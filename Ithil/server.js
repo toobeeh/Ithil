@@ -1,12 +1,9 @@
 const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http, {
-    origins: ["https://skribbl.io", "https://typo.rip"],
     handlePreflightRequest: (req, res) => {
         res.writeHead(200, {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET,POST",
-            "Access-Control-Allow-Credentials": true
+            "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
         });
         res.end();
     }

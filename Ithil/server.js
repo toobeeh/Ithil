@@ -16,7 +16,19 @@ http.listen(port, () => {
     console.log(`Listening on port:${port}.`)
 });
 
+io.of("/socket.io").on("connection", (socket) => {
+    console.log(`sio User connected: ${JSON.stringify(socket)}`);
+    socket.on("disconnect", () => {
+        console.log("He's gone.");
+    });
+});
 io.of("/nodejs").on("connection", (socket) => {
+    console.log(`njs User connected: ${JSON.stringify(socket)}`);
+    socket.on("disconnect", () => {
+        console.log("He's gone.");
+    });
+});
+io.on("connection", (socket) => {
     console.log(`User connected: ${JSON.stringify(socket)}`);
     socket.on("disconnect", () => {
         console.log("He's gone.");

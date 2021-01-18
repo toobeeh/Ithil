@@ -1,6 +1,8 @@
 const app = require('express')();
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+    origins: ["https://skribbl.io", "https://typo.rip" ]
+});
 
 //app.get('/', (req, res) => {
 //    res.sendFile(__dirname + '/index.html');

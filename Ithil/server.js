@@ -1,15 +1,16 @@
-const app = require('express')();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+var fs = require('fs');
+var app = require('express')();
+var https = require('https');
+var server = https.createServer({
+    key: fs.readFileSync('/etc/letsencrypt/live/typo.rip/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/typo.rip/cert.pem'),
+    ca: fs.readFileSync('/etc/letsencrypt/live/typo.rip/chain.pem'),
+    requestCert: false,
+    rejectUnauthorized: false
+}, app);
+server.listen(3000);
 
-app.get('/', (req, res) => {
-    res.send('<h1>Hello world</h1>');
-});
-
+var io = require('socket.io').listen(server);
 io.on('connection', (socket) => {
     console.log('a user connected');
-});
-
-http.listen(3000, () => {
-    console.log('listening on *:3000');
 });

@@ -28,7 +28,7 @@ class TypoSocket {
     }
     getUser = (data) => {
         // get user data
-        let member = this.palantirDb.getUserByLogin(data.payload.loginToken);
+        let member = this.palantirDb.getUserByLogin(this.loginToken);
         this.emitEvent(data.event + " response", { user: member });
         console.log(`Emitted event: ${data.event} response`);
     }

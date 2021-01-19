@@ -3,7 +3,7 @@ const app = require('express')();
 const https = require('https');
 const fs = require('fs');
 const cors = require('cors');
-const typoSocket = require("./typoSocket");
+const TypoSocket = require("./typoSocket");
 
 // use cors
 app.use(cors());
@@ -29,7 +29,7 @@ var io = require('socket.io')(server, {
 });
 
 // testing connection
-io.on('connection', function (socket) {
+io.on('connection', (socket) => {
     console.log('Connected socket');
-    let typosck = new typoSocket(socket);
+    let typosck = new TypoSocket(socket);
 });

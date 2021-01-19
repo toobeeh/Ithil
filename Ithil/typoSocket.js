@@ -14,4 +14,4 @@ class TypoSocket {
         this.socket.emit(data.event + " response", { Name: "hi" });
     }
 }
-exports = { TypoSocket: TypoSocket };
+exports = TypoSocket;

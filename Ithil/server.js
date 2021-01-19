@@ -16,7 +16,12 @@ server.listen(3000, function () {
     console.log('listening on *:3000');
 });
 // io client
-var io = require('socket.io')(server);
+var io = require('socket.io')(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST", "OPTIONS"]
+    }
+});
 
 // testing connection
 io.on('connection', function (socket) {

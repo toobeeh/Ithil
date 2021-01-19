@@ -34,6 +34,9 @@
     <Content Include="server.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="sqlite.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="typoSocket.js">
       <SubType>Code</SubType>
     </Content>

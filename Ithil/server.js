@@ -16,7 +16,7 @@ const server = https.createServer({
     cert: fs.readFileSync(path + '/cert.pem', 'utf8'),
     ca: fs.readFileSync(path + '/chain.pem', 'utf8')
 }, app);
-// start listeningn port 3000
+// start listening on port 3000
 server.listen(3000, function () {
     console.log('listening on *:3000');
 });

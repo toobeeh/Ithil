@@ -2,6 +2,7 @@ class TypoSocket {
     constructor(socket) {
         this.socket = socket;
         this.socket.on("login", this.login);
+        this.palantirDb = require("./sqlite");
     }
     emitEvent = (event, payload, listenResponse = false, responseTimeout = 2000) => {
         return new Promise((resolve, reject) => {
@@ -15,6 +16,9 @@ class TypoSocket {
         });
     }
     login = (data) => {
+        // check if member exists with login
+        let member = this.palantirDb.getUserByLogin(data.payload.loginToken);
+        if (!member.valid) this.socket.disconnect();
         // set login
         this.loginToken = data.payload.loginToken;
         this.socket.off("login", this.login);
@@ -24,7 +28,8 @@ class TypoSocket {
     }
     getUser = (data) => {
         // get user data
-        this.emitEvent(data.event + " response", { loginToken: this.loginToken });
+        let member = this.palantirDb.getUserByLogin(data.payload.loginToken);
+        this.emitEvent(data.event + " response", { user: member });
         console.log(`Emitted event: ${data.event} response`);
     }
 }

@@ -30,6 +30,6 @@ var io = require('socket.io')(server, {
 
 // testing connection
 io.on('connection', function (socket) {
-    console.log('Connected socket: ' + JSON.stringify(socket));
+    console.log('Connected socket');
     let typosocket = new typosockets.TypoSocket(socket);
 });

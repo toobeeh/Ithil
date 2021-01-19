@@ -3,7 +3,7 @@ const app = require('express')();
 const https = require('https');
 const fs = require('fs');
 const cors = require('cors');
-const typosockets = require("typoSocket");
+const typosockets = require("./typoSocket");
 
 // use cors
 app.use(cors());

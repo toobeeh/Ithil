@@ -1,11 +1,4 @@
-const app = require('express')();
-const http = require('http').createServer(app);
-
-
-app.get('/sub', (req, res) => {
-    res.send('<h1>Hello subdirectory</h1>');
-});
-
-http.listen(3000, () => {
-  console.log('listening on *:3000');
-});
+var server = require('http').createServer(app);
+var io = require('socket.io').listen(server);
+server.listen(8000);
+console.log('Server started at port: 8000');

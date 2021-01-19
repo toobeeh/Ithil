@@ -1,11 +1,15 @@
-var fs = require('fs');
-var https = require('https');
-let app = https.createServer({
+fs = require('fs');
+
+// Options for socket.io > 1.0.0
+var options = {
+    allowUpgrades: true,
+    transports: ['polling', 'websocket'],
+    pingTimeout: 6000,
+    pingInterval: 3000,
+    httpCompression: true,
     key: fs.readFileSync('/etc/letsencrypt/live/typo.rip/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/typo.rip/cert.pem')
-});
-var io = require('socket.io')(app);
-app.listen(3000);
-io.on('connection', (socket) => {
-    console.log('a user connected');
-});
+    cert: fs.readFileSync('/etc/letsencrypt/live/typo.rip.com/fullchain.pem'),
+    origins: '*:*'
+};
+
+io = require('socket.io')(8000, options);

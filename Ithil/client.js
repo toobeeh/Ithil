@@ -2,7 +2,7 @@ let sck = io("https://typo.rip:3000");
 
 let emitEvent = (event, payload, listenResponse = false, responseTimeout = 2000) => {
     return new Promise((resolve, reject) => {
-        if (listenResponse) sck.once(event + " repsonse", (data) => {
+        if (listenResponse) sck.once(event + " response", (data) => {
             resolve(data.payload);
         });
         try { sck.emit(event, { event: event, payload: payload }); }
@@ -12,6 +12,6 @@ let emitEvent = (event, payload, listenResponse = false, responseTimeout = 2000)
     });
 }
 
-await emitEvent("login", "123456");
+await emitEvent("login", { loginToken: "123456" });
 
 await emitEvent("get user", null, true);

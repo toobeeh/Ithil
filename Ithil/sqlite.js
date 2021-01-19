@@ -1,10 +1,10 @@
 const palantirDb = {
-    sqlite3: require("sqlite3").verbose(),
+    Database: require("better-sqlite3"),
     path: "/home/pi/Database/palantir.db",
     db: null,
     open: () => {
-        palantirDb.db = new sqlite3.Database(palantirDb.path);
-        palantirDb.db.run('PRAGMA journal_mode = WAL;');
+        palantirDb.db = new palantirDb.Database(palantirDb.path);
+        palantirDb.db.pragma('journal_mode = WAL');
     },
     close: () => {
         palantirDb.db.close();
@@ -12,18 +12,16 @@ const palantirDb = {
     },
     getUserByLogin: (login) => {
         palantirDb.open();
-        let query = palantirDb.db.prepare("SELECT * FROM Members WHERE Login = ?");
         let result = { valid: false };
-        query.get(login, (error, row) => {
-            if (!error) result = {
-                valid: true,
-                member: JSON.parse(row.Member),
-                bubbles: row.Bubbles,
-                sprites: row.Sprites,
-                drops: row.Drops,
-                flag: row.Flag
-            };
-        });
+        let row = palantirDb.db.prepare("SELECT * FROM Members WHERE Login = ?").get(login);
+        if(row) result = {
+            valid: true,
+            member: JSON.parse(row.Member),
+            bubbles: row.Bubbles,
+            sprites: row.Sprites,
+            drops: row.Drops,
+            flag: row.Flag
+        };
         palantirDb.close();
         return result;
     }

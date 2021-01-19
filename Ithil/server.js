@@ -1,22 +1,26 @@
-var app = require('express')();
-var https = require('https');
-var fs = require('fs');
+// require packets
+const app = require('express')();
+const https = require('https');
+const fs = require('fs');
 const cors = require('cors');
+const typosockets = require("typoSocket");
+
+// use cors
 app.use(cors());
 
 // path to certs
-var path = '/etc/letsencrypt/live/typo.rip';
+const path = '/etc/letsencrypt/live/typo.rip';
 // create server
-var server = https.createServer({
+const server = https.createServer({
     key: fs.readFileSync(path + '/privkey.pem', 'utf8'),
     cert: fs.readFileSync(path + '/cert.pem', 'utf8'),
     ca: fs.readFileSync(path + '/chain.pem', 'utf8')
 }, app);
-// start listening
+// start listeningn port 3000
 server.listen(3000, function () {
     console.log('listening on *:3000');
 });
-// io client
+// io client with cors allowed
 var io = require('socket.io')(server, {
     cors: {
         origin: "*",
@@ -26,11 +30,6 @@ var io = require('socket.io')(server, {
 
 // testing connection
 io.on('connection', function (socket) {
-    console.log('connected');
-    socket.on('test', function (data) {
-        socket.emit('ackmessage', {
-            'msg': 'data',
-            'key': '222'
-        });
-    });
+    console.log('Connected socket: ' + JSON.stringify(socket));
+    let typosocket = new typosockets.TypoSocket(socket);
 });

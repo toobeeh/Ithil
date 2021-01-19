@@ -8,7 +8,7 @@ var options = {
     pingInterval: 3000,
     httpCompression: true,
     key: fs.readFileSync('/etc/letsencrypt/live/typo.rip/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/typo.rip.com/fullchain.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/typo.rip/fullchain.pem'),
     origins: '*:*'
 };
 

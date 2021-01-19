@@ -1,6 +1,8 @@
 var app = require('express')();
 var https = require('https');
 var fs = require('fs');
+const cors = require('cors');
+app.use(cors());
 // path to certs
 var path = '/etc/letsencrypt/live/typo.rip';
 // create server

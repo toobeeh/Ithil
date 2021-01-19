@@ -25,11 +25,11 @@ var io = require('socket.io')(server, {
 
 // testing connection
 io.on('connection', function (socket) {
+    console.log('connected');
     socket.on('test', function (data) {
         socket.emit('ackmessage', {
             'msg': 'data',
             'key': '222'
         });
-        console.log('connected');
     });
 });

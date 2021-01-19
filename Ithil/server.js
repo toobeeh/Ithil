@@ -1,12 +1,11 @@
 var fs = require('fs');
-var app = require('express')();
 var https = require('https');
-let server = https.createServer({
+let app = https.createServer({
     key: fs.readFileSync('/etc/letsencrypt/live/typo.rip/privkey.pem'),
     cert: fs.readFileSync('/etc/letsencrypt/live/typo.rip/cert.pem')
-}, app);
-
-var io = require('socket.io').listen(server);
+});
+var io = require('socket.io').listen(app);
+app.listen(3000);
 io.on('connection', (socket) => {
     console.log('a user connected');
 });

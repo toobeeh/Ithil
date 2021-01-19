@@ -9,7 +9,7 @@ var options = {
     httpCompression: true,
     key: fs.readFileSync('/etc/letsencrypt/live/typo.rip/privkey.pem'),
     cert: fs.readFileSync('/etc/letsencrypt/live/typo.rip/fullchain.pem'),
-    origins: '*:*'
+    origins: '*'
 };
 
 io = require('socket.io')(8000, options);

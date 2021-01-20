@@ -24,7 +24,7 @@ class TypoSocket {
     }
 
     sendActiveLobbies = (lobbies) => { // send all verified of the active lobbies, called by server
-        if (this.socket.adapter.rooms.indexOf("idle") < 0) return;
+        console.log(this.socket.rooms);//if (this.socket..rooms.indexOf("idle") < 0) return;
         let authenticatedLobbies = lobbies.filter(l => this.db.getUserByLogin.Guilds.any(g => g.GuildID == l.GuildID));
         this.socket.volatile.emit("active lobbies", { event: "active lobbies", payload: { lobbies: authenticatedLobbies } });
     }

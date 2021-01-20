@@ -23,10 +23,9 @@ class TypoSocket {
         });
     }
 
-    sendActiveLobbies = (lobbies) => { // send all verified of the active lobbies, called by server
-        console.log(this.socket.rooms);
+    sendActiveLobbies = (lobbies) => { // send all verified of the active lobbies to idle sockets, called by server
         if (!this.socket.rooms.has("idle")) return;
-        let authenticatedLobbies = lobbies.filter(l => this.db.getUserByLogin(this.loginToken).member.Guilds.some(g => g.GuildID == l.GuildID));
+        let authenticatedLobbies = lobbies.filter(l => this.db.getUserByLogin(this.loginToken).member.Guilds.some(g => g.GuildID == l.guildID));
         this.socket.volatile.emit("active lobbies", { event: "active lobbies", payload: { lobbies: authenticatedLobbies } });
     }
 

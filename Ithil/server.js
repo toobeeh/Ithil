@@ -6,39 +6,46 @@ const cors = require('cors');
 const TypoSocket = require("./typoSocket");
 const palantirDb = require("./sqlite");
 
-// use cors
-app.use(cors());
-
-// path to certs
-const path = '/etc/letsencrypt/live/typo.rip';
-// create server
-const server = https.createServer({
+app.use(cors()); // use cors
+const path = '/etc/letsencrypt/live/typo.rip'; // path to certs
+const server = https.createServer({ // create server
     key: fs.readFileSync(path + '/privkey.pem', 'utf8'),
     cert: fs.readFileSync(path + '/cert.pem', 'utf8'),
     ca: fs.readFileSync(path + '/chain.pem', 'utf8')
 }, app);
-// start listening on port 3000
-server.listen(3000, function () {
-    console.log('listening on *:3000');
-});
-// io client with cors allowed
-const io = require('socket.io')(server, {
+server.listen(3000); // start listening on port 3000
+const io = require('socket.io')(server, { // start io server with cors allowed
     cors: {
         origin: "*",
         methods: ["GET", "POST", "OPTIONS"]
     }
 });
 
-// test lobbies get
-console.log(JSON.stringify(palantirDb.getActiveLobbies()));
+// refresh active lobbies all 2s
+let activeLobbies = [];
+let publicData = {};
+setInterval(() => {
+    let refreshedLobbies = palantirDb.getActiveLobbies(); // send lobbies if new
+    if (refreshedLobbies.valid && activeLobbies != refreshedLobbies.lobbies) {
+        activeLobbies = refreshedLobbies.lobbies;
+        typoSockets.forEach(s => s.sendActiveLobbies(activeLobbies));
+    }
+    let refreshedPublic = palantirDb.getPublicData(); // send public data if new
+    if (refreshedPublic.valid && refreshedPublic.publicData != publicData) {
+        publicData = refreshedPublic.publicData;
+        if (publicData != public) io.volatile.emit("public data", { event: "public data", payload: { publicData: public } });
+    }
+}, 2000);
 
-// connect new typo socket
-io.on('connection', (socket) => {
-    console.log('Connected socket');
+let typoSockets = [];
+io.on('connection', (socket) => { // on socket connect, add new typo socket
+    console.log('Connected socket ' + socket.id);
     let typosck = new TypoSocket(socket, palantirDb);
+    typoSockets.push(typosck);
     socket.on("disconnect", () => {
         // on disconnect remove reference
+        typoSockets = typoSockets.filter(s => s.socket.id != typosck.socket.id);
         typosck = null;
-        console.log("Disconnected a socket");
+        console.log("Disconnected socket " + socket.id);
     });
 });

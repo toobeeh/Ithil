@@ -46,6 +46,30 @@ const palantirDb = {
         }
         palantirDb.close();
         return result;
+    },
+    getPublicData: () => {
+        let result = { valid: false };
+        let rows;
+        try {
+            palantirDb.open();
+            // get eventdrops
+            eventdrops = palantirDb.db.prepare("SELECT * FROM EventDrops LEFT JOIN Events ON EventDrops.EventID = Events.EventID").all();
+            // get active sprites
+            onlinesprites = palantirDb.db.prepare("SELECT * FROM OnlineSprites").all();
+            // get sprites
+            sprites = palantirDb.db.prepare("SELECT * FROM Sprites").all();
+            result.valid = true;
+            result.publicData = {
+                drops: eventdrops,
+                onlinesprites: onlinesprites,
+                sprites: sprites,
+            }
+        }
+        catch{
+            return result;
+        }
+        palantirDb.close();
+        return result;
     }
 }
 module.exports = palantirDb;

@@ -11,9 +11,15 @@ const palantirDb = {
         palantirDb.db = null;
     },
     getUserByLogin: (login) => {
-        palantirDb.open();
         let result = { valid: false };
-        let row = palantirDb.db.prepare("SELECT * FROM Members WHERE Login = ?").get(login);
+        let row;
+        try {
+            palantirDb.open();
+            row = palantirDb.db.prepare("SELECT * FROM Members WHERE Login = ?").get(login);
+        }
+        catch{
+            return result;
+        }
         if(row) result = {
             valid: true,
             member: JSON.parse(row.Member),

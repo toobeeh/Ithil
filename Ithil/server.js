@@ -4,6 +4,7 @@ const https = require('https');
 const fs = require('fs');
 const cors = require('cors');
 const TypoSocket = require("./typoSocket");
+const palantirDb = require("./sqlite");
 
 // use cors
 app.use(cors());
@@ -21,15 +22,19 @@ server.listen(3000, function () {
     console.log('listening on *:3000');
 });
 // io client with cors allowed
-var io = require('socket.io')(server, {
+const io = require('socket.io')(server, {
     cors: {
         origin: "*",
         methods: ["GET", "POST", "OPTIONS"]
     }
 });
 
-// testing connection
+// connect new typo socket
 io.on('connection', (socket) => {
     console.log('Connected socket');
     let typosck = new TypoSocket(socket);
+    socket.on("disconnect", () => {
+        // on disconnect remove reference
+        typosck = null;
+    });
 });

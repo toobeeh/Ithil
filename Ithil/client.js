@@ -12,6 +12,6 @@ let emitEvent = (event, payload, listenResponse = false, responseTimeout = 2000)
     });
 }
 
-await emitEvent("login", { loginToken: "123456" });
+await emitEvent("login", { loginToken: "123456" }, true);
 
 await emitEvent("get user", null, true);

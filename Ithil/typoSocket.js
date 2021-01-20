@@ -23,12 +23,6 @@ class TypoSocket {
         });
     }
 
-    sendActiveLobbies = (lobbies) => { // send all verified of the active lobbies to idle sockets, called by server
-        if (!this.socket.rooms.has("idle")) return;
-        let authenticatedLobbies = lobbies.filter(l => this.db.getUserByLogin(this.loginToken).member.Guilds.some(g => g.GuildID == l.guildID));
-        this.socket.volatile.emit("active lobbies", { event: "active lobbies", payload: { lobbies: authenticatedLobbies } });
-    }
-
     // On login event: authorize user, close conn if unauthorized
     login = (data) => {
         let member = this.db.getUserByLogin(data.payload.loginToken); // check if member exists with login

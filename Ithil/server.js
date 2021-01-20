@@ -26,12 +26,12 @@ class SharedData {
         // refresh active lobbies and public data all 2s
         setInterval(() => {
             let refreshedLobbies = palantirDb.getActiveLobbies(); // send lobbies if new
-            if (refreshedLobbies.valid && this.activeLobbies != refreshedLobbies.lobbies) {
+            if (refreshedLobbies.valid && JSON.stringify(this.activeLobbies) != JSON.stringify(refreshedLobbies.lobbies)) {
                 this.activeLobbies = refreshedLobbies.lobbies;
-                typoSockets.forEach(s => s.sendActiveLobbies(this.activeLobbies));
+                io.to("idle").volatile.emit("active lobbies", { event: "active lobbies", payload: { activeLobbies: this.activeLobbies } });
             }
             let refreshedPublic = palantirDb.getPublicData(); // send public data if new
-            if (refreshedPublic.valid && refreshedPublic.publicData != this.publicData) {
+            if (refreshedPublic.valid && JSON.stringify(refreshedPublic.publicData) != JSON.stringify(this.publicData)) {
                 this.publicData = refreshedPublic.publicData;
                 io.volatile.emit("public data", { event: "public data", payload: { publicData: this.publicData } });
             }

@@ -1,5 +1,6 @@
 class TypoSocket {
-    constructor(socket) {
+    constructor(socket, db) {
+        this.db = db;
         this.socket = socket;
         this.socket.on("login", this.login);
         // close if not logged in within 5s
@@ -25,7 +26,7 @@ class TypoSocket {
     // On login event: authorize user, close conn if unauthorized
     login = (data) => {
         // check if member exists with login
-        let member = palantirDb.getUserByLogin(data.payload.loginToken);
+        let member = this.db.getUserByLogin(data.payload.loginToken);
         if (!member.valid) {
             this.emitEvent(data.event + " response", false);
             this.socket.disconnect();
@@ -41,7 +42,7 @@ class TypoSocket {
     // on get user event: respond with member data
     getUser = (data) => {
         // get user data
-        let member = palantirDb.getUserByLogin(this.loginToken);
+        let member = this.db.getUserByLogin(this.loginToken);
         this.emitEvent(data.event + " response", { user: member });
     }
 }

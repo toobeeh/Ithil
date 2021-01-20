@@ -32,7 +32,7 @@ const io = require('socket.io')(server, {
 // connect new typo socket
 io.on('connection', (socket) => {
     console.log('Connected socket');
-    let typosck = new TypoSocket(socket);
+    let typosck = new TypoSocket(socket, palantirDb);
     socket.on("disconnect", () => {
         // on disconnect remove reference
         typosck = null;

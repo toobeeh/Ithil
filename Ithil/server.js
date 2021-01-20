@@ -23,19 +23,22 @@ const io = require('socket.io')(server, { // start io server with cors allowed
 
 class SharedData {
     constructor() {
-        // refresh active lobbies and public data all 2s
+        // refresh active lobbies every 4 seconds 
         setInterval(() => {
             let refreshedLobbies = palantirDb.getActiveLobbies(); // send lobbies if new
             if (refreshedLobbies.valid && JSON.stringify(this.activeLobbies) != JSON.stringify(refreshedLobbies.lobbies)) {
                 this.activeLobbies = refreshedLobbies.lobbies;
                 io.to("idle").volatile.emit("active lobbies", { event: "active lobbies", payload: { activeLobbies: this.activeLobbies } });
             }
+        }, 4000);
+        // refresh public data - sprites all 10s
+        setInterval(() => {
             let refreshedPublic = palantirDb.getPublicData(); // send public data if new
             if (refreshedPublic.valid && JSON.stringify(refreshedPublic.publicData) != JSON.stringify(this.publicData)) {
                 this.publicData = refreshedPublic.publicData;
-                io.volatile.emit("public data", { event: "public data", payload: { publicData: this.publicData } });
+                io.volatile.emit("online sprites", { event: "online sprites", payload: { onlineSprites: this.publicData.onlineSprites } });
             }
-        }, 4000);
+        }, 10000);
     }
 }
 sharedData = new SharedData();

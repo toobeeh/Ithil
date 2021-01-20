@@ -4,7 +4,7 @@ class TypoSocket {
         this.sharedData = sharedData;
         this.socket = socket;
         this.socket.on("login", this.login);
-        this.socket.volatile.emit("public data", { event: "public data", payload: { publicData: this.sharedData.publicData } }); // send public data on beginning
+        this.socket.emit("public data", { event: "public data", payload: { publicData: this.sharedData.publicData } }); // send public data on beginning
     }
     // Function to emit event and optionally expect an response within a timeout
     emitEvent = (event, payload, listenResponse = false, responseTimeout = 2000) => {

@@ -62,7 +62,7 @@ const palantirDb = {
             result.valid = true;
             result.publicData = {
                 drops: eventdrops,
-                onlinesprites: onlinesprites,
+                onlineSprites: onlinesprites,
                 sprites: sprites,
             }
         }

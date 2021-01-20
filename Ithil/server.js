@@ -28,7 +28,8 @@ class SharedData {
             let refreshedLobbies = palantirDb.getActiveLobbies(); // send lobbies if new
             if (refreshedLobbies.valid && this.activeLobbies != refreshedLobbies.lobbies) {
                 this.activeLobbies = refreshedLobbies.lobbies;
-                console.log(JSON.stringify(this.activeLobbies);
+                console.log(JSON.stringify(this.activeLobbies));
+                console.log(JSON.stringify(refreshedLobbies.activeLobbies));
                 typoSockets.forEach(s => s.sendActiveLobbies(this.activeLobbies));
             }
             let refreshedPublic = palantirDb.getPublicData(); // send public data if new
@@ -36,7 +37,7 @@ class SharedData {
                 this.publicData = refreshedPublic.publicData;
                 io.volatile.emit("public data", { event: "public data", payload: { publicData: this.publicData } });
             }
-        }, 2000);
+        }, 4000);
     }
 }
 sharedData = new SharedData();

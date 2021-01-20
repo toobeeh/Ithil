@@ -30,6 +30,7 @@ class TypoSocket {
         if (!member.valid) {
             this.emitEvent(data.event + " response", false);
             this.socket.disconnect();
+            return;
         }
         // set login
         this.loginToken = data.payload.loginToken;

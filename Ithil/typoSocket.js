@@ -1,11 +1,10 @@
 class TypoSocket {
-    constructor(socket, db) {
+    constructor(socket, db, sharedData) {
         this.db = db;
+        this.sharedData = sharedData;
         this.socket = socket;
         this.socket.on("login", this.login);
-        // close if not logged in within 5s
-        //setTimeout(() => { if (!this.login) this.socket.disconnect(); }, 5000);
-        this.socket.volatile.emit("public data", { event: "public data", payload: { publicData: publicData } }); // send public data on beginning
+        this.socket.volatile.emit("public data", { event: "public data", payload: { publicData: this.sharedData.publicData } }); // send public data on beginning
     }
     // Function to emit event and optionally expect an response within a timeout
     emitEvent = (event, payload, listenResponse = false, responseTimeout = 2000) => {
@@ -33,7 +32,7 @@ class TypoSocket {
     // On login event: authorize user, close conn if unauthorized
     login = (data) => {
         let member = this.db.getUserByLogin(data.payload.loginToken); // check if member exists with login
-        let publicdata = this.db.getPublicData();
+        let publicdata = this.sharedData.publicData;
         if (!member.valid) {
             this.emitEvent(data.event + " response", { authorized: false, public: publicdata });
             this.socket.disconnect();

@@ -21,26 +21,31 @@ const io = require('socket.io')(server, { // start io server with cors allowed
     }
 });
 
-// refresh active lobbies and public data all 2s
-let activeLobbies = [];
-let publicData = {};
-setInterval(() => {
-    let refreshedLobbies = palantirDb.getActiveLobbies(); // send lobbies if new
-    if (refreshedLobbies.valid && activeLobbies != refreshedLobbies.lobbies) {
-        activeLobbies = refreshedLobbies.lobbies;
-        typoSockets.forEach(s => s.sendActiveLobbies(activeLobbies));
+class SharedData {
+    constructor() {
+        // refresh active lobbies and public data all 2s
+        setInterval(() => {
+            let refreshedLobbies = palantirDb.getActiveLobbies(); // send lobbies if new
+            if (refreshedLobbies.valid && this.activeLobbies != refreshedLobbies.lobbies) {
+                this.activeLobbies = refreshedLobbies.lobbies;
+                typoSockets.forEach(s => s.sendActiveLobbies(this.activeLobbies));
+            }
+            let refreshedPublic = palantirDb.getPublicData(); // send public data if new
+            if (refreshedPublic.valid && refreshedPublic.publicData != this.publicData) {
+                this.publicData = refreshedPublic.publicData;
+                io.volatile.emit("public data", { event: "public data", payload: { publicData: this.publicData } });
+            }
+        }, 2000);
     }
-    let refreshedPublic = palantirDb.getPublicData(); // send public data if new
-    if (refreshedPublic.valid && refreshedPublic.publicData != publicData) {
-        publicData = refreshedPublic.publicData;
-        io.volatile.emit("public data", { event: "public data", payload: { publicData: publicData } });
-    }
-}, 2000);
+}
+sharedData = new SharedData();
+
+
 
 let typoSockets = [];
 io.on('connection', (socket) => { // on socket connect, add new typo socket
     console.log('Connected socket ' + socket.id);
-    let typosck = new TypoSocket(socket, palantirDb);
+    let typosck = new TypoSocket(socket, palantirDb, sharedData);
     typoSockets.push(typosck);
     socket.on("disconnect", () => {
         // on disconnect remove reference

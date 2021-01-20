@@ -21,7 +21,7 @@ const io = require('socket.io')(server, { // start io server with cors allowed
     }
 });
 
-// refresh active lobbies all 2s
+// refresh active lobbies and public data all 2s
 let activeLobbies = [];
 let publicData = {};
 setInterval(() => {
@@ -33,7 +33,7 @@ setInterval(() => {
     let refreshedPublic = palantirDb.getPublicData(); // send public data if new
     if (refreshedPublic.valid && refreshedPublic.publicData != publicData) {
         publicData = refreshedPublic.publicData;
-        if (publicData != public) io.volatile.emit("public data", { event: "public data", payload: { publicData: public } });
+        io.volatile.emit("public data", { event: "public data", payload: { publicData: publicData } });
     }
 }, 2000);
 

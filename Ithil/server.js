@@ -29,7 +29,7 @@ class SharedData {
             if (refreshedLobbies.valid && this.activeLobbies != refreshedLobbies.lobbies) {
                 this.activeLobbies = refreshedLobbies.lobbies;
                 console.log(JSON.stringify(this.activeLobbies));
-                console.log(JSON.stringify(refreshedLobbies.activeLobbies));
+                //console.log(JSON.stringify(refreshedLobbies.activeLobbies));
                 typoSockets.forEach(s => s.sendActiveLobbies(this.activeLobbies));
             }
             let refreshedPublic = palantirDb.getPublicData(); // send public data if new

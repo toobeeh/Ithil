@@ -5,7 +5,7 @@ class TypoSocket {
         this.socket.on("login", this.login);
         // close if not logged in within 5s
         //setTimeout(() => { if (!this.login) this.socket.disconnect(); }, 5000);
-        this.volatile.emit("public data", { event: "public data", payload: { publicData: publicData } }); // send public data on beginning
+        this.socket.volatile.emit("public data", { event: "public data", payload: { publicData: publicData } }); // send public data on beginning
     }
     // Function to emit event and optionally expect an response within a timeout
     emitEvent = (event, payload, listenResponse = false, responseTimeout = 2000) => {

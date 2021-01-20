@@ -38,7 +38,7 @@ class TypoSocket {
         // add event handler
         this.socket.on("get user", this.getUser);
         this.emitEvent(data.event + " response", true);
-        console.log(`Login was set for socket: ${this.loginToken}\nAdded get user event`);
+        console.log(`Login was set for socket: ${this.loginToken}`);
     }
     // on get user event: respond with member data
     getUser = (data) => {
@@ -46,5 +46,6 @@ class TypoSocket {
         let member = this.db.getUserByLogin(this.loginToken);
         this.emitEvent(data.event + " response", { user: member });
     }
+
 }
 module.exports = TypoSocket;

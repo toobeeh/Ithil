@@ -29,6 +29,9 @@ const io = require('socket.io')(server, {
     }
 });
 
+// test lobbies get
+console.log(JSON.stringify(palantirDb.getActiveLobbies()));
+
 // connect new typo socket
 io.on('connection', (socket) => {
     console.log('Connected socket');
@@ -36,5 +39,6 @@ io.on('connection', (socket) => {
     socket.on("disconnect", () => {
         // on disconnect remove reference
         typosck = null;
+        console.log("Disconnected a socket");
     });
 });

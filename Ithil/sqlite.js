@@ -26,6 +26,7 @@ const palantirDb = {
             };
         }
         catch{
+            palantirDb.close();
             return result;
         }
         palantirDb.close();
@@ -43,6 +44,7 @@ const palantirDb = {
             result.valid = true;
         }
         catch{
+            palantirDb.close();
             return result;
         }
         palantirDb.close();
@@ -67,6 +69,42 @@ const palantirDb = {
             }
         }
         catch{
+            palantirDb.close();
+            return result;
+        }
+        palantirDb.close();
+        return result;
+    },
+    getLobby: (value, indicator = "key") => {
+        let result = { valid: false };
+        if (indicator != "key" && indicator != "id") return result;
+        try {
+            palantirDb.open();
+            // get eventdrops
+            if (indicator == "id") {
+                let dbres = palantirDb.db.prepare("SELECT * FROM Lobbies WHERE ID = ?").get(value);
+                if (dbres) {
+                    result.lobby = JSON.parse(dbres.Lobby);
+                    result.found = true;
+                }
+                else result.found = false;
+                result.valid = true;
+            }
+            else {
+                let matches = [];
+                palantirDb.db.prepare('SELECT * FROM Lobbies WHERE Lobby LIKE "%?%"').all(value).forEach(lobbyMatch => {
+                    let obj = JSON.parse(lobbyMatch);
+                    if (obj.Key == value) {
+                        result.lobby = obj;
+                        result.found = true;
+                    }
+                });
+                if (!result.lobby) result.found = false;
+                result.valid = true;
+            }
+        }
+        catch{
+            palantirDb.close();
             return result;
         }
         palantirDb.close();

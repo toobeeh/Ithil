@@ -35,6 +35,9 @@ class TypoSocket {
         this.socket.off("login", this.login);
         this.socket.join("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
+        this.socket.on("get lobby by key", this.getLobbyByKey); // add event handler get lobby by key
+        this.socket.on("get lobby by id", this.getLobbyById); // add event handler get lobby by key
+        //this.socket.on("set lobby", this.setLobby); // add event handler set lobby
         this.emitEvent(data.event + " response", { authorized: true, public: publicdata }); // reply with status
         console.log(`Login was set for socket: ${this.loginToken}`);
     }
@@ -43,6 +46,21 @@ class TypoSocket {
         // get user data
         let member = this.db.getUserByLogin(this.loginToken);
         this.emitEvent(data.event + " response", { user: member });
+    }
+    // on lobby id event: respond with lobby id for key
+    getLobbyByKey = (data) => {
+        // seek db for lobby with key
+        let lobby = this.db.getLobby(data.payload.key);
+        this.emitEvent(data.event + " response", { lobby: lobby });
+    }
+    getLobbyById = (data) => {
+        // seek db for lobby with key
+        let lobby = this.db.getLobby(data.payload.id, "id");
+        this.emitEvent(data.event + " response", { lobby: lobby });
+    }
+    // on set lobby event: set socket lobby data
+    reportLobby = (data) => {
+        // write database
     }
 }
 module.exports = TypoSocket;

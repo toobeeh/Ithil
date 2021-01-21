@@ -25,9 +25,9 @@ class TypoSocket {
     // On login event: authorize user, set room public if unauthorized
     login = (data) => {
         let member = this.db.getUserByLogin(data.payload.loginToken); // check if member exists with login
-        let publicdata = this.sharedData.publicData;
+        let activeLobbies = this.sharedData.activeLobbies;
         if (!member.valid) {
-            this.emitEvent(data.event + " response", { authorized: false, public: publicdata });
+            this.emitEvent(data.event + " response", { authorized: false});
             this.socket.join("public");
             return;
         }
@@ -36,7 +36,7 @@ class TypoSocket {
         this.socket.join("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
-        this.emitEvent(data.event + " response", { authorized: true, public: publicdata }); // reply with status
+        this.emitEvent(data.event + " response", { authorized: true, activeLobbies: activeLobbies }); // reply with status
         console.log(`Login was set for socket: ${this.loginToken}`);
     }
     // on get user event: respond with member data
@@ -48,7 +48,7 @@ class TypoSocket {
     // on join lobby event: set status as playing and get lobby id
     joinLobby = (data) => {
         // get lobby
-        let responseData;
+        let responseData = {};
         let lobbyData = this.db.getLobby(data.payload.key);
         responseData.valid = lobbyData.valid;
         if (!lobbyData.found) {

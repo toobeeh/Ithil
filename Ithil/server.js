@@ -40,7 +40,7 @@ class SharedData {
                 this.publicData = refreshedPublic.publicData;
                 io.volatile.emit("online sprites", { event: "online sprites", payload: { onlineSprites: this.publicData.onlineSprites } });
             }
-            else this.publicData = refreshedPublic.publicData;
+            this.publicData = refreshedPublic.publicData;
         }, 10000);
     }
 }

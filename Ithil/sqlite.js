@@ -114,7 +114,7 @@ const palantirDb = {
         let result = { valid: false };
         try {
             palantirDb.open();
-            palantirDb.db.prepare("REPLACE INTO Lobbies VALUES(?,?,?)").run(id, key, description);
+            palantirDb.db.prepare("REPLACE INTO Lobbies VALUES(?,?)").run(id, JSON.stringify({ ID: id, Key: key, Description: description }));
             result = { valid: true };
         }
         catch{

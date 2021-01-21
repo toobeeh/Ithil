@@ -52,7 +52,7 @@ class TypoSocket {
         let lobbyData = this.db.getLobby(data.payload.key);
         responseData.valid = lobbyData.valid;
         if (!lobbyData.found) {
-            responseData.valid = this.db.setLobby(Math.random().toString(10).substr(2, 8), data.key, "");
+            responseData.valid = this.db.setLobby(Math.random().toString(10).substr(2, 8), data.key, "").valid;
             lobbyData = this.db.getLobby(data.payload.key);
         }
         this.lobbyData = lobbyData;

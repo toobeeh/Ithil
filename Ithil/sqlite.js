@@ -91,11 +91,10 @@ const palantirDb = {
                 result.valid = true;
             }
             else {
-                let statement = palantirDb.db.prepare("SELECT * FROM Lobbies");
-                for(const lobbyMatch of statement.iterate()) {
-                    console.log(lobbyMatch.Lobby);
+                let statement = palantirDb.db.prepare("SELECT * FROM Lobbies WHERE Lobby LIKE ?");
+                for (const lobbyMatch of statement.iterate("'%" + value + "%'")) {
+                    console.log(lobbyMatch);
                     let obj = JSON.parse(lobbyMatch.Lobby);
-                    console.log(obj.Key);
                     if (obj.Key == value) {
                         result.lobby = obj;
                         result.found = true;

@@ -95,7 +95,7 @@ const palantirDb = {
                 for(const lobbyMatch of statement.iterate()) {
                     console.log(lobbyMatch.Lobby);
                     let obj = JSON.parse(lobbyMatch.Lobby);
-                    console.log(obj.key);
+                    console.log(obj.Key);
                     if (obj.Key == value) {
                         result.lobby = obj;
                         result.found = true;

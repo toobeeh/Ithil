@@ -34,7 +34,8 @@ class SharedData {
         // refresh public data - sprites all 10s
         setInterval(() => {
             let refreshedPublic = palantirDb.getPublicData(); // send public data if new
-            if (refreshedPublic.valid && JSON.stringify(refreshedPublic.publicData.onlineSprites) != JSON.stringify(this.publicData.onlineSprites)) {
+            if (refreshedPublic.valid &&
+                !refreshedPublic.publicData.onlineSprites || JSON.stringify(refreshedPublic.publicData.onlineSprites) != JSON.stringify(this.publicData.onlineSprites)) {
                 this.publicData = refreshedPublic.publicData;
                 io.volatile.emit("online sprites", { event: "online sprites", payload: { onlineSprites: this.publicData.onlineSprites } });
             }

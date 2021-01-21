@@ -34,7 +34,7 @@ class SharedData {
             }
         }
         refreshLobbies();
-        setInterval(refreshPublic, 4000);
+        setInterval(refreshLobbies, 4000);
         // refresh public data - sprites all 10s
         const refreshPublic = () => {
             let refreshedPublic = palantirDb.getPublicData(); // send public data if new
@@ -45,7 +45,7 @@ class SharedData {
             this.publicData = refreshedPublic.publicData;
         }
         refreshPublic();
-        setInterval(refreshLobbies, 10000);
+        setInterval(refreshPublic, 10000);
     }
 }
 sharedData = new SharedData();

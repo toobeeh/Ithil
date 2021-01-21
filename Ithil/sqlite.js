@@ -91,14 +91,21 @@ const palantirDb = {
                 result.valid = true;
             }
             else {
-                palantirDb.db.prepare("SELECT * FROM Lobbies WHERE Lobby LIKE ?").all("'%" + value + "%'").forEach(lobbyMatch => {
-                    let obj = JSON.parse(lobbyMatch.Lobby);
-                    if (obj.Key == value) {
-                        result.lobby = obj;
-                        result.found = true;
-                    }
-                });
-                if (!result.lobby) result.found = false;
+                //palantirDb.db.prepare("SELECT * FROM Lobbies WHERE Lobby LIKE ?").all("'%" + value + "%'").forEach(lobbyMatch => {
+                //    let obj = JSON.parse(lobbyMatch.Lobby);
+                //    if (obj.Key == value) {
+                //        result.lobby = obj;
+                //        result.found = true;
+                //    }
+                //});
+                //if (!result.lobby) result.found = false;
+                //result.valid = true;
+                let dbres = palantirDb.db.prepare("SELECT * FROM Lobbies WHERE Lobby LIKE ?").get("'%" + value + "%'");
+                if (dbres) {
+                    result.lobby = JSON.parse(dbres.Lobby);
+                    result.found = true;
+                }
+                else result.found = false;
                 result.valid = true;
             }
         }

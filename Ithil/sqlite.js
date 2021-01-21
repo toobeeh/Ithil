@@ -91,7 +91,8 @@ const palantirDb = {
                 result.valid = true;
             }
             else {
-                palantirDb.db.prepare("SELECT * FROM Lobbies ").all().forEach(lobbyMatch => {
+                palantirDb.db.prepare("SELECT * FROM Lobbies").all().forEach(lobbyMatch => {
+                    console.print(lobbyMatch.Lobby);
                     let obj = JSON.parse(lobbyMatch.Lobby);
                     if (obj.Key == value) {
                         result.lobby = obj;

@@ -82,7 +82,7 @@ const palantirDb = {
             palantirDb.open();
             // get eventdrops
             if (indicator == "id") {
-                let dbres = palantirDb.db.prepare("SELECT * FROM Lobbies WHERE ID = ?").get(value);
+                let dbres = palantirDb.db.prepare("SELECT * FROM Lobbies WHERE LobbyID = ?").get(value);
                 if (dbres) {
                     result.lobby = JSON.parse(dbres.Lobby);
                     result.found = true;
@@ -91,7 +91,6 @@ const palantirDb = {
                 result.valid = true;
             }
             else {
-                let matches = [];
                 palantirDb.db.prepare('SELECT * FROM Lobbies WHERE Lobby LIKE "%?%"').all(value).forEach(lobbyMatch => {
                     let obj = JSON.parse(lobbyMatch);
                     if (obj.Key == value) {

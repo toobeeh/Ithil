@@ -22,8 +22,7 @@ class TypoSocket {
             else setTimeout(() => reject(new Error("Response timed out")), responseTimeout);
         });
     }
-
-    // On login event: authorize user, close conn if unauthorized
+    // On login event: authorize user, set room public if unauthorized
     login = (data) => {
         let member = this.db.getUserByLogin(data.payload.loginToken); // check if member exists with login
         let publicdata = this.sharedData.publicData;
@@ -45,6 +44,5 @@ class TypoSocket {
         let member = this.db.getUserByLogin(this.loginToken);
         this.emitEvent(data.event + " response", { user: member });
     }
-
 }
 module.exports = TypoSocket;

@@ -101,7 +101,7 @@ const palantirDb = {
                 //if (!result.lobby) result.found = false;
                 //result.valid = true;
                 let dbres = palantirDb.db.prepare("SELECT * FROM Lobbies WHERE Lobby LIKE ?");
-                console.log(dbres);
+                console.log(JSON.stringify(dbres));
                 dbres = dbres.get("'%" + value + "%'");
                 if (dbres) {
                     result.lobby = JSON.parse(dbres.Lobby);

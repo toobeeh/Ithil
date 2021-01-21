@@ -91,14 +91,16 @@ const palantirDb = {
                 result.valid = true;
             }
             else {
-                palantirDb.db.prepare("SELECT * FROM Lobbies").all().forEach(lobbyMatch => {
-                    console.print(lobbyMatch.Lobby);
+                let statement = palantirDb.db.prepare("SELECT * FROM Lobbies");
+                for(const lobbyMatch of statement.iterate()) {
+                    console.log(lobbyMatch.Lobby);
                     let obj = JSON.parse(lobbyMatch.Lobby);
+                    console.log(obj.key);
                     if (obj.Key == value) {
                         result.lobby = obj;
                         result.found = true;
                     }
-                });
+                };
                 if (!result.lobby) result.found = false;
                 result.valid = true;
             }

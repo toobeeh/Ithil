@@ -80,8 +80,7 @@ const palantirDb = {
         if (indicator != "key" && indicator != "id") return result;
         try {
             palantirDb.open();
-            // get eventdrops
-            if (indicator == "id") {
+            if (indicator == "id") { // get lobby by id
                 let dbres = palantirDb.db.prepare("SELECT * FROM Lobbies WHERE LobbyID = ?").get(value);
                 if (dbres) {
                     result.lobby = JSON.parse(dbres.Lobby);
@@ -90,10 +89,9 @@ const palantirDb = {
                 else result.found = false;
                 result.valid = true;
             }
-            else {
-                let statement = palantirDb.db.prepare("SELECT * FROM Lobbies WHERE Lobby LIKE ?");
-                for (const lobbyMatch of statement.iterate("'%" + value + "%'")) {
-                    console.log(lobbyMatch);
+            else { // get lobby by key
+                let statement = palantirDb.db.prepare("SELECT * FROM Lobbies");
+                for (const lobbyMatch of statement.iterate()) {
                     let obj = JSON.parse(lobbyMatch.Lobby);
                     if (obj.Key == value) {
                         result.lobby = obj;
@@ -107,6 +105,20 @@ const palantirDb = {
         catch (e) {
             palantirDb.close();
             result.error = e;
+            return result;
+        }
+        palantirDb.close();
+        return result;
+    },
+    setLobby: (id, key, description = "") => {
+        let result = { valid: false };
+        try {
+            palantirDb.open();
+            palantirDb.db.prepare("REPLACE INTO Lobbies VALUES(?,?,?)").run(id, key, description);
+            result = { valid: true };
+        }
+        catch{
+            palantirDb.close();
             return result;
         }
         palantirDb.close();

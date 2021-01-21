@@ -35,9 +35,7 @@ class TypoSocket {
         this.socket.off("login", this.login);
         this.socket.join("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
-        this.socket.on("get lobby by key", this.getLobbyByKey); // add event handler get lobby by key
-        this.socket.on("get lobby by id", this.getLobbyById); // add event handler get lobby by key
-        //this.socket.on("set lobby", this.setLobby); // add event handler set lobby
+        this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
         this.emitEvent(data.event + " response", { authorized: true, public: publicdata }); // reply with status
         console.log(`Login was set for socket: ${this.loginToken}`);
     }
@@ -47,19 +45,24 @@ class TypoSocket {
         let member = this.db.getUserByLogin(this.loginToken);
         this.emitEvent(data.event + " response", { user: member });
     }
-    // on lobby id event: respond with lobby id for key
-    getLobbyByKey = (data) => {
-        // seek db for lobby with key
-        let lobby = this.db.getLobby(data.payload.key);
-        this.emitEvent(data.event + " response", { result: lobby });
+    // on join lobby event: set status as playing and get lobby id
+    joinLobby = (data) => {
+        // get lobby
+        let responseData;
+        let lobbyData = this.db.getLobby(data.key);
+        responseData.valid = lobbyData.valid;
+        if (!lobbyData.found) {
+            responseData.valid = this.db.setLobby(Math.random().toString(10).substr(2, 8), data.key, "");
+            lobbyData = this.db.getLobby(data.key);
+        }
+        this.lobbyData = lobbyData;
+        responseData.lobbyData = lobbyData;
+        this.socket.join("playing");
+        this.emitEvent(data.event + " response", responseData);
     }
-    getLobbyById = (data) => {
-        // seek db for lobby with key
-        let lobby = this.db.getLobby(data.payload.id, "id");
-        this.emitEvent(data.event + " response", { result: lobby });
-    }
-    // on set lobby event: set socket lobby data
+    // on report lobby event: get lobby and write report
     reportLobby = (data) => {
+        // get lobby
         // write database
     }
 }

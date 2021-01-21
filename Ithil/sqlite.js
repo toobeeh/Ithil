@@ -103,8 +103,9 @@ const palantirDb = {
                 result.valid = true;
             }
         }
-        catch{
+        catch (e) {
             palantirDb.close();
+            result.error = e;
             return result;
         }
         palantirDb.close();

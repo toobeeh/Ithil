@@ -51,12 +51,12 @@ class TypoSocket {
     getLobbyByKey = (data) => {
         // seek db for lobby with key
         let lobby = this.db.getLobby(data.payload.key);
-        this.emitEvent(data.event + " response", { lobby: lobby });
+        this.emitEvent(data.event + " response", { result: lobby });
     }
     getLobbyById = (data) => {
         // seek db for lobby with key
         let lobby = this.db.getLobby(data.payload.id, "id");
-        this.emitEvent(data.event + " response", { lobby: lobby });
+        this.emitEvent(data.event + " response", { result: lobby });
     }
     // on set lobby event: set socket lobby data
     reportLobby = (data) => {

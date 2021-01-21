@@ -91,7 +91,7 @@ const palantirDb = {
                 result.valid = true;
             }
             else {
-                palantirDb.db.prepare('SELECT * FROM Lobbies WHERE Lobby LIKE "%?%"').all(value).forEach(lobbyMatch => {
+                palantirDb.db.prepare("SELECT * FROM Lobbies WHERE Lobby LIKE '('%' || ? || '%')").all(value).forEach(lobbyMatch => {
                     let obj = JSON.parse(lobbyMatch);
                     if (obj.Key == value) {
                         result.lobby = obj;

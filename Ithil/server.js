@@ -26,22 +26,26 @@ class SharedData {
         // refresh active lobbies every 4 seconds 
         this.activeLobbies = [];
         this.publicData = { onlineSprites: [], drops: [], sprites: [] };
-        setInterval(() => {
+        const refreshLobbies = () => {
             let refreshedLobbies = palantirDb.getActiveLobbies(); // send lobbies if new
             if (refreshedLobbies.valid && JSON.stringify(this.activeLobbies) != JSON.stringify(refreshedLobbies.lobbies)) {
                 this.activeLobbies = refreshedLobbies.lobbies;
                 io.to("idle").volatile.emit("active lobbies", { event: "active lobbies", payload: { activeLobbies: this.activeLobbies } });
             }
-        }(), 4000);
+        }
+        refreshLobbies();
+        setInterval(refreshPublic, 4000);
         // refresh public data - sprites all 10s
-        setInterval(() => {
+        const refreshPublic = () => {
             let refreshedPublic = palantirDb.getPublicData(); // send public data if new
             if (refreshedPublic.valid && JSON.stringify(refreshedPublic.publicData.onlineSprites) != JSON.stringify(this.publicData.onlineSprites)) {
                 this.publicData = refreshedPublic.publicData;
                 io.volatile.emit("online sprites", { event: "online sprites", payload: { onlineSprites: this.publicData.onlineSprites } });
             }
             this.publicData = refreshedPublic.publicData;
-        }(), 10000);
+        }
+        refreshPublic();
+        setInterval(refreshLobbies, 10000);
     }
 }
 sharedData = new SharedData();

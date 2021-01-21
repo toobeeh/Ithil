@@ -15,7 +15,7 @@ class TypoSocket {
             });
             try {
                 this.socket.emit(event, { event: event, payload: payload });
-                console.log(`Emitted event: ${event} @ ${this.loginToken}\n${payload}`);
+                console.log(`Emitted event: ${event} @ ${this.loginToken}`);
             }
             catch { reject(new Error("Failed emitting event: " + event)); }
             if (!listenResponse) resolve(true);
@@ -49,11 +49,11 @@ class TypoSocket {
     joinLobby = (data) => {
         // get lobby
         let responseData;
-        let lobbyData = this.db.getLobby(data.key);
+        let lobbyData = this.db.getLobby(data.payload.key);
         responseData.valid = lobbyData.valid;
         if (!lobbyData.found) {
             responseData.valid = this.db.setLobby(Math.random().toString(10).substr(2, 8), data.key, "");
-            lobbyData = this.db.getLobby(data.key);
+            lobbyData = this.db.getLobby(data.payload.key);
         }
         this.lobbyData = lobbyData;
         responseData.lobbyData = lobbyData;

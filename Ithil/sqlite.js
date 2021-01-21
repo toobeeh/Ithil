@@ -92,7 +92,7 @@ const palantirDb = {
             }
             else {
                 palantirDb.db.prepare("SELECT * FROM Lobbies WHERE Lobby LIKE ?").all("'%" + value + "%'").forEach(lobbyMatch => {
-                    let obj = JSON.parse(lobbyMatch);
+                    let obj = JSON.parse(lobbyMatch.Lobby);
                     if (obj.Key == value) {
                         result.lobby = obj;
                         result.found = true;

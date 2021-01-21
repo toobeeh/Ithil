@@ -7,7 +7,9 @@ class TypoSocket {
         this.socket.emit("public data", { event: "public data", payload: { publicData: this.sharedData.publicData } }); // send public data on beginning
     }
     // leave all rooms
-    leaveAllRooms = () => this.socket.rooms.forEach(r => { if (r != this.socket.id) this.socket.leave(r); });
+    leaveAllStateRooms = () => this.socket.rooms.forEach(r => {
+        if (r == "idle" || r == "playing" || r == "searching" || r == "waiting") this.socket.leave(r);
+    });
     // Function to emit event and optionally expect an response within a timeout
     emitEvent = (event, payload, listenResponse = false, responseTimeout = 2000) => {
         return new Promise((resolve, reject) => {
@@ -35,7 +37,7 @@ class TypoSocket {
         }
         this.loginToken = data.payload.loginToken; // set login
         this.socket.off("login", this.login);
-        this.socket.leaveAllRooms();
+        this.leaveAllStateRooms();
         this.socket.join("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
@@ -60,7 +62,7 @@ class TypoSocket {
         }
         this.lobbyData = lobbyData;
         responseData.lobbyData = lobbyData;
-        this.socket.leaveAllRooms();
+        this.leaveAllStateRooms();
         this.socket.join("playing");
         this.emitEvent(data.event + " response", responseData);
     }

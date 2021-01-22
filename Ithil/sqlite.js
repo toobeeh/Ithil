@@ -123,6 +123,23 @@ const palantirDb = {
         }
         palantirDb.close();
         return result;
+    },
+    writeLobbyReport = (lobbies) => {
+        let result = { valid: false };
+        try {
+            palantirDb.open();
+            lobbies.forEach(lobby => {
+                palantirDb.db.prepare("REPLACE INTO REPORTS VALUES(?,?,?,datetime('now'))")
+                    .run(lobby.ID, lobby.ObserveToken, JSON.stringify(lobby));
+            });
+            result = { valid: true };
+        }
+        catch{
+            palantirDb.close();
+            return result;
+        }
+        palantirDb.close();
+        return result;
     }
 }
 module.exports = palantirDb;

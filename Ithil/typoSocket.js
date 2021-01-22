@@ -10,7 +10,7 @@ class TypoSocket {
     leaveAllStateRooms = () => this.socket.rooms.forEach(r => {
         if (r == "idle" || r == "playing" || r == "searching" || r == "waiting") this.socket.leave(r);
     });
-    // Function to emit event and optionally expect an response within a timeout
+    // emit event and optionally expect an response within a timeout
     emitEvent = (event, payload, listenResponse = false, responseTimeout = 2000) => {
         return new Promise((resolve, reject) => {
             if (listenResponse) this.socket.once(event + " response", (data) => {
@@ -29,7 +29,6 @@ class TypoSocket {
     // On login event: authorize user, set room public if unauthorized
     login = (data) => {
         let member = this.db.getUserByLogin(data.payload.loginToken); // check if member exists with login
-        let activeLobbies = this.sharedData.activeLobbies;
         if (!member.valid) {
             this.emitEvent(data.event + " response", { authorized: false});
             this.socket.join("public");
@@ -41,7 +40,8 @@ class TypoSocket {
         this.socket.join("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
-        this.emitEvent(data.event + " response", { authorized: true, activeLobbies: activeLobbies }); // reply with status
+        this.socket.on("set lobby", this.setLobby); // set lobby of socket, set playing and return lobbydata
+        this.emitEvent(data.event + " response", { authorized: true, activeLobbies: this.sharedData.activeLobbies }); // reply with status
         console.log(`Login was set for socket: ${this.loginToken}`);
     }
     // on get user event: respond with member data
@@ -60,16 +60,68 @@ class TypoSocket {
             responseData.valid = this.db.setLobby(Math.random().toString(10).substr(2, 8), data.payload.key, "").valid;
             lobbyData = this.db.getLobby(data.payload.key);
         }
+        this.searchData = null;
         this.lobbyData = lobbyData;
-        responseData.lobbyData = lobbyData;
         this.leaveAllStateRooms();
+        responseData.lobbyData = lobbyData;
         this.socket.join("playing");
+        this.socket.join("lobby#" + this.lobbyData.ID);
         this.emitEvent(data.event + " response", responseData);
+        // write report as long as player is in playing room
+        let writeLobbyPlaying = () => {
+            if (this.socket.rooms.has("playing")) {
+                try {
+                    let lobbyRaw = this.lobby;
+                    lobbyRaw.ID = lobbyData.ID
+                    lobbyRaw.Description = lobbyData.Description;
+                    lobbyRaw.Key = lobbyData.Key;
+                    let lobbyData = this.lobbyData;
+                    let guildLobbies = [];
+                    this.member.Guilds.forEach(guild => {
+                        let guildLobby = JSON.parse(JSON.stringify(lobbyRaw));
+                        guildLobby.ObserveToken = guild.ObserveToken;
+                        guildLobbies.push(guildLobby);
+                    });
+                    this.db.writeLobbyReport(guildLobbies);
+                }
+                catch (e) { console.log("Error writing report data: " + e); }
+                finally {
+                    setTimeout(writeLobbyPlaying, 2500);
+                }
+            }
+        }
+        writeLobbyPlaying();
     }
-    // on report lobby event: get lobby and write report
-    reportLobby = (data) => {
-        // get lobby
-        // write database
+    // on report lobby event: get lobby and write report, update key if changed
+    setLobby = (data) => {
+        if (this.socket.has("playing")) {
+            this.lobby = data.payload.lobby;
+            let key = data.payload.lobbyKey;
+            if (key != this.lobbyData.Key) {
+                this.db.setLobby(this.lobbyData.ID, key, this.lobbyData.Description);
+                this.lobbyData = this.db.getLobby(this.lobbyData.ID, "id");
+            }
+        }
+    }
+    // on set searching event: set status as searching
+    searchLobby = (data) => {
+        let searchData = data.payload.searchData;
+        this.leaveAllStateRooms();
+        if (searchData.waiting) {
+            this.socket.join("waiting");
+        }
+        else {
+            this.socket.join("searching");
+        }
+        this.searchData = searchData;
+    }
+    // on leave lobby event: join idle status, reset player lobby
+    leaveLobby = (data) => {
+        this.lobby = null;
+        this.lobbyData = null;
+        this.searchData = null;
+        this.leaveAllStateRooms();
+        this.socket.join("idle");
     }
 }
 module.exports = TypoSocket;

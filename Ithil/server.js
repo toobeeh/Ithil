@@ -22,12 +22,13 @@ const io = require('socket.io')(server, { // start io server with cors allowed
 });
 
 class SharedData {
-    constructor() {
+    constructor(database) {
         // refresh active lobbies every 4 seconds 
+        this.db = database;
         this.activeLobbies = [];
         this.publicData = { onlineSprites: [], drops: [], sprites: [] };
         const refreshLobbies = () => {
-            let refreshedLobbies = palantirDb.getActiveLobbies(); // send lobbies if new
+            let refreshedLobbies = this.db.getActiveLobbies(); // send lobbies if new
             if (refreshedLobbies.valid && JSON.stringify(this.activeLobbies) != JSON.stringify(refreshedLobbies.lobbies)) {
                 this.activeLobbies = refreshedLobbies.lobbies;
                 io.to("idle").volatile.emit("active lobbies", { event: "active lobbies", payload: { activeLobbies: this.activeLobbies } });
@@ -37,7 +38,7 @@ class SharedData {
         setInterval(refreshLobbies, 4000);
         // refresh public data - sprites all 10s
         const refreshPublic = () => {
-            let refreshedPublic = palantirDb.getPublicData(); // send public data if new
+            let refreshedPublic = this.db.getPublicData(); // send public data if new
             if (refreshedPublic.valid && JSON.stringify(refreshedPublic.publicData.onlineSprites) != JSON.stringify(this.publicData.onlineSprites)) {
                 this.publicData = refreshedPublic.publicData;
                 io.volatile.emit("online sprites", { event: "online sprites", payload: { onlineSprites: this.publicData.onlineSprites } });
@@ -48,9 +49,22 @@ class SharedData {
         setInterval(refreshPublic, 10000);
     }
 }
-sharedData = new SharedData();
+sharedData = new SharedData(palantirDb);
 
 let typoSockets = [];
+
+//class ReportWriter {
+//    getTypoSocketById = (id) => { return typoSockets.find(s => s.socket.id == id);}
+//    constructor(database) {
+//        this.db = database;
+//        // set interval for playerstatus writer
+//        let updatePlayerStatus = () => {
+//            typoSockets.
+//        }
+//    }
+//}
+//reportWriter = new ReportWriter(palantirDb);
+
 io.on('connection', (socket) => { // on socket connect, add new typo socket
     console.log('Connected socket ' + socket.id);
     let typosck = new TypoSocket(socket, palantirDb, sharedData);

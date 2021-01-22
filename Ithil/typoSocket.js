@@ -94,7 +94,7 @@ class TypoSocket {
     }
     // on report lobby event: get lobby and write report, update key if changed
     setLobby = (data) => {
-        if (this.socket.has("playing")) {
+        if (this.socket.rooms.has("playing")) {
             this.lobby = data.payload.lobby;
             let key = data.payload.lobbyKey;
             if (key != this.lobbyData.Key) {

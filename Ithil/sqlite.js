@@ -124,7 +124,7 @@ const palantirDb = {
         palantirDb.close();
         return result;
     },
-    writeLobbyReport = (lobbies) => {
+    writeLobbyReport: (lobbies) => {
         let result = { valid: false };
         try {
             palantirDb.open();

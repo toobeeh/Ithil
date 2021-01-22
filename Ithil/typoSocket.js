@@ -72,10 +72,10 @@ class TypoSocket {
             if (this.socket.rooms.has("playing")) {
                 try {
                     let lobbyRaw = this.lobby;
+                    let lobbyData = this.lobbyData;
                     lobbyRaw.ID = lobbyData.ID
                     lobbyRaw.Description = lobbyData.Description;
                     lobbyRaw.Key = lobbyData.Key;
-                    let lobbyData = this.lobbyData;
                     let guildLobbies = [];
                     this.member.Guilds.forEach(guild => {
                         let guildLobby = JSON.parse(JSON.stringify(lobbyRaw));

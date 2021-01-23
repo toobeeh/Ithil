@@ -31,7 +31,7 @@ class TypoSocket {
                                 guildLobbies.push(guildLobby);
                             });
                             this.db.writeLobbyReport(guildLobbies);
-                            let playerid = lobbyraw.Players.find(player => player.Sender).LobbyPlayerID;
+                            let playerid = lobbyRaw.Players.find(player => player.Sender).LobbyPlayerID;
                             let status = { PlayerMember: member, Status: "playing", LobbyID: lobbyRaw.ID, LobbyPlayerID: playerid };
                             this.db.writePlayerStatus(status, this.socket.id);
                         }

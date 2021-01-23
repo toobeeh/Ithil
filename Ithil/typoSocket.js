@@ -28,6 +28,7 @@ class TypoSocket {
                             member.Guilds.forEach(guild => {
                                 let guildLobby = JSON.parse(JSON.stringify(lobbyRaw));
                                 guildLobby.ObserveToken = guild.ObserveToken;
+                                guildLobby.GuildID = guild.GuildID;
                                 guildLobbies.push(guildLobby);
                             });
                             this.db.writeLobbyReport(guildLobbies);

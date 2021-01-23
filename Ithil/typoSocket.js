@@ -46,11 +46,12 @@ class TypoSocket {
             case "searching":
                 let writeSearchingStatus = () => {
                     let member = this.db.getUserByLogin(this.loginToken).member;
-                    member.UserName = this.searchData.UserName;
+                    member.UserName = this.searchData.userName;
                     if (this.socket.rooms.has("searching")) {
                         try {
                             let status = { PlayerMember: member, Status: "searching", LobbyID: null, LobbyPlayerID: null };
                             this.db.writePlayerStatus(status, this.socket.id);
+                            console.log("Set searching: " + JSON.stringify(status));
                         }
                         catch (e) { console.log("Error writing status data: " + e); }
                         finally { setTimeout(writeSearchingStatus, 2500); }
@@ -61,11 +62,12 @@ class TypoSocket {
             case "waiting":
                 let writeWaitingStatus = () => {
                     let member = this.db.getUserByLogin(this.loginToken).member;
-                    member.UserName = this.searchData.UserName;
+                    member.UserName = this.searchData.userName;
                     if (this.socket.rooms.has("waiting")) {
                         try {
                             let status = { PlayerMember: member, Status: "waiting", LobbyID: null, LobbyPlayerID: null };
                             this.db.writePlayerStatus(status, this.socket.id);
+                            console.log("Set searching: " + JSON.stringify(status));
                         }
                         catch (e) { console.log("Error writing status data: " + e); }
                         finally { setTimeout(writeWaitingStatus, 2500); }

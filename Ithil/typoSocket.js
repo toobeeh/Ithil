@@ -99,8 +99,7 @@ class TypoSocket {
         }
         this.loginToken = data.payload.loginToken; // set login
         this.socket.off("login", this.login);
-        this.leaveAllStateRooms();
-        this.socket.join("idle");// join idle room
+        this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
         this.socket.on("set lobby", this.setLobby); // set lobby of socket, set playing and return lobbydata

@@ -5,7 +5,7 @@ To receive responses without having to register permanent handlers for them, a p
 ```js
 const emitEvent = (event, payload, listenResponse = false, responseTimeout = 2000) => {
         return new Promise((resolve, reject) => {
-            if (listenResponse) socket.sck.once(event + " response", (data) => {
+            if (listenResponse) socket.once(event + " response", (data) => {
                 resolve(data.payload);
             });
             try { socket.sck.emit(event, { event: event, payload: payload }); }

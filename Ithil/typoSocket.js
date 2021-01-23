@@ -47,7 +47,7 @@ class TypoSocket {
                 let writeSearchingStatus = () => {
                     if (this.socket.rooms.has("searching")) {
                         try {
-                            let status = { PlayerMember: member, Status: "searching", LobbyID: null, LobbyPlayerID: null };
+                            let status = { PlayerMember: this.db.getUserByLogin(this.loginToken).member, Status: "searching", LobbyID: null, LobbyPlayerID: null };
                             this.db.writePlayerStatus(status, this.socket.id);
                         }
                         catch (e) { console.log("Error writing status data: " + e); }
@@ -60,7 +60,7 @@ class TypoSocket {
                 let writeWaitingStatus = () => {
                     if (this.socket.rooms.has("waiting")) {
                         try {
-                            let status = { PlayerMember: member, Status: "waiting", LobbyID: null, LobbyPlayerID: null };
+                            let status = { PlayerMember: this.db.getUserByLogin(this.loginToken).member, Status: "waiting", LobbyID: null, LobbyPlayerID: null };
                             this.db.writePlayerStatus(status, this.socket.id);
                         }
                         catch (e) { console.log("Error writing status data: " + e); }

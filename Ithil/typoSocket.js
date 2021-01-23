@@ -44,36 +44,20 @@ class TypoSocket {
                 writeLobbyPlaying();                
                 break;
             case "searching":
-                let writeSearchingStatus = () => {
-                    let member = this.db.getUserByLogin(this.loginToken).member;
-                    member.UserName = this.searchData.userName;
-                    if (this.socket.rooms.has("searching")) {
-                        try {
-                            let status = { PlayerMember: member, Status: "searching", LobbyID: null, LobbyPlayerID: null };
-                            this.db.writePlayerStatus(status, this.socket.id);
-                            console.log("Set searching: " + JSON.stringify(status));
-                        }
-                        catch (e) { console.log("Error writing status data: " + e); }
-                        finally { setTimeout(writeSearchingStatus, 2500); }
-                    }
-                }
-                writeSearchingStatus();
-                break;
             case "waiting":
-                let writeWaitingStatus = () => {
+                let writeSearchWaitStatus = () => {
                     let member = this.db.getUserByLogin(this.loginToken).member;
                     member.UserName = this.searchData.userName;
-                    if (this.socket.rooms.has("waiting")) {
+                    if (this.socket.rooms.has("waiting") || this.socket.rooms.has("searching") {
                         try {
-                            let status = { PlayerMember: member, Status: "waiting", LobbyID: null, LobbyPlayerID: null };
+                            let status = { PlayerMember: member, Status: this.searchData.waiting ? "waiting" : "searching", LobbyID: null, LobbyPlayerID: null };
                             this.db.writePlayerStatus(status, this.socket.id);
-                            console.log("Set searching: " + JSON.stringify(status));
                         }
                         catch (e) { console.log("Error writing status data: " + e); }
-                        finally { setTimeout(writeWaitingStatus, 2500); }
+                        finally { setTimeout(writeSearchWaitStatus, 2500); }
                     }
                 }
-                writeWaitingStatus();
+                writeSearchWaitStatus();
                 break;
             case "idle":
                 break;
@@ -110,6 +94,7 @@ class TypoSocket {
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
         this.socket.on("set lobby", this.setLobby); // set lobby of socket, set playing and return lobbydata
         this.socket.on("search lobby", this.searchLobby); // set searching status
+        this.socket.on("leave lobby", this.leaveLobby); // set idle status
         this.emitEvent(data.event + " response", { authorized: true, activeLobbies: this.sharedData.activeLobbies }); // reply with status
         console.log(`Login was set for socket: ${this.loginToken}`);
     }
@@ -159,7 +144,7 @@ class TypoSocket {
         this.lobby = null;
         this.lobbyData = null;
         this.searchData = null;
-        this.socket.join("idle");
+        this.setStatusRoom("idle");
     }
 }
 module.exports = TypoSocket;

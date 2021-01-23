@@ -53,18 +53,6 @@ sharedData = new SharedData(palantirDb);
 
 let typoSockets = [];
 
-//class ReportWriter {
-//    getTypoSocketById = (id) => { return typoSockets.find(s => s.socket.id == id);}
-//    constructor(database) {
-//        this.db = database;
-//        // set interval for playerstatus writer
-//        let updatePlayerStatus = () => {
-//            typoSockets.
-//        }
-//    }
-//}
-//reportWriter = new ReportWriter(palantirDb);
-
 io.on('connection', (socket) => { // on socket connect, add new typo socket
     console.log('Connected socket ' + socket.id);
     let typosck = new TypoSocket(socket, palantirDb, sharedData);

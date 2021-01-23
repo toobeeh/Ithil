@@ -140,6 +140,21 @@ const palantirDb = {
         }
         palantirDb.close();
         return result;
+    },
+    writePlayerStatus: (status, session) => {
+        let result = { valid: false };
+        try {
+            palantirDb.open();
+            palantirDb.db.prepare("REPLACE INTO Status VALUES(?,?,datetime('now'))")
+                .run(session, JSON.stringify(status));
+            result = { valid: true };
+        }
+        catch{
+            palantirDb.close();
+            return result;
+        }
+        palantirDb.close();
+        return result;
     }
 }
 module.exports = palantirDb;

@@ -6,10 +6,73 @@ class TypoSocket {
         this.socket.on("login", this.login);
         this.socket.emit("public data", { event: "public data", payload: { publicData: this.sharedData.publicData } }); // send public data on beginning
     }
-    // leave all rooms
-    leaveAllStateRooms = () => this.socket.rooms.forEach(r => {
-        if (r == "idle" || r == "playing" || r == "searching" || r == "waiting") this.socket.leave(r);
-    });
+    setStatusRoom = (status) => {
+        this.socket.rooms.forEach(r => { // leave all status rooms
+            if (r == "idle" || r == "playing" || r == "searching" || r == "waiting") this.socket.leave(r);
+        });
+        this.socket.join(status);
+        // write status to db
+        switch (status) {
+            case "playing":
+                // write report as long as player is in playing room
+                let writeLobbyPlaying = () => {
+                    if (this.socket.rooms.has("playing")) {
+                        try {
+                            let lobbyRaw = this.lobby;
+                            let lobbyData = this.lobbyData;
+                            let member = this.db.getUserByLogin(this.loginToken).member;
+                            lobbyRaw.ID = lobbyData.lobby.ID
+                            lobbyRaw.Description = lobbyData.lobby.Description;
+                            lobbyRaw.Key = lobbyData.lobby.Key;
+                            let guildLobbies = [];
+                            member.Guilds.forEach(guild => {
+                                let guildLobby = JSON.parse(JSON.stringify(lobbyRaw));
+                                guildLobby.ObserveToken = guild.ObserveToken;
+                                guildLobbies.push(guildLobby);
+                            });
+                            this.db.writeLobbyReport(guildLobbies);
+                            let playerid = lobbyraw.Players.find(player => player.Sender).LobbyPlayerID;
+                            let status = { PlayerMember: member, Status: "playing", LobbyID: lobbyRaw.ID, LobbyPlayerID: playerid };
+                            this.db.writePlayerStatus(status, this.socket.id);
+                        }
+                        catch (e) { console.log("Error writing report data: " + e); }
+                        finally {
+                            setTimeout(writeLobbyPlaying, 2500);
+                        }
+                    }
+                }
+                writeLobbyPlaying();                
+                break;
+            case "searching":
+                let writeSearchingStatus = () => {
+                    if (this.socket.rooms.has("searching")) {
+                        try {
+                            let status = { PlayerMember: member, Status: "searching", LobbyID: null, LobbyPlayerID: null };
+                            this.db.writePlayerStatus(status, this.socket.id);
+                        }
+                        catch (e) { console.log("Error writing status data: " + e); }
+                        finally { setTimeout(writeSearchingStatus, 2500); }
+                    }
+                }
+                writeSearchingStatus();
+                break;
+            case "waiting":
+                let writeWaitingStatus = () => {
+                    if (this.socket.rooms.has("waiting")) {
+                        try {
+                            let status = { PlayerMember: member, Status: "waiting", LobbyID: null, LobbyPlayerID: null };
+                            this.db.writePlayerStatus(status, this.socket.id);
+                        }
+                        catch (e) { console.log("Error writing status data: " + e); }
+                        finally { setTimeout(writeWaitingStatus, 2500); }
+                    }
+                }
+                writeWaitingStatus();
+                break;
+            case "idle":
+                break;
+        }
+    }
     // emit event and optionally expect an response within a timeout
     emitEvent = (event, payload, listenResponse = false, responseTimeout = 2000) => {
         return new Promise((resolve, reject) => {
@@ -41,6 +104,7 @@ class TypoSocket {
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
         this.socket.on("set lobby", this.setLobby); // set lobby of socket, set playing and return lobbydata
+        this.socket.on("search lobby", this.searchLobby); // set searching status
         this.emitEvent(data.event + " response", { authorized: true, activeLobbies: this.sharedData.activeLobbies }); // reply with status
         console.log(`Login was set for socket: ${this.loginToken}`);
     }
@@ -62,67 +126,34 @@ class TypoSocket {
         }
         this.searchData = null;
         this.lobbyData = lobbyData;
-        this.leaveAllStateRooms();
         responseData.lobbyData = lobbyData;
-        this.socket.join("playing");
+        this.setStatusRoom("playing");
         this.socket.join("lobby#" + this.lobbyData.ID);
         this.emitEvent(data.event + " response", responseData);
-        // write report as long as player is in playing room
-        let writeLobbyPlaying = () => {
-            if (this.socket.rooms.has("playing")) {
-                try {
-                    let lobbyRaw = this.lobby;
-                    let lobbyData = this.lobbyData;
-                    lobbyRaw.ID = lobbyData.lobby.ID
-                    lobbyRaw.Description = lobbyData.lobby.Description;
-                    lobbyRaw.Key = lobbyData.lobby.Key;
-                    let guildLobbies = [];
-                    this.db.getUserByLogin(this.loginToken).member.Guilds.forEach(guild => {
-                        let guildLobby = JSON.parse(JSON.stringify(lobbyRaw));
-                        guildLobby.ObserveToken = guild.ObserveToken;
-                        guildLobbies.push(guildLobby);
-                    });
-                    this.db.writeLobbyReport(guildLobbies);
-                }
-                catch (e) { console.log("Error writing report data: " + e); }
-                finally {
-                    setTimeout(writeLobbyPlaying, 2500);
-                }
-            }
-        }
-        writeLobbyPlaying();
     }
     // on report lobby event: get lobby and write report, update key if changed
     setLobby = (data) => {
         if (this.socket.rooms.has("playing")) {
             this.lobby = data.payload.lobby;
             let key = data.payload.lobbyKey;
-            console.log("Set lobby: lobbydata:" + JSON.stringify(this.lobbyData) + " lobby:" + JSON.stringify(this.lobby) + "data:" + JSON.stringify(data));
-            if (key != this.lobbyData.lobby.Key) {
+            if (key != this.lobbyData.lobby.Key) { // if new lobby key differs from old, set new key in db
                 this.db.setLobby(this.lobbyData.lobby.ID, key, this.lobbyData.lobby.Description);
                 this.lobbyData = this.db.getLobby(this.lobbyData.lobby.ID, "id");
             }
-            console.log("new lobby: lobbydata:" + JSON.stringify(this.lobbyData) + " lobby:" + JSON.stringify(this.lobby) + "data:" + JSON.stringify(data));
+            this.emitEvent(data.event + " response", this.lobbyData);
         }
     }
     // on set searching event: set status as searching
     searchLobby = (data) => {
-        let searchData = data.payload.searchData;
-        this.leaveAllStateRooms();
-        if (searchData.waiting) {
-            this.socket.join("waiting");
-        }
-        else {
-            this.socket.join("searching");
-        }
-        this.searchData = searchData;
+        this.searchData = data.payload.searchData;
+        if (searchData.waiting) this.setStatusRoom("waiting");
+        else this.setStatusRoom("searching");
     }
     // on leave lobby event: join idle status, reset player lobby
     leaveLobby = (data) => {
         this.lobby = null;
         this.lobbyData = null;
         this.searchData = null;
-        this.leaveAllStateRooms();
         this.socket.join("idle");
     }
 }

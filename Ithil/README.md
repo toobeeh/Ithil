@@ -1,6 +1,20 @@
 # Ithil
 
 ## Interface Documentation
+To receive responses without having to register permanent handlers for them, a promise-based function is used to listen for responses:
+```js
+const emitEvent = (event, payload, listenResponse = false, responseTimeout = 2000) => {
+        return new Promise((resolve, reject) => {
+            if (listenResponse) socket.sck.once(event + " response", (data) => {
+                resolve(data.payload);
+            });
+            try { socket.sck.emit(event, { event: event, payload: payload }); }
+            catch { reject(new Error("Failed emitting event: " + event)); }
+            if (!listenResponse) resolve(true);
+            else setTimeout(() => reject(new Error("Response timed out")), responseTimeout);
+        });
+    }
+```
 #### Connect to the socketio server
 Open the socket:
 ```js
@@ -62,14 +76,14 @@ Public sockets only get onlinesprite data events if this data changes, so sprite
 ### Set lobby searching status 
 To set a idle socket to searching or waiting, emit following data:
 ```js
-await socket.emitEvent("search lobby", {searchData: {userName: "tobeh", waiting: false}}) 
+await emitEvent("search lobby", {searchData: {userName: "tobeh", waiting: false}}) 
 ```
 If the player isn't currently jumping through lobbies but waiting for a free slot, set waiting to true.
 ### Join a lobby
 Before lobby data is accepted by the server, the socket has to join the playing state.
 This is done by joining the lobby with the join lobby event:
 ```js
-await socket.emitEvent("join lobby", {key: "1234"},true) 
+await emitEvent("join lobby", {key: "1234"},true) 
 ```
 The server will search for an active lobby with the same key. If there's already an open lobby, the players are shown together by setting the same lobby ID.  
 A response with the id of the found or created lobby is sent:
@@ -93,7 +107,7 @@ The lobby data has to contain lobby properties like language, link, players and 
 If the lobby key differs from the lobby key of the lobby ID in the database, the lobby key is updated.
 The set lobby event:
 ```js
-await socket.emitEvent("set lobby", {lobbyKey: "666", lobby: lobby}) 
+await emitEvent("set lobby", {lobbyKey: "666", lobby: lobby}) 
 ```
 where lobby has to contain following properties:
 ```json
@@ -129,7 +143,7 @@ where lobby has to contain following properties:
 To stop being shown in the bot, the socket has to get back to the idle state.
 This is done with the leave lobby event:
 ```js
-await socket.emitEvent("leave lobby", {}, true) 
+await emitEvent("leave lobby", {}, true) 
 ```
 The response conatins active lobbies, which can be used if a search is active.
 Now, the socket is idle and can get back to either searching, waiting or playing state.

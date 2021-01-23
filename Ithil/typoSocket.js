@@ -101,7 +101,7 @@ class TypoSocket {
                 this.db.setLobby(this.lobbyData.ID, key, this.lobbyData.Description);
                 this.lobbyData = this.db.getLobby(this.lobbyData.ID, "id");
             }
-            console.log("Set lobby: lobbydata:" + JSON.stringify(this.lobbyData) + " lobby:" + JON.stringify(this.lobby));
+            console.log("Set lobby: lobbydata:" + JSON.stringify(this.lobbyData) + " lobby:" + JSON.stringify(this.lobby));
         }
     }
     // on set searching event: set status as searching

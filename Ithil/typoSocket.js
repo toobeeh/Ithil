@@ -146,6 +146,7 @@ class TypoSocket {
         this.lobby = null;
         this.lobbyData = null;
         this.searchData = null;
+        this.emitEvent(data.event + " response", {activeLobbies: this.sharedData.activeLobbies }); // reply with active lobbies
     }
 }
 module.exports = TypoSocket;

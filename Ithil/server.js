@@ -31,7 +31,7 @@ class SharedData {
             let refreshedLobbies = this.db.getActiveLobbies(); // send lobbies if new
             if (refreshedLobbies.valid && JSON.stringify(this.activeLobbies) != JSON.stringify(refreshedLobbies.lobbies)) {
                 this.activeLobbies = refreshedLobbies.lobbies;
-                io.to("idle").volatile.emit("active lobbies", { event: "active lobbies", payload: { activeLobbies: this.activeLobbies } });
+                io.to("idle").to("searching").to("waiting").volatile.emit("active lobbies", { event: "active lobbies", payload: { activeLobbies: this.activeLobbies } });
             }
         }
         refreshLobbies();

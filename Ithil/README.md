@@ -79,6 +79,7 @@ To set a idle socket to searching or waiting, emit following data:
 await emitEvent("search lobby", {searchData: {userName: "tobeh", waiting: false}}) 
 ```
 If the player isn't currently jumping through lobbies but waiting for a free slot, set waiting to true.
+Sockets which joined searching receive activeLobbies broadcasts as well as idle sockets.
 ### Join a lobby
 Before lobby data is accepted by the server, the socket has to join the playing state.
 This is done by joining the lobby with the join lobby event:
@@ -145,6 +146,6 @@ This is done with the leave lobby event:
 ```js
 await emitEvent("leave lobby", {}, true) 
 ```
-The response conatins active lobbies, which can be used if a search is active.
+The response contains the current active lobbies.
 Now, the socket is idle and can get back to either searching, waiting or playing state.
 It will also receive active lobby data again.

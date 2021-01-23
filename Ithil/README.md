@@ -8,7 +8,7 @@ const emitEvent = (event, payload, listenResponse = false, responseTimeout = 200
             if (listenResponse) socket.once(event + " response", (data) => {
                 resolve(data.payload);
             });
-            try { socket.sck.emit(event, { event: event, payload: payload }); }
+            try { socket.emit(event, { event: event, payload: payload }); }
             catch { reject(new Error("Failed emitting event: " + event)); }
             if (!listenResponse) resolve(true);
             else setTimeout(() => reject(new Error("Response timed out")), responseTimeout);

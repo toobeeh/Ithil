@@ -151,7 +151,7 @@ class TypoSocket {
     // on set searching event: set status as searching
     searchLobby = (data) => {
         this.searchData = data.payload.searchData;
-        if (searchData.waiting) this.setStatusRoom("waiting");
+        if (this.searchData.waiting) this.setStatusRoom("waiting");
         else this.setStatusRoom("searching");
     }
     // on leave lobby event: join idle status, reset player lobby

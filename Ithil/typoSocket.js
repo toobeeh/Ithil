@@ -141,10 +141,10 @@ class TypoSocket {
     }
     // on leave lobby event: join idle status, reset player lobby
     leaveLobby = (data) => {
+        this.setStatusRoom("idle");
         this.lobby = null;
         this.lobbyData = null;
         this.searchData = null;
-        this.setStatusRoom("idle");
     }
 }
 module.exports = TypoSocket;

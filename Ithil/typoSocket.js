@@ -46,9 +46,9 @@ class TypoSocket {
             case "searching":
             case "waiting":
                 let writeSearchWaitStatus = () => {
-                    let member = this.db.getUserByLogin(this.loginToken).member;
-                    member.UserName = this.searchData.userName;
                     if (this.socket.rooms.has("waiting") || this.socket.rooms.has("searching")) {
+                        let member = this.db.getUserByLogin(this.loginToken).member;
+                        member.UserName = this.searchData.userName;
                         try {
                             let status = { PlayerMember: member, Status: this.searchData.waiting ? "waiting" : "searching", LobbyID: null, LobbyPlayerID: null };
                             this.db.writePlayerStatus(status, this.socket.id);

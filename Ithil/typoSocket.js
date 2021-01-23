@@ -130,7 +130,7 @@ class TypoSocket {
                 this.db.setLobby(this.lobbyData.lobby.ID, key, this.lobbyData.lobby.Description);
                 this.lobbyData = this.db.getLobby(this.lobbyData.lobby.ID, "id");
             }
-            this.emitEvent(data.event + " response", this.lobbyData);
+            //this.emitEvent(data.event + " response", this.lobbyData);
         }
     }
     // on set searching event: set status as searching

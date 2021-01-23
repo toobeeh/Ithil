@@ -73,9 +73,9 @@ class TypoSocket {
                 try {
                     let lobbyRaw = this.lobby;
                     let lobbyData = this.lobbyData;
-                    lobbyRaw.ID = lobbyData.ID
-                    lobbyRaw.Description = lobbyData.Description;
-                    lobbyRaw.Key = lobbyData.Key;
+                    lobbyRaw.ID = lobbyData.lobby.ID
+                    lobbyRaw.Description = lobbyData.lobby.Description;
+                    lobbyRaw.Key = lobbyData.lobby.Key;
                     let guildLobbies = [];
                     this.db.getUserByLogin(this.loginToken).member.Guilds.forEach(guild => {
                         let guildLobby = JSON.parse(JSON.stringify(lobbyRaw));
@@ -98,9 +98,9 @@ class TypoSocket {
             this.lobby = data.payload.lobby;
             let key = data.payload.lobbyKey;
             console.log("Set lobby: lobbydata:" + JSON.stringify(this.lobbyData) + " lobby:" + JSON.stringify(this.lobby) + "data:" + JSON.stringify(data));
-            if (key != this.lobbyData.Key) {
-                this.db.setLobby(this.lobbyData.ID, key, this.lobbyData.Description);
-                this.lobbyData = this.db.getLobby(this.lobbyData.ID, "id");
+            if (key != this.lobbyData.lobby.Key) {
+                this.db.setLobby(this.lobbyData.lobby.ID, key, this.lobbyData.lobby.Description);
+                this.lobbyData = this.db.getLobby(this.lobbyData.lobby.ID, "id");
             }
             console.log("new lobby: lobbydata:" + JSON.stringify(this.lobbyData) + " lobby:" + JSON.stringify(this.lobby) + "data:" + JSON.stringify(data));
         }

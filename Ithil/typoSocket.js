@@ -97,11 +97,12 @@ class TypoSocket {
         if (this.socket.rooms.has("playing")) {
             this.lobby = data.payload.lobby;
             let key = data.payload.lobbyKey;
+            console.log("Set lobby: lobbydata:" + JSON.stringify(this.lobbyData) + " lobby:" + JSON.stringify(this.lobby) + "data:" + JSON.stringify(data));
             if (key != this.lobbyData.Key) {
                 this.db.setLobby(this.lobbyData.ID, key, this.lobbyData.Description);
                 this.lobbyData = this.db.getLobby(this.lobbyData.ID, "id");
             }
-            console.log("Set lobby: lobbydata:" + JSON.stringify(this.lobbyData) + " lobby:" + JSON.stringify(this.lobby));
+            console.log("new lobby: lobbydata:" + JSON.stringify(this.lobbyData) + " lobby:" + JSON.stringify(this.lobby) + "data:" + JSON.stringify(data));
         }
     }
     // on set searching event: set status as searching

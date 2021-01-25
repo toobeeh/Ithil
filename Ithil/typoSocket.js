@@ -88,6 +88,9 @@ class TypoSocket {
             this.socket.join("public");
             return;
         }
+        member.member.Guilds.forEach(guild => {
+            this.socket.join("guild" + guild.GuildID);
+        });
         this.loginToken = data.payload.loginToken; // set login
         this.socket.off("login", this.login);
         this.setStatusRoom("idle");// join idle room

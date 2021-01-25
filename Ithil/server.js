@@ -47,6 +47,8 @@ class SharedData {
         }
         refreshPublic();
         setInterval(refreshPublic, 10000);
+        // clean volatile db tables
+        setInterval(this.db.clearVolatile, 2000);
     }
 }
 sharedData = new SharedData(palantirDb);

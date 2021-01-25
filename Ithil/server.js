@@ -33,6 +33,7 @@ class SharedData {
                 this.activeLobbies = refreshedLobbies.lobbies;
                 this.activeLobbies.forEach(guildLobbies => {
                     io.to("guild" + guildLobbies.guildID).volatile.emit("active lobbies", { event: "active lobbies", payload: { activeGuildLobbies: guildLobbies } });
+                    console.log("sent to guild" + guildLobbies.guildID);
                 });
                 //io.to("idle").to("searching").to("waiting").volatile.emit("active lobbies", { event: "active lobbies", payload: { activeLobbies: this.activeLobbies } });
             }

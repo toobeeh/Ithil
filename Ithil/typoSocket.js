@@ -90,6 +90,7 @@ class TypoSocket {
         }
         member.member.Guilds.forEach(guild => {
             this.socket.join("guild" + guild.GuildID);
+            console.log("joined guild" + guild.GuildID);
         });
         this.loginToken = data.payload.loginToken; // set login
         this.socket.off("login", this.login);

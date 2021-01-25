@@ -89,7 +89,7 @@ class TypoSocket {
             return;
         }
         member.member.Guilds.forEach(guild => {
-            this.socket.join("guild" + guild.GuildID.slice(-2));
+            this.socket.join("guild" + guild.GuildID.slice(0,-2));
         });
         this.loginToken = data.payload.loginToken; // set login
         this.socket.off("login", this.login);

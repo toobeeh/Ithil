@@ -91,7 +91,6 @@ class TypoSocket {
         member.member.Guilds.forEach(guild => {
             this.socket.join("guild" + guild.GuildID.slice(0,-2));
         });
-        this.socket.rooms.forEach(r => console.log(r));
         this.loginToken = data.payload.loginToken; // set login
         this.socket.off("login", this.login);
         this.setStatusRoom("idle");// join idle room
@@ -138,7 +137,6 @@ class TypoSocket {
                 this.db.setLobby(this.lobbyData.lobby.ID, key, this.lobbyData.lobby.Description);
                 this.lobbyData = this.db.getLobby(this.lobbyData.lobby.ID, "id");
             }
-            //this.emitEvent(data.event + " response", this.lobbyData);
         }
     }
     // on set searching event: set status as searching
@@ -153,7 +151,9 @@ class TypoSocket {
         this.lobby = null;
         this.lobbyData = null;
         this.searchData = null;
-        this.emitEvent(data.event + " response", {activeLobbies: this.sharedData.activeLobbies }); // reply with active lobbies
+        this.emitEvent(data.event + " response", {
+            activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
+        }); // reply with active lobbies
     }
 }
 module.exports = TypoSocket;

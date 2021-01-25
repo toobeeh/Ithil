@@ -91,7 +91,9 @@ class TypoSocket {
         member.member.Guilds.forEach(guild => {
             this.socket.join("guild" + guild.GuildID);
         });
-        console.log("joined guilds: " + JSON.stringify(this.socket.rooms));
+        this.socket.rooms.forEach(r => { // leave all status rooms
+            console.log("in room " + r);
+        });
         this.loginToken = data.payload.loginToken; // set login
         this.socket.off("login", this.login);
         this.setStatusRoom("idle");// join idle room

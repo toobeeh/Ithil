@@ -39,8 +39,9 @@ const palantirDb = {
             palantirDb.open();
             rows = palantirDb.db.prepare("SELECT * FROM GuildLobbies").all();
             result.lobbies = [];
-            rows.forEach(row => result.lobbies.push({ guildID: row.GuildID, guildLobbies: JSON.parse(row.Lobbies) }));
+            rows.forEach(row => result.lobbies.push({ guildID: "" + row.GuildID, guildLobbies: JSON.parse(row.Lobbies) }));
             result.lobbies.forEach(g => g.guildLobbies.forEach(l => l.Players = l.Players.length));
+            result.lobbies.forEach(g => console.log("read "g.guildID));
             result.valid = true;
         }
         catch{

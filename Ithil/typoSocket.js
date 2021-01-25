@@ -99,7 +99,10 @@ class TypoSocket {
         this.socket.on("set lobby", this.setLobby); // set lobby of socket, set playing and return lobbydata
         this.socket.on("search lobby", this.searchLobby); // set searching status
         this.socket.on("leave lobby", this.leaveLobby); // set idle status
-        this.emitEvent(data.event + " response", { authorized: true, activeLobbies: this.sharedData.activeLobbies }); // reply with status
+        this.emitEvent(data.event + " response", {
+            authorized: true,
+            activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
+        }); // reply with status
         console.log(`Login was set for socket: ${this.loginToken}`);
     }
     // on get user event: respond with member data

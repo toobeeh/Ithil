@@ -31,10 +31,8 @@ class SharedData {
             let refreshedLobbies = this.db.getActiveLobbies(); // send lobbies if new
             if (refreshedLobbies.valid && JSON.stringify(this.activeLobbies) != JSON.stringify(refreshedLobbies.lobbies)) {
                 this.activeLobbies = refreshedLobbies.lobbies;
-                console.log("here1" );
                 this.activeLobbies.forEach(guildLobbies => {
-                    console.log("here" + JSON.stringify(guildLobbies));
-                    io.to("guild" + guildLobbies.GuildID).volatile.emit("active lobbies", { event: "active lobbies", payload: { activeGuildLobbies: guildLobbies } });
+                    io.to("guild" + guildLobbies.guildID).volatile.emit("active lobbies", { event: "active lobbies", payload: { activeGuildLobbies: guildLobbies } });
                 });
                 //io.to("idle").to("searching").to("waiting").volatile.emit("active lobbies", { event: "active lobbies", payload: { activeLobbies: this.activeLobbies } });
             }

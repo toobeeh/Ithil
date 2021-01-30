@@ -76,6 +76,8 @@ const drops = {
             while (true) {
                 let drop = await drops.getNextDrop();
                 io.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
+                // drop catch timeout
+                await drops.idle(5000);
             }
         }, 1);        
     }

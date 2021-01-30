@@ -52,7 +52,6 @@ const palantirDb = {
     },
     getPublicData: () => {
         let result = { valid: false };
-        let rows;
         try {
             palantirDb.open();
             // get eventdrops
@@ -164,6 +163,22 @@ const palantirDb = {
             palantirDb.db.prepare("DELETE FROM Status WHERE Date < datetime('now', '-10 seconds')").run();
             palantirDb.db.prepare("DELETE FROM OnlineSprites WHERE Date < datetime('now', '-10 seconds')").run();
             result = { valid: true };
+        }
+        catch{
+            palantirDb.close();
+            return result;
+        }
+        palantirDb.close();
+        return result;
+    },
+    getDrop: () => {
+        let result = { valid: false };
+        try {
+            palantirDb.open();
+            // get drop
+            let drop = palantirDb.db.prepare("SELECT * FROM 'Drop'").get();
+            result.valid = true;
+            result.drop = drop;
         }
         catch{
             palantirDb.close();

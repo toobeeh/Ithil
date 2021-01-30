@@ -55,8 +55,36 @@ class SharedData {
 }
 sharedData = new SharedData(palantirDb);
 
-let typoSockets = [];
+// drops
+const drops = {
+    idle: async (timeMs) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => resolve(), timeMs);
+        });
+    },
+    getNextDrop: async () => {
+        let nextDrop;
+        // wait for next drop to appear, check in 5s intervals
+        while (!(nextDrop = palantirDb.getDrop()).valid || nextDrop.LobbyPlayerID == "") await drops.idle(5000);
+        let ms = (new Date(nextDrop.ValidFrom)).getTime() - Date.now();
+        console.log("Next drop in " + ms / 1000 + "s");
+        await drops.idle(ms);
+        return nextDrop;
+    },
+    start: () => {
+        setTimeout(async () => {
+            while (true) {
+                let drop = await drops.getNextDrop();
+                io.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
+            }
+        }, 1);        
+    }
+}
+await drops.start();
 
+
+let typoSockets = [];
+console.log("Initiating connection events..");
 io.on('connection', (socket) => { // on socket connect, add new typo socket
     console.log('Connected socket ' + socket.id);
     let typosck = new TypoSocket(socket, palantirDb, sharedData);

@@ -66,6 +66,7 @@ const drops = {
         let nextDrop;
         // wait for next drop to appear, check in 5s intervals
         while ((nextDrop = palantirDb.getDrop()).drop.CaughtLobbyKey != "") await drops.idle(5000);
+        console.log(JSON.stringify(nextDrop.drop));
         let ms = (new Date(nextDrop.drop.ValidFrom)).getTime() - Date.now();
         console.log("Next drop in " + ms / 1000 + "s");
         await drops.idle(ms);

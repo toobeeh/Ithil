@@ -80,7 +80,7 @@ const drops = {
         }, 1);        
     }
 }
-await drops.start();
+drops.start();
 
 
 let typoSockets = [];

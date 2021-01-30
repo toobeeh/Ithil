@@ -158,7 +158,10 @@ class TypoSocket {
         }); // reply with active lobbies
     }
     claimDrop = (data) => {
-        let res = this.db.getDrop(data.payload.drop.DropID).drop;
+        console.log(JSON.stringify(data.payload));
+        let res = this.db.getDrop(data.payload.drop.DropID);
+        console.log(JSON.stringify(res));
+        res = res.drop;
         let result;
         if (res.CaughtLobbyKey == "" && data.payload.timedOut === false) {
             this.db.claimDrop(data.payload.lobbyKey, data.payload.name, data.payload.drop.DropID);

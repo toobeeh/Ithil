@@ -99,6 +99,7 @@ class TypoSocket {
         this.socket.on("set lobby", this.setLobby); // set lobby of socket, set playing and return lobbydata
         this.socket.on("search lobby", this.searchLobby); // set searching status
         this.socket.on("leave lobby", this.leaveLobby); // set idle status
+        this.socket.on("claim drop", this.claimDrop); // claim drop
         this.emitEvent(data.event + " response", {
             authorized: true,
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
@@ -154,6 +155,26 @@ class TypoSocket {
         this.emitEvent(data.event + " response", {
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
         }); // reply with active lobbies
+    }
+    claimDrop = (data) => {
+        let res = this.db.getDrop(data.payload.drop.DropID).drop;
+        if (res.CaughtLobbyKey == "" && data.payload.timedOut === false) {
+            this.db.claimDrop(data.payload.lobbyKey, data.payload.name, data.payload.drop.DropID);
+            this.socket.io.to("playing").emit("clear drop", { result: { caughtPlayer: data.payload.name, caughtLobbyKey: data.payload.lobbyKey }});
+            result = {
+                caught: true,
+            }
+        }
+        else {
+            result = {
+                caught: false,
+                caughtPlayer: res.CaughtLobbyPlayerID,
+                caughtLobbyKey: res.CaughtLobbyKey
+            }
+        }
+        this.emitEvent(data.event + " response", {
+            result: result
+        }); // reply with result
     }
 }
 module.exports = TypoSocket;

@@ -171,14 +171,30 @@ const palantirDb = {
         palantirDb.close();
         return result;
     },
-    getDrop: () => {
+    getDrop: (id = -1) => {
         let result = { valid: false };
         try {
             palantirDb.open();
             // get drop
-            let drop = palantirDb.db.prepare("SELECT * FROM 'Drop'").get();
+            let drop = id > -1 ? palantirDb.db.prepare("SELECT * FROM 'Drop' WHERE DropID = ?").get(id) :
+                palantirDb.db.prepare("SELECT * FROM 'Drop'").get();
             result.valid = true;
             result.drop = drop;
+        }
+        catch{
+            palantirDb.close();
+            return result;
+        }
+        palantirDb.close();
+        return result;
+    },
+    claimDrop: (lobbyKey, playerName, dropID) => {
+        let result = { valid: false };
+        try {
+            palantirDb.open();
+            // get drop
+            let drop = palantirDb.db.prepare("UPDATE 'Drop' SET CaughtLobbyKey = ?, CaughtLobbyPlayerID = ? WHERE DropID = ?").run(lobbyKey, playerName, dropID);
+            result.valid = true;
         }
         catch{
             palantirDb.close();

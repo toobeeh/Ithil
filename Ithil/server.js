@@ -67,6 +67,7 @@ const drops = {
         // wait for next drop to appear, check in 5s intervals
         while ((nextDrop = palantirDb.getDrop()).drop.CaughtLobbyKey != "") await drops.idle(5000);
         let ms = (new Date(nextDrop.drop.ValidFrom + " UTC")).getTime() - Date.now();
+        if (ms < 0) return false; // old drop hasnt been claimed
         console.log("Next drop in " + ms / 1000 + "s");
         await drops.idle(ms);
         return nextDrop.drop;
@@ -75,7 +76,7 @@ const drops = {
         setTimeout(async () => {
             while (true) {
                 let drop = await drops.getNextDrop();
-                io.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
+                if(drop !== false) io.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
                 // drop catch timeout
                 await drops.idle(5000);
             }

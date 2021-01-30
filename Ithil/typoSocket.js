@@ -1,6 +1,7 @@
 class TypoSocket {
-    constructor(socket, db, sharedData) {
+    constructor(socket, db, sharedData, io) {
         this.db = db;
+        this.io = io;
         this.sharedData = sharedData;
         this.socket = socket;
         this.socket.on("login", this.login);
@@ -161,7 +162,7 @@ class TypoSocket {
         let result;
         if (res.CaughtLobbyKey == "" && data.payload.timedOut === false) {
             this.db.claimDrop(data.payload.lobbyKey, data.payload.name, data.payload.drop.DropID);
-            this.socket.io.to("playing").emit("clear drop", { result: { caughtPlayer: data.payload.name, caughtLobbyKey: data.payload.lobbyKey }});
+            this.io.to("playing").emit("clear drop", { result: { caughtPlayer: data.payload.name, caughtLobbyKey: data.payload.lobbyKey }});
             result = {
                 caught: true,
             }

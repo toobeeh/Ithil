@@ -207,10 +207,11 @@ const palantirDb = {
         let result = { valid: false };
         try {
             palantirDb.open();
-            if (eventdrop > 0)
-                palantirDb.db.prepare("UPDATE EventCredits SET Credit = Credit + 1 WHERE EventDropID = ? AND Login = ?").run(eventdrop, login);
-            else
-                palantirDb.db.prepare("UPDATE Members SET Drops = Drops + 1 WHERE Login = ?").run(login);
+            if (eventdrop > 0) {
+                let info = palantirDb.db.prepare("UPDATE EventCredits SET Credit = Credit + 1 WHERE EventDropID = ? AND Login = ?").run(eventdrop, login);
+                if (info.changes <= 0) palantirDb.db.prepare("INSERT INTO EventCredits VALUES(?, ?, 1)").run(login, eventdrop);
+            }
+            else palantirDb.db.prepare("UPDATE Members SET Drops = Drops + 1 WHERE Login = ?").run(login);
             result.valid = true;
         }
         catch{

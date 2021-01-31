@@ -170,6 +170,7 @@ class TypoSocket {
         if (res.CaughtLobbyKey == "" && data.payload.timedOut === false) {
             this.db.claimDrop(data.payload.lobbyKey, data.payload.name, data.payload.drop.DropID);
             this.socket.to("playing").emit("clear drop", { result: { caughtPlayer: data.payload.name, caughtLobbyKey: data.payload.lobbyKey }});
+            this.db.rewardDrop(this.loginToken, data.payload.drop.EventDropID);
             result = {
                 caught: true,
             }

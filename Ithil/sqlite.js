@@ -193,7 +193,24 @@ const palantirDb = {
         try {
             palantirDb.open();
             // get drop
-            let drop = palantirDb.db.prepare("UPDATE 'Drop' SET CaughtLobbyKey = ?, CaughtLobbyPlayerID = ? WHERE DropID = ?").run(lobbyKey, playerName, dropID);
+            palantirDb.db.prepare("UPDATE 'Drop' SET CaughtLobbyKey = ?, CaughtLobbyPlayerID = ? WHERE DropID = ?").run(lobbyKey, playerName, dropID);
+            result.valid = true;
+        }
+        catch{
+            palantirDb.close();
+            return result;
+        }
+        palantirDb.close();
+        return result;
+    },
+    rewardDrop: (login, eventdrop) => {
+        let result = { valid: false };
+        try {
+            palantirDb.open();
+            if (eventdrop > 0)
+                palantirDb.db.prepare("UPDATE EventCredits SET Credit = Credit + 1 WHERE EventDropID = ? AND Login = ?").run(eventdrop, login);
+            else
+                palantirDb.db.prepare("UPDATE Members SET Drops = Drops + 1 WHERE Login = ?").run(login);
             result.valid = true;
         }
         catch{

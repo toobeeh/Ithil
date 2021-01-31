@@ -1,7 +1,7 @@
 class TypoSocket {
-    constructor(socket, db, sharedData, io) {
+    constructor(socket, db, sharedData, prodb) {
         this.db = db;
-        this.io = io;
+        this.prodb = prodb;
         this.sharedData = sharedData;
         this.socket = socket;
         this.socket.on("login", this.login);
@@ -101,6 +101,8 @@ class TypoSocket {
         this.socket.on("search lobby", this.searchLobby); // set searching status
         this.socket.on("leave lobby", this.leaveLobby); // set idle status
         this.socket.on("claim drop", this.claimDrop); // claim drop
+        this.socket.on("store drawing", this.storeDrawing); // store drawing local and permanent
+        this.socket.on("fetch drawing", this.fetchDrawing); // get stored drawing
         this.emitEvent(data.event + " response", {
             authorized: true,
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
@@ -185,6 +187,31 @@ class TypoSocket {
         this.emitEvent(data.event + " response", {
             result: result
         }); // reply with result
+    }
+    storeDrawing = (data) => {
+        let meta = data.payload.meta;
+        let uri = data.payload.uri;
+        let commands = data.payload.commands;
+        if (!meta.name) meta.name = "Unnamed";
+        if (!meta.author) meta.author = "Unknown";
+        if (!meta.date) meta.date = (new Date()).toString();
+        meta.login = this.loginToken;
+        let id = Date.now();
+
+        if (this.prodb.addDrawing(this.loginToken, id, meta)) {
+            this.prodb.addDrawCommands(id, commands);
+            this.prodb.addURI(id, uri);
+        }
+        this.emitEvent(data.event + " response", {
+            id: id
+        }); 
+    }
+    fetchDrawing = data => {
+        let id = data.payload.id;
+        let result = this.prodb.getDrawing(id);
+        this.emitEvent(data.event + " response", {
+            drawing: result
+        }); 
     }
 }
 module.exports = TypoSocket;

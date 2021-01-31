@@ -5,6 +5,7 @@ const fs = require('fs');
 const cors = require('cors');
 const TypoSocket = require("./typoSocket");
 const palantirDb = require("./sqlite");
+const prodb = require("./prodb");
 
 app.use(cors()); // use cors
 const path = '/etc/letsencrypt/live/typo.rip'; // path to certs
@@ -90,7 +91,7 @@ let typoSockets = [];
 console.log("Initiating connection events..");
 io.on('connection', (socket) => { // on socket connect, add new typo socket
     console.log('Connected socket ' + socket.id);
-    let typosck = new TypoSocket(socket, palantirDb, sharedData, io);
+    let typosck = new TypoSocket(socket, palantirDb, sharedData, prodb);
     typoSockets.push(typosck);
     socket.on("disconnect", () => {
         // on disconnect remove reference

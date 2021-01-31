@@ -14,7 +14,7 @@ const prodb = {
         success = false;
         try {
             prodb.open();
-            palantirDb.db.prepare("INSERT INTO Drawings VALUES(?,?,?)").run(login, id, JSON.stringify(meta));
+            prodb.db.prepare("INSERT INTO Drawings VALUES(?,?,?)").run(login, id, JSON.stringify(meta));
             prodb.close();
             success = true;
         }
@@ -28,7 +28,7 @@ const prodb = {
         success = false;
         try {
             prodb.open();
-            palantirDb.db.prepare("INSERT INTO Commands VALUES(?,?)").run(id, JSON.stringify(commands));
+            prodb.db.prepare("INSERT INTO Commands VALUES(?,?)").run(id, JSON.stringify(commands));
             prodb.close();
             success = true;
         }
@@ -43,7 +43,7 @@ const prodb = {
         success = false;
         try {
             prodb.open();
-            palantirDb.db.prepare("INSERT INTO BaseURI VALUES(?,?)").run(id, uri);
+            prodb.db.prepare("INSERT INTO BaseURI VALUES(?,?)").run(id, uri);
             prodb.close();
             success = true;
         }
@@ -58,9 +58,9 @@ const prodb = {
         result.valid = false;
         try {
             prodb.open();
-            let meta = palantirDb.db.prepare("SELECT * FROM Drawings WHERE id = ?").get(id).Meta;
-            let uri = palantirDb.db.prepare("SELECT * FROM BaseURI WHERE id = ?").get(id).URI;
-            let commands = palantirDb.db.prepare("SELECT * FROM Commands WHERE id = ?").get(id).Commands;
+            let meta = prodb.db.prepare("SELECT * FROM Drawings WHERE id = ?").get(id).Meta;
+            let uri = prodb.db.prepare("SELECT * FROM BaseURI WHERE id = ?").get(id).URI;
+            let commands = prodb.db.prepare("SELECT * FROM Commands WHERE id = ?").get(id).Commands;
             prodb.close();
             result.valid = true;
             result.commands = JSON.parse(commands);

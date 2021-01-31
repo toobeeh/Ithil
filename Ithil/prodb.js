@@ -54,6 +54,7 @@ const prodb = {
         return success;
     },
     getDrawing: (id) => {
+        let result;
         result.valid = false;
         try {
             prodb.open();

@@ -73,4 +73,4 @@ const prodb = {
         return result;
     }
 }
-module.exports = palantirDb;
+module.exports = prodb;

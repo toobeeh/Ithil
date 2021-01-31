@@ -3,7 +3,7 @@ const prodb = {
     path: "/home/pi/Webroot/rippro/rippro.db",
     db: null,
     open: () => {
-        prodb.db = new palantirDb.Database(prodb.path);
+        prodb.db = new prodb.Database(prodb.path);
         prodb.db.pragma('journal_mode = WAL');
     },
     close: () => {

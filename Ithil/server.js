@@ -66,7 +66,7 @@ const drops = {
     getNextDrop: async () => {
         let nextDrop;
         // wait for next drop to appear, check in 5s intervals
-        while ((nextDrop = palantirDb.getDrop()).drop && nextDrop.drop.CaughtLobbyKey != "") await drops.idle(5000);
+        while (!(nextDrop = palantirDb.getDrop()).drop || nextDrop.drop.CaughtLobbyKey != "") await drops.idle(5000);
         let ms = (new Date(nextDrop.drop.ValidFrom + " UTC")).getTime() - Date.now();
         if (ms < 0) return false; // old drop hasnt been claimed
         console.log("Next drop in " + ms / 1000 + "s");

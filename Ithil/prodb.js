@@ -3,12 +3,12 @@ const prodb = {
     path: "/home/pi/Webroot/rippro/rippro.db",
     db: null,
     open: () => {
-        palantirDb.db = new palantirDb.Database(palantirDb.path);
-        palantirDb.db.pragma('journal_mode = WAL');
+        prodb.db = new palantirDb.Database(palantirDb.path);
+        prodb.db.pragma('journal_mode = WAL');
     },
     close: () => {
-        palantirDb.db.close();
-        palantirDb.db = null;
+        prodb.db.close();
+        prodb.db = null;
     },
     addDrawing: (login, id, meta) => {
         success = false;

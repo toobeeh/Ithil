@@ -20,7 +20,7 @@ const prodb = {
         }
         catch (e) {
             console.log(e.toString());
-            prob.close();
+            prodb.close();
         }
         return success;
     },
@@ -34,7 +34,7 @@ const prodb = {
         }
         catch (e) {
             console.log(e.toString());
-            prob.close();
+            prodb.close();
         }
         return success;
     }
@@ -49,7 +49,7 @@ const prodb = {
         }
         catch (e) {
             console.log(e.toString());
-            prob.close();
+            prodb.close();
         }
         return success;
     },
@@ -62,13 +62,13 @@ const prodb = {
             let commands = palantirDb.db.prepare("SELECT * FROM Commands WHERE id = ?").get(id).Commands;
             prodb.close();
             result.valid = true;
-            result.commands = commands;
+            result.commands = JSON.parse(commands);
             result.uri = uri;
-            result.meta = meta;
+            result.meta = JSON.parse(meta);
         }
         catch (e) {
             console.log(e.toString());
-            prob.close();
+            prodb.close();
         }
         return result;
     }

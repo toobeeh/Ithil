@@ -136,8 +136,10 @@ class TypoSocket {
             this.lobby = data.payload.lobby;
             let key = data.payload.lobbyKey;
             let desc = data.payload.description;
-            if (!desc) desc = "";
-            if (key != this.lobbyData.lobby.Key || desc != this.lobbyData.lobby.Description) { // if new lobby key differs from old, set new key in db
+            if (data.payload.lobby.Players.findIndex(p => p.Sender == true) == 0 && data.payload.description) // if owner and desc set
+                desc = data.payload.description;
+            else desc = this.lobbyData.lobby.Description;
+            if (key != this.lobbyData.lobby.Key || desc != this.lobbyData.lobby.Description) { // if new lobby key / desc differs from old, set new key in db
                 this.db.setLobby(this.lobbyData.lobby.ID, key, desc);
                 this.lobbyData = this.db.getLobby(this.lobbyData.lobby.ID, "id");
             }

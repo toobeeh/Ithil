@@ -92,6 +92,9 @@ class TypoSocket {
         member.member.Guilds.forEach(guild => {
             this.socket.join("guild" + guild.GuildID.slice(0,-2));
         });
+        if (data.payload.ripro == true) this.riproEnabled = true;
+        else this.riproEnabled = false;
+        this.loginDate = Math.ceil(Daten.now());
         this.loginToken = data.payload.loginToken; // set login
         this.socket.off("login", this.login);
         this.setStatusRoom("idle");// join idle room
@@ -222,6 +225,9 @@ class TypoSocket {
         this.emitEvent(data.event + " response", {
             drawings: result.drawings
         }); 
+    }
+    resetTypro = () => {
+        if(!this.riproEnabled)this.prodb.removeEntries(this.loginToken, this.loginDate);
     }
 }
 module.exports = TypoSocket;

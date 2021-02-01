@@ -84,7 +84,28 @@ const prodb = {
             rows.forEach(row => {
                 if (limit > 0 && result.drawings.length > limit) return;
                 result.drawings.push({ id: row.ID, meta: JSON.parse(row.Meta) });
-            })
+            });
+            result.valid = true;
+        }
+        catch (e) {
+            console.log(e.toString());
+            prodb.close();
+        }
+        return result;
+    },
+    removeEntries: (login, logindate) => {
+        let result = {};
+        result.valid = false;
+        try {
+            prodb.open();
+            // get drawings 
+            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? AND ID > ?").all(login, logindate);
+            rows.forEach(row => {
+                prodb.db.prepare("DELETE FROM Drawings WHERE Login = ? AND ID = ?").run(login, row.ID);
+                prodb.db.prepare("DELETE FROM BaseURI WHERE Login = ? AND ID = ?").run(login, row.ID);
+                prodb.db.prepare("DELETE FROM Commands WHERE Login = ? AND ID = ?").run(login, row.ID);
+            });
+            prodb.close();
             result.valid = true;
         }
         catch (e) {

@@ -94,7 +94,7 @@ class TypoSocket {
         });
         if (data.payload.ripro == true) this.riproEnabled = true;
         else this.riproEnabled = false;
-        this.loginDate = Math.ceil(Daten.now());
+        this.loginDate = Math.ceil(Date.now());
         this.loginToken = data.payload.loginToken; // set login
         this.socket.off("login", this.login);
         this.setStatusRoom("idle");// join idle room

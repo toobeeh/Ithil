@@ -210,6 +210,7 @@ class TypoSocket {
     fetchDrawing = data => {
         let id = data.payload.id;
         let result = this.prodb.getDrawing(id);
+        if (data.payload.withCommands != true) result.commands = null;
         this.emitEvent(data.event + " response", {
             drawing: result
         }); 

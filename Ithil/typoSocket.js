@@ -197,7 +197,7 @@ class TypoSocket {
         if (!meta.author) meta.author = "Unknown";
         if (!meta.date) meta.date = (new Date()).toString();
         meta.login = this.loginToken;
-        let id = Date.now();
+        let id = ceil(Date.now()).toString();
 
         if (this.prodb.addDrawing(this.loginToken, id, meta)) {
             this.prodb.addDrawCommands(id, commands);

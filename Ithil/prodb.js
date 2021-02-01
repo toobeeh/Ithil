@@ -78,7 +78,7 @@ const prodb = {
         result.valid = false;
         try {
             prodb.open();
-            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? ORDER BY ID DESCENDING").all(login);
+            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? ORDER BY ID DESC").all(login);
             prodb.close();
             result.drawings = [];
             rows.forEach(row => {

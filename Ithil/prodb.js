@@ -72,6 +72,26 @@ const prodb = {
             prodb.close();
         }
         return result;
+    },
+    getUserMeta: (login, limit = -1) => {
+        let result = {};
+        result.valid = false;
+        try {
+            prodb.open();
+            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? ORDER BY ID DESCENDING").all(login);
+            prodb.close();
+            result.drawings = [];
+            rows.forEach(row => {
+                if (limit > 0 && result.drawings.length > limit) return;
+                result.drawings.push({ id: row.ID, meta: JSON.parse(row.Meta) });
+            })
+            result.valid = true;
+        }
+        catch (e) {
+            console.log(e.toString());
+            prodb.close();
+        }
+        return result;
     }
 }
 module.exports = prodb;

@@ -103,6 +103,7 @@ class TypoSocket {
         this.socket.on("claim drop", this.claimDrop); // claim drop
         this.socket.on("store drawing", this.storeDrawing); // store drawing local and permanent
         this.socket.on("fetch drawing", this.fetchDrawing); // get stored drawing
+        this.socket.on("get meta", this.getUserMeta); // get all meta
         this.emitEvent(data.event + " response", {
             authorized: true,
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
@@ -211,6 +212,14 @@ class TypoSocket {
         let result = this.prodb.getDrawing(id);
         this.emitEvent(data.event + " response", {
             drawing: result
+        }); 
+    }
+    getUserMeta = data => {
+        let limit = data.payload.limit;
+        if (!limit) limit = -1;
+        let result = this.prodb.getUserMeta(this.loginToken, limit);
+        this.emitEvent(data.event + " response", {
+            drawings: result.drawings
         }); 
     }
 }

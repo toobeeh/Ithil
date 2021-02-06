@@ -228,7 +228,7 @@ class TypoSocket {
         }); 
     }
     resetTypro = () => {
-        if(!this.riproEnabled)this.prodb.removeEntries(this.loginToken, this.loginDate);
+        if(!this.riproEnabled)this.prodb.removeEntries(this.loginToken, this.loginDate - 1000 * 60 * 60 * 48); // delete older than 48h
     }
 }
 module.exports = TypoSocket;

@@ -83,7 +83,7 @@ const prodb = {
             if (query.name) where += " AND json_extract(meta,'$.name) = " + query.name;
             if (query.author) where += " AND json_extract(meta,'$.author) = " + query.author;
             if (query.date) where += " AND json_extract(meta,'$.date) like'%" + query.date + "%'";
-            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? ? ORDER BY ID DESC").all(login, where);
+            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? " + where + " ORDER BY ID DESC").all(login);
             prodb.close();
             result.drawings = [];
             rows.forEach(row => {

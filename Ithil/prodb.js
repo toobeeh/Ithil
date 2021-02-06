@@ -73,12 +73,17 @@ const prodb = {
         }
         return result;
     },
-    getUserMeta: (login, limit = -1) => {
+    getUserMeta: (login, limit = -1, query = {}) => {
         let result = {};
         result.valid = false;
         try {
             prodb.open();
-            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? ORDER BY ID DESC").all(login);
+            let where = "true";
+            if (query.own) where += " AND json_extract(meta,'$.own) = " + query.own == true ? "1" : "0";
+            if (query.name) where += " AND json_extract(meta,'$.name) = " + query.name;
+            if (query.author) where += " AND json_extract(meta,'$.author) = " + query.author;
+            if (query.date) where += " AND json_extract(meta,'$.date) like'%" + query.date + "%'";
+            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? WHERE ? ORDER BY ID DESC").all(login, where);
             prodb.close();
             result.drawings = [];
             rows.forEach(row => {

@@ -221,7 +221,8 @@ class TypoSocket {
     getUserMeta = data => {
         let limit = data.payload.limit;
         if (!limit) limit = -1;
-        let result = this.prodb.getUserMeta(this.loginToken, limit);
+        let query = data.payload.query;
+        let result = this.prodb.getUserMeta(this.loginToken, limit, query);
         this.emitEvent(data.event + " response", {
             drawings: result.drawings
         }); 

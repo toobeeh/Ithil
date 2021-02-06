@@ -79,9 +79,9 @@ const prodb = {
         try {
             prodb.open();
             let where = "";
-            if (query.own) where += " AND json_extract(meta,'$.own') = " + query.own == true ? "1" : "0";
-            if (query.name) where += " AND json_extract(meta,'$.name') = " + query.name;
-            if (query.author) where += " AND json_extract(meta,'$.author') = " + query.author;
+            if (query.own) where += " AND json_extract(meta,'$.own') = '" + query.own == true ? "1" : "0" + "'";
+            if (query.name) where += " AND json_extract(meta,'$.name') = '" + query.name + "'";
+            if (query.author) where += " AND json_extract(meta,'$.author') = '" + query.author + "'";
             if (query.date) where += " AND json_extract(meta,'$.date') like'%" + query.date + "%'";
             let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? " + where + " ORDER BY ID DESC").all(login);
             prodb.close();

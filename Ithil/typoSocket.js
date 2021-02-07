@@ -42,6 +42,7 @@ class TypoSocket {
                             setTimeout(writeLobbyPlaying, 2500);
                         }
                     }
+                    else console.log("Player not in playing room anymore, cancelled report writing");
                 }
                 writeLobbyPlaying();                
                 break;

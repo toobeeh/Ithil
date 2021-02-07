@@ -75,7 +75,7 @@ class TypoSocket {
             });
             try {
                 this.socket.emit(event, { event: event, payload: payload });
-                console.log(`Emitted event: ${event} @ ${this.loginToken}`);
+                console.log((new Date()).toTimeString().split(" ")[0] + `: Emitted event: ${event} @ ${this.loginToken}`);
             }
             catch { reject(new Error("Failed emitting event: " + event)); }
             if (!listenResponse) resolve(true);

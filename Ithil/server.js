@@ -19,7 +19,10 @@ const io = require('socket.io')(server, { // start io server with cors allowed
     cors: {
         origin: "*",
         methods: ["GET", "POST", "OPTIONS"]
-    }
+    },
+    transports: ['websocket'],
+    allowUpgrades: false,
+    pingTimeout: 20000
 });
 
 class SharedData {

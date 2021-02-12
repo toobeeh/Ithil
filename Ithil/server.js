@@ -20,8 +20,6 @@ const io = require('socket.io')(server, { // start io server with cors allowed
         origin: "*",
         methods: ["GET", "POST", "OPTIONS"]
     },
-    transports: ['websocket'],
-    allowUpgrades: false,
     pingTimeout: 20000
 });
 

@@ -104,7 +104,7 @@ const prodb = {
         try {
             prodb.open();
             // get drawings 
-            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? AND ID > ?").all(login, logindate);
+            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? AND ID < ?").all(login, logindate);
             rows.forEach(row => {
                 prodb.db.prepare("DELETE FROM Drawings WHERE ID = ?").run(row.ID);
                 prodb.db.prepare("DELETE FROM BaseURI WHERE ID = ?").run(row.ID);

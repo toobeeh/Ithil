@@ -125,7 +125,7 @@ const prodb = {
         try {
             prodb.open();
             if(prodb.db.prepare("SELECT * FROM Drawings WHERE ID = ?").get(id).Login != login) throw new Error("Unauthorized delete request");
-            prodb.db.prepare("DELETE FROM Drawings WHERE ID = ? AND Login = ?").run(id);
+            prodb.db.prepare("DELETE FROM Drawings WHERE ID = ?").run(id);
             prodb.db.prepare("DELETE FROM BaseURI WHERE ID = ?").run(id);
             prodb.db.prepare("DELETE FROM Commands WHERE ID = ?").run(id);
             prodb.close();

@@ -107,6 +107,7 @@ class TypoSocket {
         this.socket.on("claim drop", this.claimDrop); // claim drop
         this.socket.on("store drawing", this.storeDrawing); // store drawing local and permanent
         this.socket.on("fetch drawing", this.fetchDrawing); // get stored drawing
+        this.socket.on("remove drawing", this.removeDrawing); // get stored drawing
         this.socket.on("get commands", this.getCommands); // get stored drawing commands
         this.socket.on("get meta", this.getUserMeta); // get all meta
         this.emitEvent(data.event + " response", {

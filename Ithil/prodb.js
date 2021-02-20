@@ -118,6 +118,24 @@ const prodb = {
             prodb.close();
         }
         return result;
+    },
+    removeDrawing: (id, login) => {
+        let result = {};
+        result.valid = false;
+        try {
+            prodb.open();
+            if(prodb.db.prepare("SELECT * FROM Drawings WHERE ID = ?").get(id).Login != login) throw new Error("Unauthorized delete request");
+            prodb.db.prepare("DELETE FROM Drawings WHERE ID = ? AND Login = ?").run(id);
+            prodb.db.prepare("DELETE FROM BaseURI WHERE ID = ?").run(id);
+            prodb.db.prepare("DELETE FROM Commands WHERE ID = ?").run(id);
+            prodb.close();
+            result.valid = true;
+        }
+        catch (e) {
+            console.log(e.toString());
+            prodb.close();
+        }
+        return result;
     }
 }
 module.exports = prodb;

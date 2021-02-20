@@ -107,6 +107,7 @@ class TypoSocket {
         this.socket.on("claim drop", this.claimDrop); // claim drop
         this.socket.on("store drawing", this.storeDrawing); // store drawing local and permanent
         this.socket.on("fetch drawing", this.fetchDrawing); // get stored drawing
+        this.socket.on("get commands", this.getCommands); // get stored drawing commands
         this.socket.on("get meta", this.getUserMeta); // get all meta
         this.emitEvent(data.event + " response", {
             authorized: true,
@@ -211,6 +212,10 @@ class TypoSocket {
             id: id
         }); 
     }
+    removeDrawing = data => {
+        let id = data.payload.id;
+        this.prodb.removeDrawing(id, this.loginToken);
+    }
     fetchDrawing = data => {
         let id = data.payload.id;
         let result = this.prodb.getDrawing(id);
@@ -218,6 +223,13 @@ class TypoSocket {
         this.emitEvent(data.event + " response", {
             drawing: result
         }); 
+    }
+    getCommands = data => {
+        let id = data.payload.id;
+        let result = this.prodb.getDrawing(id);
+        this.emitEvent(data.event + " response", {
+            commands: result.commands
+        });
     }
     getUserMeta = data => {
         let limit = data.payload.limit;

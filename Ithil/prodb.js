@@ -80,10 +80,10 @@ const prodb = {
             prodb.open();
             let where = "";
             if (query.own) where += " AND json_extract(meta,'$.own') = " + query.own == true ? "1" : "0" + "";
-            if (query.name) where += " AND json_extract(meta,'$.name') like'%" + query.name + "%'";
-            if (query.author) where += " AND json_extract(meta,'$.author') like'%" + query.author + "%'";
-            if (query.date) where += " AND json_extract(meta,'$.date') like'%" + query.date + "%'";
-            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? " + where + " ORDER BY ID DESC").all(login);
+            if (query.name) where += " AND json_extract(meta,'$.name') like '%" + query.name + "%'";
+            if (query.author) where += " AND json_extract(meta,'$.author') like '%" + query.author + "%'";
+            if (query.date) where += " AND json_extract(meta,'$.date') like '%" + query.date + "%'";
+            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE login = ? " + where + " ORDER BY id DESC").all(login);
             prodb.close();
             result.drawings = [];
             rows.forEach(row => {
@@ -104,11 +104,11 @@ const prodb = {
         try {
             prodb.open();
             // get drawings 
-            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE Login = ? AND ID < ?").all(login, logindate);
+            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE login = ? AND id < ?").all(login, logindate);
             rows.forEach(row => {
-                prodb.db.prepare("DELETE FROM Drawings WHERE ID = ?").run(row.ID);
-                prodb.db.prepare("DELETE FROM BaseURI WHERE ID = ?").run(row.ID);
-                prodb.db.prepare("DELETE FROM Commands WHERE ID = ?").run(row.ID);
+                prodb.db.prepare("DELETE FROM Drawings WHERE id = ?").run(row.ID);
+                prodb.db.prepare("DELETE FROM BaseURI WHERE id = ?").run(row.ID);
+                prodb.db.prepare("DELETE FROM Commands WHERE id = ?").run(row.ID);
             });
             prodb.close();
             result.valid = true;

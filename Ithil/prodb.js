@@ -58,9 +58,9 @@ const prodb = {
         result.valid = false;
         try {
             prodb.open();
-            let meta = prodb.db.prepare("SELECT * FROM Drawings WHERE id = ?").get(id).Meta;
-            let uri = prodb.db.prepare("SELECT * FROM BaseURI WHERE id = ?").get(id).URI;
-            let commands = prodb.db.prepare("SELECT * FROM Commands WHERE id = ?").get(id).Commands;
+            let meta = prodb.db.prepare("SELECT * FROM Drawings WHERE id = ?").get(id).meta;
+            let uri = prodb.db.prepare("SELECT * FROM BaseURI WHERE id = ?").get(id).uri;
+            let commands = prodb.db.prepare("SELECT * FROM Commands WHERE id = ?").get(id).commands;
             prodb.close();
             result.valid = true;
             result.commands = JSON.parse(commands);
@@ -88,7 +88,7 @@ const prodb = {
             result.drawings = [];
             rows.forEach(row => {
                 if (limit > 0 && result.drawings.length > limit) return;
-                result.drawings.push({ id: row.ID, meta: JSON.parse(row.Meta) });
+                result.drawings.push({ id: row.id, meta: JSON.parse(row.meta) });
             });
             result.valid = true;
         }
@@ -106,9 +106,9 @@ const prodb = {
             // get drawings 
             let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE login = ? AND id < ?").all(login, logindate);
             rows.forEach(row => {
-                prodb.db.prepare("DELETE FROM Drawings WHERE id = ?").run(row.ID);
-                prodb.db.prepare("DELETE FROM BaseURI WHERE id = ?").run(row.ID);
-                prodb.db.prepare("DELETE FROM Commands WHERE id = ?").run(row.ID);
+                prodb.db.prepare("DELETE FROM Drawings WHERE id = ?").run(row.id);
+                prodb.db.prepare("DELETE FROM BaseURI WHERE id = ?").run(row.id);
+                prodb.db.prepare("DELETE FROM Commands WHERE id = ?").run(row.id);
             });
             prodb.close();
             result.valid = true;
@@ -124,7 +124,7 @@ const prodb = {
         result.valid = false;
         try {
             prodb.open();
-            if(prodb.db.prepare("SELECT * FROM Drawings WHERE ID = ?").get(id).Login != login) throw new Error("Unauthorized delete request");
+            if(prodb.db.prepare("SELECT * FROM Drawings WHERE ID = ?").get(id).login != login) throw new Error("Unauthorized delete request");
             prodb.db.prepare("DELETE FROM Drawings WHERE ID = ?").run(id);
             prodb.db.prepare("DELETE FROM BaseURI WHERE ID = ?").run(id);
             prodb.db.prepare("DELETE FROM Commands WHERE ID = ?").run(id);

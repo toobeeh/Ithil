@@ -93,7 +93,7 @@ class TypoSocket {
         member.member.Guilds.forEach(guild => {
             this.socket.join("guild" + guild.GuildID.slice(0,-2));
         });
-        let flags = (Number(this.member.member.flag) >>> 0).toString(2);
+        let flags = (Number(member.member.flag) >>> 0).toString(2);
         if (flags[flags.length - 4] == "1") { this.riproEnabled = true; console.log("ripro connected");}
         else this.riproEnabled = false;
         this.loginDate = Math.ceil(Date.now());

@@ -61,11 +61,11 @@ const prodb = {
             let meta = prodb.db.prepare("SELECT * FROM Drawings WHERE id = ?").get(id).meta;
             let uri = prodb.db.prepare("SELECT * FROM BaseURI WHERE id = ?").get(id).uri;
             let commands = prodb.db.prepare("SELECT * FROM Commands WHERE id = ?").get(id).commands;
-            prodb.close();
-            result.valid = true;
             result.commands = JSON.parse(commands);
             result.uri = uri;
             result.meta = JSON.parse(meta);
+            prodb.close();
+            result.valid = true;
         }
         catch (e) {
             console.log(e.toString());
@@ -84,12 +84,12 @@ const prodb = {
             if (query.author) where += " AND json_extract(meta,'$.author') like '%" + query.author + "%'";
             if (query.date) where += " AND json_extract(meta,'$.date') like '%" + query.date + "%'";
             let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE login = ? " + where + " ORDER BY id DESC").all(login);
-            prodb.close();
             result.drawings = [];
             rows.forEach(row => {
                 if (limit > 0 && result.drawings.length > limit) return;
                 result.drawings.push({ id: row.id, meta: JSON.parse(row.meta) });
             });
+            prodb.close();
             result.valid = true;
         }
         catch (e) {

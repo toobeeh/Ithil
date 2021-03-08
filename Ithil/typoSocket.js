@@ -172,7 +172,7 @@ class TypoSocket {
         }); // reply with active lobbies
     }
     claimDrop = (data) => {
-        console.log(data.payload.name + " claims a drop: " + (drop ? drop.DropID : " no drop - invalid."));
+        console.log(data.payload.name + " claims a drop: " + (data.payload.drop ? data.payload.drop.DropID : " no drop - invalid."));
         if (!data.payload.drop) return;
         let res = this.db.getDrop(data.payload.drop.DropID);
         console.log(JSON.stringify(res));

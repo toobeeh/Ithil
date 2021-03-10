@@ -7,6 +7,7 @@ const TypoSocket = require("./typoSocket");
 const palantirDb = require("./sqlite");
 const prodb = require("./prodb");
 
+console.log("Starting Ithil...");
 app.use(cors()); // use cors
 const path = '/etc/letsencrypt/live/typo.rip'; // path to certs
 const server = https.createServer({ // create server
@@ -22,7 +23,8 @@ const io = require('socket.io')(server, { // start io server with cors allowed
     },
     pingTimeout: 20000
 });
-
+console.log("Ithil socketio server listening now on port 3000");
+console.log("Initiating shared data...");
 class SharedData {
     constructor(database) {
         // refresh active lobbies every 4 seconds 
@@ -57,6 +59,7 @@ class SharedData {
 }
 sharedData = new SharedData(palantirDb);
 
+console.log("Initiating drops...");
 // drops
 const drops = {
     idle: async (timeMs) => {
@@ -86,7 +89,6 @@ const drops = {
     }
 }
 drops.start();
-
 
 let typoSockets = [];
 console.log("Initiating connection events..");

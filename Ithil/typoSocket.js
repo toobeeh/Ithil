@@ -42,7 +42,6 @@ class TypoSocket {
                             setTimeout(writeLobbyPlaying, 2500);
                         }
                     }
-                    else console.log("Player not in playing room anymore, cancelled report writing");
                 }
                 writeLobbyPlaying();                
                 break;
@@ -71,11 +70,11 @@ class TypoSocket {
         return new Promise((resolve, reject) => {
             if (listenResponse) this.socket.once(event + " response", (data) => {
                 resolve(data.payload);
-                console.log(`Received response: ${event} @ ${this.loginToken}\n${data.payload}`);
+                //console.log(`Received response: ${event} @ ${this.loginToken}\n${data.payload}`);
             });
             try {
                 this.socket.emit(event, { event: event, payload: payload });
-                console.log((new Date()).toTimeString().split(" ")[0] + `: Emitted event: ${event} @ ${this.loginToken}`);
+                //console.log((new Date()).toTimeString().split(" ")[0] + `: Emitted event: ${event} @ ${this.loginToken}`);
             }
             catch { reject(new Error("Failed emitting event: " + event)); }
             if (!listenResponse) resolve(true);

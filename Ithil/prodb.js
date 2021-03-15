@@ -79,7 +79,7 @@ const prodb = {
         try {
             prodb.open();
             let where = "";
-            if (query.own) where += " AND json_extract(meta,'$.own') like " + query.own == true ? "1" : "0";
+            if (query.own === true) where += " AND json_extract(meta,'$.own') ";
             if (query.name) where += " AND json_extract(meta,'$.name') like '%" + query.name + "%'";
             if (query.author) where += " AND json_extract(meta,'$.author') like '%" + query.author + "%'";
             if (query.date) where += " AND json_extract(meta,'$.date') like '%" + query.date + "%'";

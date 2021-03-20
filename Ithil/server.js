@@ -94,7 +94,7 @@ let typoSockets = [];
 console.log("Initiating connection events..");
 io.on('connection', (socket) => { // on socket connect, add new typo socket
     console.log('Connected socket ' + socket.id);
-    cosnole.log(typoSockets.length + " total connections.");
+    console.log(typoSockets.length + " total connections.");
     let typosck = new TypoSocket(socket, palantirDb, sharedData, prodb);
     typoSockets.push(typosck);
     socket.on("disconnect", () => {

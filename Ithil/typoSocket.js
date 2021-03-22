@@ -37,7 +37,7 @@ class TypoSocket {
                             let status = { PlayerMember: member, Status: "playing", LobbyID: lobbyRaw.ID, LobbyPlayerID: playerid };
                             this.db.writePlayerStatus(status, this.socket.id);
                         }
-                        catch (e) { console.log("Error writing report data: " + e.toString() + " on socket " + this.socket.id); }
+                        catch (e) { console.log("Error writing report data: " + e.toString() + " on user " + this.username); }
                         finally {
                             setTimeout(writeLobbyPlaying, 2500);
                         }
@@ -97,6 +97,7 @@ class TypoSocket {
         else this.riproEnabled = false;
         this.loginDate = Math.ceil(Date.now());
         this.loginToken = data.payload.loginToken; // set login
+        this.username = member.member.UserName;
         this.socket.off("login", this.login);
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
@@ -169,6 +170,7 @@ class TypoSocket {
         this.emitEvent(data.event + " response", {
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
         }); // reply with active lobbies
+        console.log(this.username + " left a lobby.");
     }
     claimDrop = (data) => {
         console.log(data.payload.name + " claims a drop: " + (data.payload.drop ? data.payload.drop.DropID : " no drop - invalid."));

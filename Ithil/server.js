@@ -97,11 +97,11 @@ io.on('connection', (socket) => { // on socket connect, add new typo socket
     console.log(typoSockets.length + " total connections.");
     let typosck = new TypoSocket(socket, palantirDb, sharedData, prodb);
     typoSockets.push(typosck);
-    socket.on("disconnect", () => {
+    socket.on("disconnect", (reason) => {
         // on disconnect remove reference
         typosck.resetTypro();
         typoSockets = typoSockets.filter(s => s.socket.id != typosck.socket.id);
         typosck = null;
-        console.log("Disconnected socket " + socket.id);
+        console.log("Disconnected socket " + socket.id + " with reason " + reason);
     });
 });

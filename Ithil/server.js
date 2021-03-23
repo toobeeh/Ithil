@@ -6,8 +6,22 @@ const cors = require('cors');
 const TypoSocket = require("./typoSocket");
 const palantirDb = require("./sqlite");
 const prodb = require("./prodb");
+const tynt = require("tynt");
 
-console.log("Starting Ithil...");
+const logLoading = (msg) => {
+    console.log(tynt.BgWhite(tynt.Blue(msg)));
+}
+const logState = (msg) => {
+    console.log(tynt.BgWhite(tynt.Black(msg)));
+}
+const logSocketInfo = (id, username, msg) => {
+    console.log(tynt.Blue(id + ": ") + username + " - " + msg);
+}
+const logInfo = (msg) => {
+    console.log(msg);
+}
+
+logLoading("Starting Ithil...");
 app.use(cors()); // use cors
 const path = '/etc/letsencrypt/live/typo.rip'; // path to certs
 const server = https.createServer({ // create server
@@ -23,8 +37,8 @@ const io = require('socket.io')(server, { // start io server with cors allowed
     },
     pingTimeout: 20000
 });
-console.log("Ithil socketio server listening now on port 3000");
-console.log("Initiating shared data...");
+logState("Ithil socketio server listening now on port 3000");
+logLoading("Initiating shared data...");
 class SharedData {
     constructor(database) {
         // refresh active lobbies every 4 seconds 
@@ -59,7 +73,7 @@ class SharedData {
 }
 sharedData = new SharedData(palantirDb);
 
-console.log("Initiating drops...");
+logLoading("Initiating drops..");
 // drops
 const drops = {
     idle: async (timeMs) => {
@@ -91,10 +105,10 @@ const drops = {
 drops.start();
 
 let typoSockets = [];
-console.log("Initiating connection events..");
+logLoading("Initiating connection events..");
 io.on('connection', (socket) => { // on socket connect, add new typo socket
-    console.log('Connected socket ' + socket.id);
-    console.log(typoSockets.length + " total connections.");
+    logState('Connected socket ' + socket.id);
+    logInfo(typoSockets.length + " total connections.");
     let typosck = new TypoSocket(socket, palantirDb, sharedData, prodb);
     typoSockets.push(typosck);
     socket.on("disconnect", (reason) => {
@@ -102,6 +116,6 @@ io.on('connection', (socket) => { // on socket connect, add new typo socket
         typosck.resetTypro();
         typoSockets = typoSockets.filter(s => s.socket.id != typosck.socket.id);
         typosck = null;
-        console.log("Disconnected socket " + socket.id + " with reason " + reason);
+        logSocketInfo(socket.id, tynt.Red("disconnected"),  reason);
     });
 });

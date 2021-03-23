@@ -109,7 +109,7 @@ logLoading("Initiating connection events..");
 io.on('connection', (socket) => { // on socket connect, add new typo socket
     logState('Connected socket ' + socket.id);
     logInfo(typoSockets.length + " total connections.");
-    let typosck = new TypoSocket(socket, palantirDb, sharedData, prodb, logSocketInfo);
+    let typosck = new TypoSocket(socket, palantirDb, sharedData, prodb, logSocketInfo, tynt);
     typoSockets.push(typosck);
     socket.on("disconnect", (reason) => {
         // on disconnect remove reference

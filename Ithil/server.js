@@ -12,7 +12,7 @@ const logLoading = (msg) => {
     console.log(tynt.BgWhite(tynt.Blue(msg)));
 }
 const logState = (msg) => {
-    console.log(tynt.BgWhite(tynt.Black(msg)));
+    console.log(tynt.Cyan(msg));
 }
 const logSocketInfo = (id, username, msg) => {
     console.log(tynt.Blue(id + ": ") + username + " - " + msg);

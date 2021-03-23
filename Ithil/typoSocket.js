@@ -39,7 +39,7 @@ class TypoSocket {
                             let status = { PlayerMember: member, Status: "playing", LobbyID: lobbyRaw.ID, LobbyPlayerID: playerid };
                             this.db.writePlayerStatus(status, this.socket.id);
                         }
-                        catch (e) { this.log(this.socket.id, this.socket.username, this.tynt.Red("Error writing report data: ") + e); }
+                        catch (e) { this.log(this.socket.id, this.username, this.tynt.Red("Error writing report data: ") + e); }
                         finally {
                             setTimeout(writeLobbyPlaying, 2500);
                         }
@@ -57,7 +57,7 @@ class TypoSocket {
                             let status = { PlayerMember: member, Status: this.searchData.waiting ? "waiting" : "searching", LobbyID: null, LobbyPlayerID: null };
                             this.db.writePlayerStatus(status, this.socket.id);
                         }
-                        catch (e) { this.log(this.socket.id, this.socket.username, this.tynt.Red("Error writing status data: ") + e); }
+                        catch (e) { this.log(this.socket.id, this.username, this.tynt.Red("Error writing status data: ") + e); }
                         finally { setTimeout(writeSearchWaitStatus, 2500); }
                     }
                 }
@@ -117,7 +117,7 @@ class TypoSocket {
             authorized: true,
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
         }); // reply with status
-        this.log(this.socket.id, this.socket.username, this.tynt.Green("Logged in: ") + this.loginToken);
+        this.log(this.socket.id, this.username, this.tynt.Green("Logged in: ") + this.loginToken);
     }
     // on get user event: respond with member data
     getUser = (data) => {
@@ -172,10 +172,10 @@ class TypoSocket {
         this.emitEvent(data.event + " response", {
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
         }); // reply with active lobbies
-        this.log(this.socket.id, this.socket.username, "Left a lobby");
+        this.log(this.socket.id, this.username, "Left a lobby");
     }
     claimDrop = (data) => {
-        this.log(this.socket.id, this.socket.username, "Claims a drop: " + (data.payload.drop ? data.payload.drop.DropID : " no drop - invalid."));
+        this.log(this.socket.id, this.username, "Claims a drop: " + (data.payload.drop ? data.payload.drop.DropID : " no drop - invalid."));
         if (!data.payload.drop) return;
         let res = this.db.getDrop(data.payload.drop.DropID);
         console.log(JSON.stringify(res));

@@ -1,6 +1,7 @@
 class TypoSocket {
-    constructor(socket, db, sharedData, prodb, log, this.tynt) {
+    constructor(socket, db, sharedData, prodb, log, tynt) {
         this.log = log;
+        this.tynt = tynt;
         this.db = db;
         this.prodb = prodb;
         this.sharedData = sharedData;

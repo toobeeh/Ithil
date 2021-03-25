@@ -104,7 +104,7 @@ const drops = {
 }
 drops.start();
 
-setInterval(logInfo((new Date()).toLocaleTimeString()), 500);
+setInterval(()=>logInfo((new Date()).toLocaleTimeString()), 500);
 
 let typoSockets = [];
 logLoading("Initiating connection events..");

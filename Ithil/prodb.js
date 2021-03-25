@@ -142,7 +142,7 @@ const prodb = {
             prodb.open();
             let logins = [];
             let iterate = prodb.db.prepare("SELECT DISTINCT Login FROM Drawings").all(); iterate.forEach(row => logins.push(row.login));
-            logins.forEach(async login => {
+            for(login of logins) {
                 // slow
                 //console.log("-------creating db for " + login);
                 //let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/" + login + ".db");
@@ -182,13 +182,10 @@ const prodb = {
                 userdb.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ? AND id < ?)").run(login);
                 userdb.prepare("DELETE FROM Drawings WHERE NOT login = ?").run(login);
                 console.log("------- done with db for " + login);
-            });
-            prodb.close();
-            result.valid = true;
+            }
         }
         catch (e) {
             console.log(e.toString());
-            prodb.close();
         }
     }
 }

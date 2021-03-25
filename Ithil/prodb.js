@@ -1,6 +1,6 @@
 const prodb = {
     Database: require("better-sqlite3"),
-    path: "/home/pi/Webroot/rippro/rippro.db",
+    path: "/home/pi/Webroot/rippro/mod.db",
     db: null,
     open: () => {
         prodb.db = new prodb.Database(prodb.path);
@@ -140,7 +140,6 @@ const prodb = {
         //prodb.db.pragma('journal_mode = WAL'); CREATE TABLE Commands("id" STRING, "commands" STRING);
         try {
             prodb.open();
-            prodb.db.pragma('secure_delete = 0');
             let logins = [];
             let iterate = prodb.db.prepare("SELECT DISTINCT Login FROM Drawings").all(); iterate.forEach(row => logins.push(row.login));
             let c = 0;
@@ -156,15 +155,14 @@ const prodb = {
                 console.log("done");
                 let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/user" + login + ".db");
                 userdb.pragma('journal_mode = WAL');
-                userdb.pragma('secure_delete = 0');
                 console.log("deleting other drawings");
                 userdb.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
                 userdb.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
                 userdb.prepare("DELETE FROM Drawings WHERE NOT login = ?").run(login);
                 console.log("deleting from origin");
-                prodb.db.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
-                prodb.db.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
-                prodb.db.prepare("DELETE FROM Drawings WHERE NOT login = ?").run(login);
+                prodb.db.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE login = ?)").run(login);
+                prodb.db.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE login = ?)").run(login);
+                prodb.db.prepare("DELETE FROM Drawings WHERE login = ?").run(login);
                 console.log("------- done with db for " + login + ". this was number " + c);
                 c++;
             }

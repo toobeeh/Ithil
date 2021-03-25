@@ -155,7 +155,7 @@ const prodb = {
                 console.log("done");
                 let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/user" + login + ".db");
                 userdb.pragma('journal_mode = WAL');
-                userdb.pragma('secure_delete = FAST');
+                userdb.pragma('secure_delete = 0');
                 console.log("deleting other drawings");
                 userdb.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
                 userdb.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);

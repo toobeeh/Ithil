@@ -142,7 +142,7 @@ const prodb = {
             prodb.open();
             let logins = [];
             let iterate = prodb.db.prepare("SELECT DISTINCT Login FROM Drawings").all(); iterate.forEach(row => logins.push(row.login));
-            logins.forEach(login => {
+            logins.forEach(async login => {
                 // slow
                 //console.log("-------creating db for " + login);
                 //let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/" + login + ".db");

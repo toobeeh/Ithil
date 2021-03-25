@@ -175,6 +175,7 @@ const prodb = {
                         resolve();
                     });
                 });
+                console.log("done");
                 let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/user" + login + ".db");
                 userdb.pragma('journal_mode = WAL');
                 console.log("deleting other drawings");

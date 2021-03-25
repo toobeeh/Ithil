@@ -104,13 +104,20 @@ const prodb = {
         try {
             prodb.open();
             // get drawings 
-            let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE login = ? AND id < ?").all(login, logindate);
-            rows.forEach(row => {
-                console.log("deletin for " + login + " " + logindate + " " + row.id);
-                prodb.db.prepare("DELETE FROM Drawings WHERE id = ?").run(row.id);
-                prodb.db.prepare("DELETE FROM BaseURI WHERE id = ?").run(row.id);
-                prodb.db.prepare("DELETE FROM Commands WHERE id = ?").run(row.id);
-            });
+            //let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE login = ? AND id < ?").all(login, logindate);
+            prodb.db.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE login = ? AND id < ?)").run(login, logindate);
+            prodb.db.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE login = ? AND id < ?)").run(login, logindate);
+            prodb.db.prepare("DELETE FROM Drawings WHERE login = ? AND id < ?").run(login, logindate);
+            //let remove = [];
+            //rows.forEach(remove.push(row.id));
+            //if (remove.length > 0) {
+            //}
+            //rows.forEach(row => {
+            //    console.log("deletin for " + login + " " + logindate + " " + row.id);
+            //    prodb.db.prepare("DELETE FROM Drawings WHERE id = ?").run(row.id);
+            //    prodb.db.prepare("DELETE FROM BaseURI WHERE id = ?").run(row.id);
+            //    prodb.db.prepare("DELETE FROM Commands WHERE id = ?").run(row.id);
+            //});
             prodb.close();
             result.valid = true;
         }

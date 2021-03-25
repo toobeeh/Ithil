@@ -142,31 +142,8 @@ const prodb = {
             prodb.open();
             let logins = [];
             let iterate = prodb.db.prepare("SELECT DISTINCT Login FROM Drawings").all(); iterate.forEach(row => logins.push(row.login));
+            let c = 0;
             for(login of logins) {
-                // slow
-                //console.log("-------creating db for " + login);
-                //let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/" + login + ".db");
-                //userdb.pragma('journal_mode = WAL');
-                //try { userdb.open(); } catch{ }
-
-                //userdb.prepare('CREATE TABLE Commands("id" STRING, "commands" STRING);').run();
-                //userdb.prepare('CREATE TABLE BaseURI("id" STRING, "uri" STRING);').run();
-                //userdb.prepare('CREATE TABLE Drawings ("login" STRING, "id" STRING, "meta" STRING);').run();
-                //console.log("getting drawings");
-                //let drawings = prodb.getUserMeta(login);
-                //let len = drawings.drawings.length;
-                //let ind = 0;
-                //console.log("writing drawings");
-                //drawings.drawings.forEach(drawingMeta => {
-                //    console.log(ind + " / " + len);
-                //    ind++;
-                //    let drawing = prodb.getDrawing(drawingMeta.id);
-                //    userdb.prepare("INSERT INTO Drawings VALUES(?,?,?)").run(drawing.login, drawing.id, JSON.stringify(drawing.meta));
-                //    userdb.prepare("INSERT INTO Commands VALUES(?,?)").run(drawing.id, JSON.stringify(drawing.commands));
-                //    userdb.prepare("INSERT INTO BaseURI VALUES(?,?)").run(drawing.id, drawing.uri);
-                //});
-                //try { userdb.close(); } catch{ }
-                //console.log("------- done with db for " + login);
                 const fs = require('fs');
                 console.log("-------creating db for " + login);
                 // File destination.txt will be created or overwritten by default.
@@ -180,9 +157,10 @@ const prodb = {
                 userdb.pragma('journal_mode = WAL');
                 console.log("deleting other drawings");
                 userdb.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
-                userdb.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ? AND id < ?)").run(login);
+                userdb.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
                 userdb.prepare("DELETE FROM Drawings WHERE NOT login = ?").run(login);
-                console.log("------- done with db for " + login);
+                console.log("------- done with db for " + login + ". this was number " + c);
+                c++;
             }
         }
         catch (e) {

@@ -22,9 +22,9 @@ const logSocketInfo = (id, username, msg) => {
 const logInfo = (msg) => {
     console.log(msg);
 }
-console.logLoading("STARTING SPLIT ATTEMPT");
+logLoading("STARTING SPLIT ATTEMPT");
 prodb.doTheSplit();
-console.logLoading("ENDED SPLIT ATTEMPT");
+logLoading("ENDED SPLIT ATTEMPT");
 return;
 
 logLoading("Starting Ithil...");

@@ -140,6 +140,7 @@ const prodb = {
         //prodb.db.pragma('journal_mode = WAL'); CREATE TABLE Commands("id" STRING, "commands" STRING);
         try {
             prodb.open();
+            prodb.db.pragma('secure_delete = 0');
             let logins = [];
             let iterate = prodb.db.prepare("SELECT DISTINCT Login FROM Drawings").all(); iterate.forEach(row => logins.push(row.login));
             let c = 0;
@@ -160,6 +161,10 @@ const prodb = {
                 userdb.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
                 userdb.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
                 userdb.prepare("DELETE FROM Drawings WHERE NOT login = ?").run(login);
+                console.log("deleting from origin");
+                prodb.db.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
+                prodb.db.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
+                prodb.db.prepare("DELETE FROM Drawings WHERE NOT login = ?").run(login);
                 console.log("------- done with db for " + login + ". this was number " + c);
                 c++;
             }

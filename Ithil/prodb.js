@@ -156,7 +156,7 @@ const prodb = {
                 let len = drawings.length;
                 let ind = 0;
                 console.log("writing drawings");
-                drawings.forEach(drawingMeta => {
+                drawings.drawings.forEach(drawingMeta => {
                     console.log(ind + " / " + len);
                     ind++;
                     let drawing = prodb.getDrawing(drawingMeta.id);

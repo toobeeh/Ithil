@@ -15,7 +15,7 @@ const logState = (msg) => {
     console.log(tynt.Cyan(msg));
 }
 const logSocketInfo = (id, username, msg) => {
-    console.log((new Date()).toLocaleTimeString() + tynt.Blue(id + ": ") + username + " - " + msg);
+    console.log(tynt.Blue(id + ": ") + username + " - " + msg);
 }
 const logInfo = (msg) => {
     console.log(msg);
@@ -103,8 +103,6 @@ const drops = {
     }
 }
 drops.start();
-
-setInterval(()=>logInfo((new Date()).toLocaleTimeString()), 500);
 
 let typoSockets = [];
 logLoading("Initiating connection events..");

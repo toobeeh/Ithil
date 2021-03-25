@@ -135,7 +135,7 @@ const prodb = {
         }
         return result;
     },
-    doTheSplit: () => {
+    doTheSplit: async () => {
         //prodb.db = new prodb.Database(prodb.path);
         //prodb.db.pragma('journal_mode = WAL'); CREATE TABLE Commands("id" STRING, "commands" STRING);
         try {
@@ -170,8 +170,10 @@ const prodb = {
                 const fs = require('fs');
                 console.log("-------creating db for " + login);
                 // File destination.txt will be created or overwritten by default.
-                fs.copyFile('/home/pi/Webroot/rippro/rippro.db', '/home/pi/Webroot/rippro/userdb/user' + login + '.db', (err) => {
-                    if (err) throw err;
+                await new Promise((resolve, reject) => {
+                    fs.copyFile('/home/pi/Webroot/rippro/rippro.db', '/home/pi/Webroot/rippro/userdb/user' + login + '.db', (err) => {
+                        resolve();
+                    });
                 });
                 let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/user" + login + ".db");
                 userdb.pragma('journal_mode = WAL');

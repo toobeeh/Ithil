@@ -23,7 +23,7 @@ const logInfo = (msg) => {
     console.log(msg);
 }
 logLoading("STARTING SPLIT ATTEMPT");
-prodb.doTheSplit();
+await prodb.doTheSplit();
 logLoading("ENDED SPLIT ATTEMPT");
 return;
 

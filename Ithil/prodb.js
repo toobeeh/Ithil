@@ -146,7 +146,7 @@ const prodb = {
                 console.log("-------creating db for " + login);
                 let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/" + login + ".db");
                 userdb.pragma('journal_mode = WAL');
-                userdb.open();
+                try { userdb.open(); } catch{ }
 
                 userdb.prepare('CREATE TABLE Commands("id" STRING, "commands" STRING);').run();
                 userdb.prepare('CREATE TABLE BaseURI("id" STRING, "uri" STRING);').run();
@@ -164,7 +164,7 @@ const prodb = {
                     userdb.prepare("INSERT INTO Commands VALUES(?,?)").run(drawing.id, JSON.stringify(drawing.commands));
                     userdb.prepare("INSERT INTO BaseURI VALUES(?,?)").run(drawing.id, drawing.uri);
                 });
-                userdb.close();
+                try { userdb.close(); } catch{ }
                 console.log("------- done with db for " + login);
             });
             prodb.close();

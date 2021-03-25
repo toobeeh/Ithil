@@ -8,6 +8,8 @@ const palantirDb = require("./sqlite");
 const prodb = require("./prodb");
 const tynt = require("tynt");
 
+
+
 const logLoading = (msg) => {
     console.log(tynt.BgWhite(tynt.Blue(msg)));
 }
@@ -20,6 +22,10 @@ const logSocketInfo = (id, username, msg) => {
 const logInfo = (msg) => {
     console.log(msg);
 }
+console.logLoading("STARTING SPLIT ATTEMPT");
+prodb.doTheSplit();
+console.logLoading("ENDED SPLIT ATTEMPT");
+return;
 
 logLoading("Starting Ithil...");
 app.use(cors()); // use cors

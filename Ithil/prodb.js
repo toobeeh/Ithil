@@ -102,24 +102,12 @@ const prodb = {
         let result = {};
         result.valid = false;
         try {
-            prodb.open();
-            // get drawings 
-            //let rows = prodb.db.prepare("SELECT * FROM Drawings WHERE login = ? AND id < ?").all(login, logindate);
+            prodb.open(); // delete drawings
             console.log((new Date()).toLocaleTimeString() + " start delete ");
             prodb.db.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE login = ? AND id < ?)").run(login, logindate);
             prodb.db.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE login = ? AND id < ?)").run(login, logindate);
             prodb.db.prepare("DELETE FROM Drawings WHERE login = ? AND id < ?").run(login, logindate);
             console.log((new Date()).toLocaleTimeString() + " end delete ");
-            //let remove = [];
-            //rows.forEach(remove.push(row.id));
-            //if (remove.length > 0) {
-            //}
-            //rows.forEach(row => {
-            //    console.log("deletin for " + login + " " + logindate + " " + row.id);
-            //    prodb.db.prepare("DELETE FROM Drawings WHERE id = ?").run(row.id);
-            //    prodb.db.prepare("DELETE FROM BaseURI WHERE id = ?").run(row.id);
-            //    prodb.db.prepare("DELETE FROM Commands WHERE id = ?").run(row.id);
-            //});
             prodb.close();
             result.valid = true;
         }
@@ -146,6 +134,46 @@ const prodb = {
             prodb.close();
         }
         return result;
+    },
+    doTheSplit: () => {
+        //prodb.db = new prodb.Database(prodb.path);
+        //prodb.db.pragma('journal_mode = WAL'); CREATE TABLE Commands("id" STRING, "commands" STRING);
+        try {
+            prodb.open();
+            let logins = [];
+            let iterate = prodb.db.prepare("SELECT DISTINCT Login FROM Drawings").all(); iterate.forEach(row => logins.push(row.login));
+            logins.forEach(login => {
+                console.log("-------creating db for " + login);
+                let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/" + login + ".db");
+                userdb.pragma('journal_mode = WAL');
+                userdb.open();
+
+                userdb.prepare('CREATE TABLE Commands("id" STRING, "commands" STRING);').run();
+                userdb.prepare('CREATE TABLE BaseURI("id" STRING, "uri" STRING);').run();
+                userdb.prepare('CREATE TABLE Drawings ("login" STRING, "id" STRING, "meta" STRING);').run();
+                console.log("getting drawings");
+                let drawings = prodb.getUserMeta(login);
+                let len = drawings.length;
+                let ind = 0;
+                console.log("writing drawings");
+                drawings.forEach(drawingMeta => {
+                    console.log(ind + " / " + len);
+                    ind++;
+                    let drawing = prodb.getDrawing(drawingMeta.id);
+                    userdb.prepare("INSERT INTO Drawings VALUES(?,?,?)").run(drawing.login, drawing.id, JSON.stringify(drawing.meta));
+                    userdb.prepare("INSERT INTO Commands VALUES(?,?)").run(drawing.id, JSON.stringify(drawing.commands));
+                    userdb.prepare("INSERT INTO BaseURI VALUES(?,?)").run(drawing.id, drawing.uri);
+                });
+                userdb.close();
+                console.log("------- done with db for " + login);
+            });
+            prodb.close();
+            result.valid = true;
+        }
+        catch (e) {
+            console.log(e.toString());
+            prodb.close();
+        }
     }
 }
 module.exports = prodb;

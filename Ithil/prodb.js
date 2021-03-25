@@ -170,10 +170,10 @@ const prodb = {
                 const fs = require('fs');
                 console.log("-------creating db for " + login);
                 // File destination.txt will be created or overwritten by default.
-                fs.copyFile('/home/pi/Webroot/rippro/rippro.db', '/home/pi/Webroot/rippro/user' + login + '.db', (err) => {
+                fs.copyFile('/home/pi/Webroot/rippro/rippro.db', '/home/pi/Webroot/rippro/userdb/user' + login + '.db', (err) => {
                     if (err) throw err;
                 });
-                let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/" + login + ".db");
+                let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/user" + login + ".db");
                 userdb.pragma('journal_mode = WAL');
                 console.log("deleting other drawings");
                 userdb.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);

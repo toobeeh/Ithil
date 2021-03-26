@@ -117,6 +117,7 @@ class TypoSocket {
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
         }); // reply with status
         this.prodb = new this.UserDB(this.loginToken);
+        this.log(this.prodb.path);
         this.log(this.socket.id, this.username, this.tynt.Green("Logged in: ") + this.loginToken);
     }
     // on get user event: respond with member data

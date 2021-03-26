@@ -113,6 +113,7 @@ class TypoSocket {
         this.socket.on("remove drawing", this.removeDrawing); // get stored drawing
         this.socket.on("get commands", this.getCommands); // get stored drawing commands
         this.socket.on("get meta", this.getUserMeta); // get all meta
+        this.socket.on("disconnect", this.clearCloud); // clear image cloud
         this.emitEvent(data.event + " response", {
             authorized: true,
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
@@ -246,7 +247,7 @@ class TypoSocket {
             drawings: result.drawings
         }); 
     }
-    resetTypro = () => {
+    clearCloud = () => {
         if(!this.riproEnabled) this.prodb.removeEntries(this.loginToken, this.loginDate - 1000 * 60 * 60 * 24 * 14); // delete older than 14 days
     }
 }

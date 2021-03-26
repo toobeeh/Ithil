@@ -112,7 +112,6 @@ io.on('connection', (socket) => { // on socket connect, add new typo socket
     typoSockets.push(typosck);
     socket.on("disconnect", (reason) => {
         // on disconnect remove reference
-        typosck.resetTypro();
         typoSockets = typoSockets.filter(s => s.socket.id != typosck.socket.id);
         typosck = null;
         logSocketInfo(socket.id, tynt.Red("disconnected"),  reason);

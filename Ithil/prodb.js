@@ -103,7 +103,7 @@ const prodb = {
         result.valid = false;
         try {
             prodb.open(); // delete drawings
-            console.log((new Date()).toLocaleTimeString() + " start delete ");
+            console.log((new Date()).toLocaleTimeString() + " start delete " + prodb.path);
             prodb.db.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE login = ? AND id < ?)").run(login, logindate);
             prodb.db.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE login = ? AND id < ?)").run(login, logindate);
             prodb.db.prepare("DELETE FROM Drawings WHERE login = ? AND id < ?").run(login, logindate);

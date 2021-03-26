@@ -116,9 +116,7 @@ class TypoSocket {
             authorized: true,
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
         }); // reply with status
-        console.log(this.UserDB);
         this.prodb = (new this.UserDB(this.loginToken)).dbAccess;
-        console.log(this.prodb);
         this.log(this.prodb.path);
         this.log(this.socket.id, this.username, this.tynt.Green("Logged in: ") + this.loginToken);
     }

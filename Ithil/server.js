@@ -7,7 +7,7 @@ const TypoSocket = require("./typoSocket");
 const palantirDb = require("./sqlite");
 const UserDB = require("./prodb");
 const tynt = require("tynt");
-
+console.log(UserDB);
 const logLoading = (msg) => {
     console.log(tynt.BgWhite(tynt.Blue(msg)));
 }

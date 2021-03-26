@@ -4,6 +4,7 @@ const prodb = {
     db: null,
     open: () => {
         prodb.db = new prodb.Database(prodb.path);
+        console.log(prodb.path);
         prodb.db.pragma('journal_mode = WAL');
     },
     close: () => {

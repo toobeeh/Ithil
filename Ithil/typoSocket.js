@@ -100,6 +100,7 @@ class TypoSocket {
         this.loginToken = data.payload.loginToken; // set login
         this.username = member.member.UserName;
         this.socket.off("login", this.login);
+        this.prodb = (new this.UserDB(this.loginToken)).dbAccess;
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
@@ -116,8 +117,6 @@ class TypoSocket {
             authorized: true,
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
         }); // reply with status
-        this.prodb = (new this.UserDB(this.loginToken)).dbAccess;
-        this.log(this.prodb.path);
         this.log(this.socket.id, this.username, this.tynt.Green("Logged in: ") + this.loginToken);
     }
     // on get user event: respond with member data

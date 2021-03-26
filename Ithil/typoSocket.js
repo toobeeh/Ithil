@@ -99,7 +99,7 @@ class TypoSocket {
         this.loginToken = data.payload.loginToken; // set login
         this.username = member.member.UserName;
         this.socket.off("login", this.login);
-        this.prodb = (require("./prodb"))(this.loginToken);
+        this.prodb = new (require("./prodb"))(this.loginToken);
         console.log(this.prodb);
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user

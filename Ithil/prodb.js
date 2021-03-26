@@ -24,7 +24,7 @@ class ImageDatabase {
             db = null;
         }
         this.addDrawing = (login, id, meta) => {
-            success = false;
+            let success = false;
             try {
                 open();
                 db.prepare("INSERT INTO Drawings VALUES(?,?,?)").run(login, id, JSON.stringify(meta));
@@ -38,7 +38,7 @@ class ImageDatabase {
             return success;
         }
         this.addDrawCommands = (id, commands) => {
-            success = false;
+            let success = false;
             try {
                 open();
                 db.prepare("INSERT INTO Commands VALUES(?,?)").run(id, JSON.stringify(commands));
@@ -52,7 +52,7 @@ class ImageDatabase {
             return success;
         }
         this.addURI = (id, uri) => {
-            success = false;
+            let success = false;
             try {
                 open();
                 db.prepare("INSERT INTO BaseURI VALUES(?,?)").run(id, uri);

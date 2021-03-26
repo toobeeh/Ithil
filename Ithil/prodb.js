@@ -1,6 +1,6 @@
 const prodb = {
     Database: require("better-sqlite3"),
-    path: "/home/pi/Webroot/rippro/mod.db",
+    path: undefined,
     db: null,
     open: () => {
         prodb.db = new prodb.Database(prodb.path);

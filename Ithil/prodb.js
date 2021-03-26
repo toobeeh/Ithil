@@ -149,7 +149,6 @@ const UserDB = class {
         let dbAccess = { ...prodb };
         dbAccess.path = "/home/pi/Webroot/rippro/userdb/udb" + login + ".db";
         this.dbAccess = dbAccess;
-        return dbAccess;
     }
 }
 module.exports = UserDB;

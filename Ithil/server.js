@@ -5,7 +5,6 @@ const fs = require('fs');
 const cors = require('cors');
 const TypoSocket = require("./typoSocket");
 const palantirDb = require("./sqlite");
-const UserDB = require("./prodb");
 const tynt = require("tynt");
 
 const logLoading = (msg) => {
@@ -109,7 +108,7 @@ logLoading("Initiating connection events..");
 io.on('connection', (socket) => { // on socket connect, add new typo socket
     logState('Connected socket ' + socket.id);
     logInfo(typoSockets.length + " total connections.");
-    let typosck = new TypoSocket(socket, palantirDb, sharedData, UserDB, logSocketInfo, tynt);
+    let typosck = new TypoSocket(socket, palantirDb, sharedData, logSocketInfo, tynt);
     typoSockets.push(typosck);
     socket.on("disconnect", (reason) => {
         // on disconnect remove reference

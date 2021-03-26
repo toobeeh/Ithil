@@ -1,9 +1,8 @@
 class TypoSocket {
-    constructor(socket, db, sharedData, UserDB, log, tynt) {
+    constructor(socket, db, sharedData, log, tynt) {
         this.log = log;
         this.tynt = tynt;
         this.db = db;
-        this.UserDB = UserDB;
         this.sharedData = sharedData;
         this.socket = socket;
         this.socket.on("login", this.login);
@@ -100,7 +99,8 @@ class TypoSocket {
         this.loginToken = data.payload.loginToken; // set login
         this.username = member.member.UserName;
         this.socket.off("login", this.login);
-        this.prodb = (new this.UserDB(this.loginToken)).dbAccess;
+        this.prodb = (require("./prodb"))(this.loginToken);
+        console.log(this.prodb);
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata

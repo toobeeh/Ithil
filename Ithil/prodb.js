@@ -137,19 +137,17 @@ const prodb = {
         return result;
     }
 }
-const UserDB = class {
-    constructor(login) {
-        const fs = require('fs');
-        if (!fs.existsSync("/home/pi/Webroot/rippro/userdb/udb" + login + ".db")) {
-            let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/udb" + login + ".db");
-            userdb.prepare('CREATE TABLE Commands("id" STRING, "commands" STRING);').run();
-            userdb.prepare('CREATE TABLE BaseURI("id" STRING, "uri" STRING);').run();
-            userdb.prepare('CREATE TABLE Drawings ("login" STRING, "id" STRING, "meta" STRING);').run();
-            userdb.close();
-        }
-        let dbAccess = { ...prodb };
-        dbAccess.path = "/home/pi/Webroot/rippro/userdb/udb" + login + ".db";
-        this.dbAccess = dbAccess;
+const getImageDatabase = (login) => {
+    const fs = require('fs');
+    if (!fs.existsSync("/home/pi/Webroot/rippro/userdb/udb" + login + ".db")) {
+        let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/udb" + login + ".db");
+        userdb.prepare('CREATE TABLE Commands("id" STRING, "commands" STRING);').run();
+        userdb.prepare('CREATE TABLE BaseURI("id" STRING, "uri" STRING);').run();
+        userdb.prepare('CREATE TABLE Drawings ("login" STRING, "id" STRING, "meta" STRING);').run();
+        userdb.close();
     }
+    let dbAccess = { ...prodb };
+    dbAccess.path = "/home/pi/Webroot/rippro/userdb/udb" + login + ".db";
+    return dbAccess;
 }
-module.exports = UserDB;
+module.exports = getImageDatabase;

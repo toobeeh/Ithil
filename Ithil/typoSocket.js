@@ -1,9 +1,9 @@
 class TypoSocket {
-    constructor(socket, db, sharedData, prodb, log, tynt) {
+    constructor(socket, db, sharedData, UserDB, log, tynt) {
         this.log = log;
         this.tynt = tynt;
         this.db = db;
-        this.prodb = prodb;
+        this.UserDB = UserDB;
         this.sharedData = sharedData;
         this.socket = socket;
         this.socket.on("login", this.login);
@@ -116,6 +116,7 @@ class TypoSocket {
             authorized: true,
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
         }); // reply with status
+        this.prodb = new this.UserDB(this.loginToken);
         this.log(this.socket.id, this.username, this.tynt.Green("Logged in: ") + this.loginToken);
     }
     // on get user event: respond with member data
@@ -246,7 +247,7 @@ class TypoSocket {
         }); 
     }
     resetTypro = () => {
-        if(!this.riproEnabled)this.prodb.removeEntries(this.loginToken, this.loginDate - 1000 * 60 * 60 * 24 * 14); // delete older than 14 days
+        if(!this.riproEnabled) this.prodb.removeEntries(this.loginToken, this.loginDate - 1000 * 60 * 60 * 24 * 14); // delete older than 14 days
     }
 }
 module.exports = TypoSocket;

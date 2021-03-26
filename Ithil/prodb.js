@@ -134,42 +134,22 @@ const prodb = {
             prodb.close();
         }
         return result;
-    },
-    doTheSplit: async () => {
-        //prodb.db = new prodb.Database(prodb.path);
-        //prodb.db.pragma('journal_mode = WAL'); CREATE TABLE Commands("id" STRING, "commands" STRING);
-        try {
-            prodb.open();
-            let logins = [];
-            let iterate = prodb.db.prepare("SELECT DISTINCT Login FROM Drawings").all(); iterate.forEach(row => logins.push(row.login));
-            let c = 0;
-            for(login of logins) {
-                const fs = require('fs');
-                console.log("-------creating db for " + login);
-                // File destination.txt will be created or overwritten by default.
-                await new Promise((resolve, reject) => {
-                    fs.copyFile('/home/pi/Webroot/rippro/rippro.db', '/home/pi/Webroot/rippro/userdb/user' + login + '.db', (err) => {
-                        resolve();
-                    });
-                });
-                console.log("done");
-                let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/user" + login + ".db");
-                userdb.pragma('journal_mode = WAL');
-                console.log("deleting other drawings");
-                userdb.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
-                userdb.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE NOT login = ?)").run(login);
-                userdb.prepare("DELETE FROM Drawings WHERE NOT login = ?").run(login);
-                console.log("deleting from origin");
-                prodb.db.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE login = ?)").run(login);
-                prodb.db.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE login = ?)").run(login);
-                prodb.db.prepare("DELETE FROM Drawings WHERE login = ?").run(login);
-                console.log("------- done with db for " + login + ". this was number " + c);
-                c++;
-            }
-        }
-        catch (e) {
-            console.log(e.toString());
-        }
     }
 }
-module.exports = prodb;
+const UserDB = class {
+    constructor(login) {
+        const fs = require('fs');
+        if (!fs.existsSync("/home/pi/Webroot/rippro/userdb/udb" + login + ".db")) {
+            let userdb = new prodb.Database("/home/pi/Webroot/rippro/userdb/udb" + login + ".db");
+            userdb.prepare('CREATE TABLE Commands("id" STRING, "commands" STRING);').run();
+            userdb.prepare('CREATE TABLE BaseURI("id" STRING, "uri" STRING);').run();
+            userdb.prepare('CREATE TABLE Drawings ("login" STRING, "id" STRING, "meta" STRING);').run();
+            userdb.close();
+        }
+        let dbAccess = { ...prodb };
+        dbAccess.path = "/home/pi/Webroot/rippro/userdb/udb" + login + ".db";
+        this.dbAccess = dbAccess;
+        return dbAccess;
+    }
+}
+module.exports = UserDB;

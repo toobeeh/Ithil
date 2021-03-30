@@ -6,6 +6,7 @@ const cors = require('cors');
 const TypoSocket = require("./typoSocket");
 const palantirDb = require("./sqlite");
 const tynt = require("tynt");
+const portscanner = require('portscanner');
 
 const logLoading = (msg) => {
     console.log(tynt.BgWhite(tynt.Blue(msg)));
@@ -20,7 +21,7 @@ const logInfo = (msg) => {
     console.log(msg);
 }
 
-logLoading("Starting Ithil...");
+logLoading("Starting Ithil cluster...");
 app.use(cors()); // use cors
 const path = '/etc/letsencrypt/live/typo.rip'; // path to certs
 const server = https.createServer({ // create server
@@ -28,7 +29,18 @@ const server = https.createServer({ // create server
     cert: fs.readFileSync(path + '/cert.pem', 'utf8'),
     ca: fs.readFileSync(path + '/chain.pem', 'utf8')
 }, app);
-server.listen(3000); // start listening on port 3000
+
+logLoading("Searching for free cluster port...");
+// get first free port from clusters and open
+(async () => {
+    await new Promise((resolve, reject) => {
+        portscanner.findAPortNotInUse(3000, 3004, '127.0.0.1', function (error, port) {
+            server.listen(port); // start listening on first free port
+            logState("Ithil socketio server listening now on port " + port);
+        });
+    });
+})();
+
 const io = require('socket.io')(server, { // start io server with cors allowed
     cors: {
         origin: "*",
@@ -36,7 +48,7 @@ const io = require('socket.io')(server, { // start io server with cors allowed
     },
     pingTimeout: 20000
 });
-logState("Ithil socketio server listening now on port 3000");
+
 logLoading("Initiating shared data...");
 class SharedData {
     constructor(database) {

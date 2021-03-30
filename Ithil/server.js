@@ -34,7 +34,7 @@ logLoading("Searching for free cluster port...");
 // get first free port from clusters and open
 (async () => {
     await new Promise((resolve, reject) => {
-        portscanner.findAPortNotInUse(3000, 3004, '127.0.0.1', function (error, port) {
+        portscanner.findAPortNotInUse(3000, 3001, '127.0.0.1', function (error, port) {
             server.listen(port); // start listening on first free port
             logState("Ithil socketio server listening now on port " + port);
         });

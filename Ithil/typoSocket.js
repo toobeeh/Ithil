@@ -169,10 +169,12 @@ class TypoSocket {
         this.lobby = null;
         this.lobbyData = null;
         this.searchData = null;
-        this.emitEvent(data.event + " response", {
-            activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
-        }); // reply with active lobbies
-        this.log(this.socket.id, this.username, "Left a lobby");
+        if (this.data.payload.joined) {
+            this.emitEvent(data.event + " response", {
+                activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
+            }); // reply with active lobbies
+            this.log(this.socket.id, this.username, "Left a lobby");
+        }
     }
     claimDrop = (data) => {
         this.log(this.socket.id, this.username, "Claims a drop: " + (data.payload.drop ? data.payload.drop.DropID : " no drop - invalid."));

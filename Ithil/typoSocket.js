@@ -169,7 +169,7 @@ class TypoSocket {
         this.lobby = null;
         this.lobbyData = null;
         this.searchData = null;
-        if (this.data.payload.joined) {
+        if (data.payload.joined) {
             this.emitEvent(data.event + " response", {
                 activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
             }); // reply with active lobbies

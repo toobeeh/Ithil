@@ -197,9 +197,7 @@ class TypoSocket {
                 caughtLobbyKey: res.CaughtLobbyKey
             }
         }
-        this.emitEvent(data.event + " response", {
-            result: result
-        }); // reply with result
+        this.emitEvent(data.event + " response", result); // reply with result
         // clear drop
         this.socket.to("playing").emit("clear drop", { payload: { result: { caughtPlayer: data.payload.name, caughtLobbyKey: data.payload.lobbyKey } } });
     }

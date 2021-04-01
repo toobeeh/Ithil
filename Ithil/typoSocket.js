@@ -193,7 +193,7 @@ class TypoSocket {
         else {
             result = {
                 caught: false,
-                caughtPlayer: res.CaughtLobbyPlayerID,
+                playerName: res.CaughtLobbyPlayerID,
                 caughtLobbyKey: res.CaughtLobbyKey
             }
         }

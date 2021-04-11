@@ -156,7 +156,7 @@ class TypoSocket {
                 this.lobbyData = this.db.getLobby(this.lobbyData.lobby.ID, "id");
             }
         }
-        responseData = {};
+        let responseData = {};
         responseData.lobbyData = this.lobbyData;
         this.emitEvent(data.event + " response", responseData);
     }

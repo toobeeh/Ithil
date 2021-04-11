@@ -156,6 +156,9 @@ class TypoSocket {
                 this.lobbyData = this.db.getLobby(this.lobbyData.lobby.ID, "id");
             }
         }
+        responseData = {};
+        responseData.lobbyData = this.lobbyData;
+        this.emitEvent(data.event + " response", responseData);
     }
     // on set searching event: set status as searching
     searchLobby = (data) => {
@@ -248,7 +251,7 @@ class TypoSocket {
         }); 
     }
     clearCloud = () => {
-        if(!this.riproEnabled) this.prodb.removeEntries(this.loginToken, this.loginDate - 1000 * 60 * 60 * 24 * 14); // delete older than 14 days
+        if(!this.riproEnabled) this.prodb.removeEntries(this.loginToken, this.loginDate - 1000 * 60 * 60 * 24 * 30); // delete older than 30 days
     }
 }
 module.exports = TypoSocket;

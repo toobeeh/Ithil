@@ -158,6 +158,7 @@ class TypoSocket {
         }
         let responseData = {};
         responseData.lobbyData = this.lobbyData;
+        responseData.owner = this.db.isPalantirLobbyOwner(this.lobbyData.lobby.ID, this.lobby.Players.find(player => player.Sender).LobbyPlayerID);
         this.emitEvent(data.event + " response", responseData);
     }
     // on set searching event: set status as searching

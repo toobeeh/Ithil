@@ -223,14 +223,15 @@ const palantirDb = {
         return result;
     },
     isPalantirLobbyOwner: (lobbyID, playerID) => {
-        let result = { valid: false };
         try {
             palantirDb.open();
             let lobbyplayers = palantirDb.db.prepare('select json_extract(Status, "$.LobbyPlayerID") as playerid from Status where json_extract(Status, "$.LobbyID") = ?').all(lobbyID);
-            return lobbyplayers.some(player => playerID > player.playerid);
             palantirDb.close();
+            console.log("pID: " + playerID + " players: " + JSON.stringify(lobbyplayers));
+            return lobbyplayers.some(player => playerID > player.playerid);
         }
-        catch{
+        catch (e) {
+            console.log(e);
             palantirDb.close();
             return false;
         }

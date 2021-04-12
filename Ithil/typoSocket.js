@@ -144,11 +144,12 @@ class TypoSocket {
     }
     // on report lobby event: get lobby and write report, update key if changed
     setLobby = (data) => {
+        let owner = this.db.isPalantirLobbyOwner(this.lobbyData.lobby.ID, this.lobby.Players.find(player => player.Sender).LobbyPlayerID);
         if (this.socket.rooms.has("playing")) {
             this.lobby = data.payload.lobby;
             let key = data.payload.lobbyKey;
             let desc = data.payload.description;
-            if (data.payload.lobby.Players.findIndex(p => p.Sender == true) == 0 && data.payload.description) // if owner and desc set
+            if (owner && data.payload.description) // if owner and desc set
                 desc = data.payload.description;
             else desc = this.lobbyData.lobby.Description;
             if (key != this.lobbyData.lobby.Key || desc != this.lobbyData.lobby.Description) { // if new lobby key / desc differs from old, set new key in db
@@ -158,7 +159,7 @@ class TypoSocket {
         }
         let responseData = {};
         responseData.lobbyData = this.lobbyData;
-        responseData.owner = this.db.isPalantirLobbyOwner(this.lobbyData.lobby.ID, this.lobby.Players.find(player => player.Sender).LobbyPlayerID);
+        responseData.owner = owner;
         this.emitEvent(data.event + " response", responseData);
     }
     // on set searching event: set status as searching

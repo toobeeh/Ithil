@@ -113,12 +113,10 @@ const palantirDb = {
         let result = { valid: false };
         try {
             palantirDb.open();
-            let qres = palantirDb.db.prepare("UPDATE Lobbies SET Lobby = ? WHERE LobbyID = ?").run(JSON.stringify({ ID: id, Key: key, Description: description }), id);
-            if (qres.changes <= 0) palantirDb.db.prepare("INSERT INTO Lobbies VALUES(?,?, ''").run(id,JSON.stringify({ ID: id, Key: key, Description: description }));
+            palantirDb.db.prepare("REPLACE INTO Lobbies VALUES(?,?)").run(id, JSON.stringify({ ID: id, Key: key, Description: description }));
             result = { valid: true };
         }
-        catch (e) {
-            console.log(e);
+        catch{
             palantirDb.close();
             return result;
         }
@@ -129,7 +127,7 @@ const palantirDb = {
         let result = { valid: false };
         try {
             palantirDb.open();
-            palantirDb.db.prepare("UPDATE Lobbies SET Restriction = ? WHERE LobbyID = ?").run(restriction, id);
+            //palantirDb.db.prepare("UPDATE Lobbies SET Restriction = ? WHERE LobbyID = ?").run(restriction, id);
             result = { valid: true };
         }
         catch{

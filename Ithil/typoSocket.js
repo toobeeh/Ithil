@@ -146,7 +146,8 @@ class TypoSocket {
     setLobby = (data) => {
         let owner = false;
         if (this.socket.rooms.has("playing")) {
-            owner = this.db.isPalantirLobbyOwner(this.lobbyData.lobby.ID, this.lobby.Players.find(player => player.Sender).LobbyPlayerID); 
+            try { owner = this.db.isPalantirLobbyOwner(this.lobbyData.lobby.ID, this.lobby.Players.find(player => player.Sender).LobbyPlayerID); }
+            catch{ }
             this.lobby = data.payload.lobby;
             let key = data.payload.lobbyKey;
             let desc = data.payload.description;

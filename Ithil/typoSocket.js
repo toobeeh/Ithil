@@ -154,14 +154,14 @@ class TypoSocket {
             if (owner && data.payload.description) // if owner and desc set
                 desc = data.payload.description;
             else desc = this.lobbyData.lobby.Description;
-            if (this.lobbyData.lobby.Private && owner)
-                rest = data.payload.restriction;
-            else rest = this.lobbyData.lobby.Restriction;
-            if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(owner && data.payload.description));
-            if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(this.lobby.Private && owner));
-            if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(data.payload.description));
             if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(data.payload.restriction));
-            if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(rest) + JSON.stringify(desc));
+            if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(rest));
+            if (this.lobbyData.lobby.Private && owner) {
+                rest = data.payload.restriction;
+                if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(data.payload.restriction));
+                if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(rest));
+            }
+            else rest = this.lobbyData.lobby.Restriction;
             if (key != this.lobbyData.lobby.Key || desc != this.lobbyData.lobby.Description || rest != this.lobbyData.lobby.Restriction) { // if new lobby key / desc differs from old, set new key in db
                 this.db.setLobby(this.lobbyData.lobby.ID, key, desc, rest);
                 this.lobbyData = this.db.getLobby(this.lobbyData.lobby.ID, "id");

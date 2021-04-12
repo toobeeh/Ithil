@@ -117,7 +117,8 @@ const palantirDb = {
             if (qres.changes <= 0) palantirDb.db.prepare("INSERT INTO Lobbies VALUES(?,?, ''").run(id,JSON.stringify({ ID: id, Key: key, Description: description }));
             result = { valid: true };
         }
-        catch{
+        catch (e) {
+            console.log(e);
             palantirDb.close();
             return result;
         }

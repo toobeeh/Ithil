@@ -146,20 +146,21 @@ class TypoSocket {
     setLobby = (data) => {
         let owner = false;
         if (this.socket.rooms.has("playing")) {
-            try { owner = this.db.isPalantirLobbyOwner(this.lobbyData.lobby.ID, this.lobby.Players.find(player => player.Sender).LobbyPlayerID); }
-            catch{ }
             this.lobby = data.payload.lobby;
+            owner = this.db.isPalantirLobbyOwner(this.lobbyData.lobby.ID, this.lobby.Players.find(player => player.Sender).LobbyPlayerID); 
             let key = data.payload.lobbyKey;
-            let desc = data.payload.description;
-            let restrict = data.payload.restriction;
+            let desc = "";
+            let rest  = "";
             if (owner && data.payload.description) // if owner and desc set
                 desc = data.payload.description;
             else desc = this.lobbyData.lobby.Description;
+            if (this.lobbyData.Private && owner)
+                rest = data.payload.restriction;
+            else desc = this.lobbyData.lobby.Restriction;
             if (key != this.lobbyData.lobby.Key || desc != this.lobbyData.lobby.Description) { // if new lobby key / desc differs from old, set new key in db
-                this.db.setLobby(this.lobbyData.lobby.ID, key, desc);
+                this.db.setLobby(this.lobbyData.lobby.ID, key, desc, rest);
                 this.lobbyData = this.db.getLobby(this.lobbyData.lobby.ID, "id");
             }
-            if (this.lobbyData.Private && owner) this.db.setRestriction(this.lobbyData.lobby.ID, restrict);
         }
         let responseData = {};
         responseData.lobbyData = this.lobbyData;

@@ -109,25 +109,13 @@ const palantirDb = {
         palantirDb.close();
         return result;
     },
-    setLobby: (id, key, description = "") => {
+    setLobby: (id, key, description = "", restriction = "") => {
         let result = { valid: false };
         try {
             palantirDb.open();
-            palantirDb.db.prepare("REPLACE INTO Lobbies VALUES(?,?)").run(id, JSON.stringify({ ID: id, Key: key, Description: description }));
-            result = { valid: true };
-        }
-        catch{
-            palantirDb.close();
-            return result;
-        }
-        palantirDb.close();
-        return result;
-    },
-    setRestriction: (id, restriction) => {
-        let result = { valid: false };
-        try {
-            palantirDb.open();
-            //palantirDb.db.prepare("UPDATE Lobbies SET Restriction = ? WHERE LobbyID = ?").run(restriction, id);
+            //let r = palantirDb.db.prepare("SELECT json_extract(Lobby, '$.Restriction') as r FROM 'Lobbies' WHERE LobbyID = ").get(id).r;
+            //console.log(r);
+            palantirDb.db.prepare("REPLACE INTO Lobbies VALUES(?,?)").run(id, JSON.stringify({ ID: id, Key: key, Description: description, Restriction: restriction }));
             result = { valid: true };
         }
         catch{

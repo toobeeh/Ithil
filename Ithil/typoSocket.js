@@ -150,14 +150,15 @@ class TypoSocket {
             owner = this.db.isPalantirLobbyOwner(this.lobbyData.lobby.ID, this.lobby.Players.find(player => player.Sender).LobbyPlayerID); 
             let key = data.payload.lobbyKey;
             let desc = "";
-            let rest  = "";
+            let rest = "";
             if (owner && data.payload.description) // if owner and desc set
                 desc = data.payload.description;
             else desc = this.lobbyData.lobby.Description;
             if (this.lobbyData.Private && owner)
                 rest = data.payload.restriction;
             else desc = this.lobbyData.lobby.Restriction;
-            if (key != this.lobbyData.lobby.Key || desc != this.lobbyData.lobby.Description) { // if new lobby key / desc differs from old, set new key in db
+            console.log(desc + rest);
+            if (key != this.lobbyData.lobby.Key || desc != this.lobbyData.lobby.Description || rest != this.lobbyData.lobby.Restriction) { // if new lobby key / desc differs from old, set new key in db
                 this.db.setLobby(this.lobbyData.lobby.ID, key, desc, rest);
                 this.lobbyData = this.db.getLobby(this.lobbyData.lobby.ID, "id");
             }

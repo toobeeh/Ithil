@@ -157,9 +157,9 @@ class TypoSocket {
             if (owner && data.payload.description) // if owner and desc set
                 desc = data.payload.description;
             else desc = this.lobbyData.lobby.Description;
-            if (this.lobbyData.Private && owner)
+            if (this.lobbyData.lobby.Private && owner)
                 rest = data.payload.restriction;
-            else desc = this.lobbyData.lobby.Restriction;
+            else rest = this.lobbyData.lobby.Restriction;
             if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(rest) + JSON.stringify(desc));
             console.log("blabla" + desc + rest);
             if (key != this.lobbyData.lobby.Key || desc != this.lobbyData.lobby.Description || rest != this.lobbyData.lobby.Restriction) { // if new lobby key / desc differs from old, set new key in db

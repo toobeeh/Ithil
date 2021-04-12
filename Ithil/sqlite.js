@@ -113,7 +113,7 @@ const palantirDb = {
         let result = { valid: false };
         try {
             palantirDb.open();
-            palantirDb.db.prepare("REPLACE INTO Lobbies VALUES(?,?)").run(id, JSON.stringify({ ID: id, Key: key, Description: description }));
+            palantirDb.db.prepare("UPDATE Lobbies SET Lobby = ? WHERE LobbyID = ?").run(JSON.stringify({ ID: id, Key: key, Description: description }), id);
             result = { valid: true };
         }
         catch{

@@ -145,8 +145,7 @@ class TypoSocket {
     // on report lobby event: get lobby and write report, update key if changed
     setLobby = (data) => {
         let owner = false;
-        try { this.db.isPalantirLobbyOwner(this.lobbyData.lobby.ID, this.lobby.Players.find(player => player.Sender).LobbyPlayerID); }
-        catch{ };
+        this.db.isPalantirLobbyOwner(this.lobbyData.lobby.ID, this.lobby.Players.find(player => player.Sender).LobbyPlayerID); 
         if (this.socket.rooms.has("playing")) {
             this.lobby = data.payload.lobby;
             let key = data.payload.lobbyKey;

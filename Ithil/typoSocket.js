@@ -157,7 +157,7 @@ class TypoSocket {
             if (this.lobbyData.Private && owner)
                 rest = data.payload.restriction;
             else desc = this.lobbyData.lobby.Restriction;
-            console.log(desc + rest);
+            console.log("blabla" + desc + rest);
             if (key != this.lobbyData.lobby.Key || desc != this.lobbyData.lobby.Description || rest != this.lobbyData.lobby.Restriction) { // if new lobby key / desc differs from old, set new key in db
                 this.db.setLobby(this.lobbyData.lobby.ID, key, desc, rest);
                 this.lobbyData = this.db.getLobby(this.lobbyData.lobby.ID, "id");

@@ -123,6 +123,20 @@ const palantirDb = {
         palantirDb.close();
         return result;
     },
+    setRestriction: (id, restriction) => {
+        let result = { valid: false };
+        try {
+            palantirDb.open();
+            palantirDb.db.prepare("UPDATE Lobbies SET Restriction = ? WHERE LobbyID = ?").run(restriction, id);
+            result = { valid: true };
+        }
+        catch{
+            palantirDb.close();
+            return result;
+        }
+        palantirDb.close();
+        return result;
+    },
     writeLobbyReport: (lobbies) => {
         let result = { valid: false };
         try {

@@ -149,6 +149,7 @@ class TypoSocket {
             this.lobby = data.payload.lobby;
             let key = data.payload.lobbyKey;
             let desc = data.payload.description;
+            let restrict = data.payload.restriction;
             if (owner && data.payload.description) // if owner and desc set
                 desc = data.payload.description;
             else desc = this.lobbyData.lobby.Description;
@@ -156,6 +157,7 @@ class TypoSocket {
                 this.db.setLobby(this.lobbyData.lobby.ID, key, desc);
                 this.lobbyData = this.db.getLobby(this.lobbyData.lobby.ID, "id");
             }
+            if (this.lobbyData.Private && owner) this.db.setRestriction(this.lobbyData.lobby.ID, restrict);
         }
         let responseData = {};
         responseData.lobbyData = this.lobbyData;

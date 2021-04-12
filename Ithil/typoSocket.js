@@ -151,7 +151,7 @@ class TypoSocket {
             let key = data.payload.lobbyKey;
             let desc = "";
             let rest = "";
-            this.log(this.socket.id, this.username,"pl" + data.payload.description);
+            this.log(this.socket.id, this.username,"pl" + JSON.stringify(data.payload));
             if (owner && data.payload.description) // if owner and desc set
                 desc = data.payload.description;
             else desc = this.lobbyData.lobby.Description;

@@ -156,8 +156,8 @@ class TypoSocket {
             else desc = this.lobbyData.lobby.Description;
             if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(data.payload.restriction));
             if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(rest));
-            if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(this.lobbyData.lobby.Private && owner));
-            if (this.lobbyData.lobby.Private && owner) {
+            if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(this.lobby.Private && owner));
+            if (this.lobby.Private && owner) {
                 rest = data.payload.restriction;
                 if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(data.payload.restriction));
                 if (this.username == "tobeh") this.log(this.socket.id, this.username, "pl" + JSON.stringify(rest));

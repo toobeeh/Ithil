@@ -216,7 +216,7 @@ class TypoSocket {
         }
         this.emitEvent(data.event + " response", result); // reply with result
         // clear drop
-        this.socket.to("playing").emit("clear drop", { payload: { result: result } });
+        this.socket.to("playing").emit("clear drop", { payload: { result: { caughtPlayer: data.payload.name, caughtLobbyKey: data.payload.lobbyKey } } });
     }
     storeDrawing = (data) => {
         let meta = data.payload.meta;

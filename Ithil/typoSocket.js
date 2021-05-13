@@ -99,6 +99,7 @@ class TypoSocket {
         this.loginDate = Math.ceil(Date.now());
         this.loginToken = data.payload.loginToken; // set login
         this.username = member.member.UserName;
+        this.id = member.member.UserID;
         this.socket.off("login", this.login);
         this.prodb = new (require("./prodb"))(this.loginToken);
         this.setStatusRoom("idle");// join idle room
@@ -200,7 +201,7 @@ class TypoSocket {
         res = res.drop;
         let result;
         if (res.CaughtLobbyKey == "" && data.payload.timedOut === false) {
-            this.db.claimDrop(data.payload.lobbyKey, data.payload.name, data.payload.drop.DropID);
+            this.db.claimDrop(data.payload.lobbyKey, `<a href='#${this.id}'>${data.payload.name}</a>`, data.payload.drop.DropID);
             this.db.rewardDrop(this.loginToken, data.payload.drop.EventDropID);
             result = {
                 caught: true,
@@ -210,7 +211,7 @@ class TypoSocket {
             result = {
                 caught: false,
                 playerName: res.CaughtLobbyPlayerID,
-                caughtLobbyKey: res.CaughtLobbyKey
+                caughtLobbyKey: data.payload.lobbyKey // for showing catcher name in every lobby
             }
         }
         this.emitEvent(data.event + " response", result); // reply with result

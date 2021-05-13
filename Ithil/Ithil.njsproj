@@ -33,9 +33,6 @@
     <Content Include="client.js">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="prodbWorkerWrapper.js">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="server.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />

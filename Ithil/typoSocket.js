@@ -201,7 +201,7 @@ class TypoSocket {
         res = res.drop;
         let result;
         if (res.CaughtLobbyKey == "" && data.payload.timedOut === false) {
-            this.db.claimDrop(data.payload.lobbyKey, `<a href='#${this.id}'>${data.payload.name}</a>`, data.payload.drop.DropID);
+            this.db.claimDrop(data.payload.lobbyKey, `<a href='#${data.payload.drop.DropID}'>${data.payload.name}</a>`, data.payload.drop.DropID);
             this.db.rewardDrop(this.loginToken, data.payload.drop.EventDropID);
             result = {
                 caught: true,
@@ -216,7 +216,7 @@ class TypoSocket {
         }
         this.emitEvent(data.event + " response", result); // reply with result
         // clear drop
-        this.socket.to("playing").emit("clear drop", { payload: { result: { caughtPlayer: `<a href='#${this.id}'>${data.payload.name}</a>`, caughtLobbyKey: data.payload.lobbyKey } } });
+        this.socket.to("playing").emit("clear drop", { payload: { result: { caughtPlayer: `<a href='#${data.payload.drop.DropID}'>${data.payload.name}</a>`, caughtLobbyKey: data.payload.lobbyKey } } });
     }
     storeDrawing = (data) => {
         let meta = data.payload.meta;

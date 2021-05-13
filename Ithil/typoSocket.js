@@ -211,12 +211,12 @@ class TypoSocket {
             result = {
                 caught: false,
                 playerName: res.CaughtLobbyPlayerID,
-                caughtLobbyKey: data.payload.lobbyKey // for showing catcher name in every lobby
+                caughtLobbyKey: res.CaughtLobbyKey 
             }
         }
         this.emitEvent(data.event + " response", result); // reply with result
         // clear drop
-        this.socket.to("playing").emit("clear drop", { payload: { result: { caughtPlayer: data.payload.name, caughtLobbyKey: data.payload.lobbyKey } } });
+        this.socket.to("playing").emit("clear drop", { payload: { result: { caughtPlayer: `<a href='#${this.id}'>${data.payload.name}</a>`, caughtLobbyKey: data.payload.lobbyKey } } });
     }
     storeDrawing = (data) => {
         let meta = data.payload.meta;

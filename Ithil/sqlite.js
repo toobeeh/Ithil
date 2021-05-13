@@ -199,13 +199,14 @@ const palantirDb = {
         palantirDb.close();
         return result;
     },
-    claimDrop: (lobbyKey, playerName, dropID) => {
+    claimDrop: (lobbyKey, playerName, dropID, userid) => {
         let result = { valid: false };
         try {
             palantirDb.open();
             // get drop
             palantirDb.db.prepare("UPDATE 'Drop' SET CaughtLobbyKey = ?, CaughtLobbyPlayerID = ? WHERE DropID = ?").run(lobbyKey, playerName, dropID);
             palantirDb.db.prepare("INSERT INTO PastDrops Select * From 'Drop'").run();
+            palantirDb.db.prepare("UPDATE PastDrops SET CaughtLobbyPlayerID = ? WHERE DropID = ?").run(userid, dropID);
             result.valid = true;
         }
         catch{

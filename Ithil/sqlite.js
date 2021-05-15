@@ -46,8 +46,9 @@ const palantirDb = {
             result.lobbies.forEach(g => g.guildLobbies.forEach(l => l.Players = l.Players.length));
             result.valid = true;
         }
-        catch{
+        catch(e){
             palantirDb.close();
+            console.log(e);
             return result;
         }
         palantirDb.close();

@@ -40,8 +40,8 @@ const palantirDb = {
             rows = palantirDb.db.prepare(`SELECT json_object('INT32', GuildID) as GuildID, Lobbies FROM GuildLobbies`).all();
             result.lobbies = [];
             rows.forEach(row => {
-                console.log(row.GuildID);
-                result.lobbies.push({ guildID: "" + row.GuildID, guildLobbies: JSON.parse(row.Lobbies) });
+                console.log(JSON.parse(row.GuildID).INT32);
+                result.lobbies.push({ guildID: JSON.parse(row.GuildID).INT32, guildLobbies: JSON.parse(row.Lobbies) });
             });
             result.lobbies.forEach(g => g.guildLobbies.forEach(l => l.Players = l.Players.length));
             result.valid = true;

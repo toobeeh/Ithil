@@ -89,13 +89,19 @@ class TypoSocket {
             this.socket.join("public");
             return;
         }
-        member.member.Guilds.forEach(guild => {
-            this.socket.join("guild" + guild.GuildID.slice(0,-2));
-        });
         let flags = (Number(member.flag) >>> 0).toString(2);
-        if (flags[flags.length - 4] == "1") { this.riproEnabled = true; console.log("ripro connected"); }
-        if (flags[flags.length - 5] == "1") { this.riproEnabled = true; console.log("patron connected"); }
+        this.flags = flags;
+        if (flags[flags.length - 3] == "1") {
+            this.emitEvent(data.event + " response", { authorized: false, banned: true });
+            console.log("banned connected");
+            this.socket.join("public");
+            return;
+        }
+        if (flags[flags.length - 5] == "1" || flags[flags.length - 4] == "1") { this.riproEnabled = true; console.log("patron / cloud connected"); }
         else this.riproEnabled = false;
+        member.member.Guilds.forEach(guild => {
+            this.socket.join("guild" + guild.GuildID.slice(0, -2));
+        });
         this.loginDate = Math.ceil(Date.now());
         this.loginToken = data.payload.loginToken; // set login
         this.username = member.member.UserName;
@@ -195,7 +201,7 @@ class TypoSocket {
     }
     claimDrop = (data) => {
         this.log(this.socket.id, this.username, "Claims a drop: " + (data.payload.drop ? data.payload.drop.DropID : " no drop - invalid."));
-        if (!data.payload.drop) return;
+        if (!data.payload.drop || this.flags[this.flags.length - 2] == "1") return;
         let res = this.db.getDrop(data.payload.drop.DropID);
         console.log(JSON.stringify(res));
         res = res.drop;

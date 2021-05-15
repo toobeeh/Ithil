@@ -61,6 +61,7 @@ class SharedData {
             if (refreshedLobbies.valid && JSON.stringify(this.activeLobbies) != JSON.stringify(refreshedLobbies.lobbies)) {
                 this.activeLobbies = refreshedLobbies.lobbies;
                 this.activeLobbies.forEach(guildLobbies => {
+                    console.log(guildLobbies.guildID);
                     io.to("guild" + guildLobbies.guildID.slice(0,-2)).emit("active lobbies", { event: "active lobbies", payload: { activeGuildLobbies: guildLobbies } });
                 });
             }

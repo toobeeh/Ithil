@@ -37,7 +37,7 @@ const palantirDb = {
         let rows;
         try {
             palantirDb.open();
-            rows = palantirDb.db.prepare(`SELECT GuildID, Lobbies FROM GuildLobbies`).all();
+            rows = palantirDb.db.prepare(`SELECT json_object("INT32", GuildID) as GuildID, Lobbies FROM GuildLobbies`).all();
             result.lobbies = [];
             rows.forEach(row => {
                 console.log(row.GuildID);

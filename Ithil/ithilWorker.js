@@ -22,6 +22,7 @@ const cors = require('cors');
 const palantirDb = require("./palantirDatabase");
 const tynt = require("tynt");
 const portscanner = require('portscanner');
+const ipc = require('socket-ipc');
 
 // logging function
 const logState = (msg) => { console.log(tynt.BgWhite(tynt.Blue(msg))); }
@@ -48,11 +49,15 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         logState("Client connected!");
     });
 
-    // connect to coordination server
-    const coord = require('socket.io-client')("localhost:3999");
-    coord.on("connect", async () => {
+    // connect to coordination ipc server
+    const coord = new ipc.MessageClient('/tmp/ithil-coordination');
+    client.on('connection', (connection) => {
         logState("connected to coord");
     });
+    //const coord = require('socket.io-client')("localhost:3999");
+    //coord.on("connect", async () => {
+    //    logState("connected to coord");
+    //});
 });
 
 

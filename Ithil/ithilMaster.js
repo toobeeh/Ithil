@@ -93,7 +93,7 @@ ipc.config.id = 'coord';
 ipc.config.retry = 1500;
 
 ipc.serve(() => {
-    ipc.on("workerConnect", (data, socket) => {
+    ipc.server.on("workerConnect", (data, socket) => {
         console.log(data);
     });
 });

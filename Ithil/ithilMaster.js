@@ -55,8 +55,8 @@ balancer = {
 }
 
 // DEBUG
-let dummy = 4001;
-setInterval(() => balancer.addWorker(++dummy, "test"), 3000);
+//let dummy = 4001;
+//setInterval(() => balancer.addWorker(++dummy, "test"), 3000);
 
 // start public server with cors & ssl
 logLoading("Starting public endpoint with CORS & SSL");
@@ -91,15 +91,11 @@ logLoading("Initiating coordinating IPC");
 // start coordination ipc server 
 ipc.config.id = 'coord';
 ipc.config.retry = 1500;
-
+ipc.config.logDepth = 1;
 ipc.serve(() => {
     ipc.server.on("workerConnect", (data, socket) => {
-        console.log(data);
+        balancer.addWorker(data.port, socket);
     });
 });
 ipc.server.start();
-//const coord = new ipc.MessageServer('/tmp/ithil-coordination');
-//coord.on('connection', (connection) => {
-//    logState("Worker connected!");
-//});
 

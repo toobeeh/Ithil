@@ -52,17 +52,14 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     // connect to coordination ipc server
     ipc.config.id = 'worker' + workerPort;
     ipc.config.retry = 1500;
+    ipc.config.logDepth = 1;
     ipc.connectTo("coord", () => {
         ipc.of.coord.on("connect", () => {
             logState("connected to coord");
-            ipc.of.coord.emit("workerConnect", "lol");
+            ipc.of.coord.emit("workerConnect", { port: workerPort });
         });
 
     });
-    //const coord = new ipc.MessageClient('/tmp/ithil-coordination');
-    //coord.on('connection', (connection) => {
-    //    logState("connected to coord");
-    //});
 });
 
 

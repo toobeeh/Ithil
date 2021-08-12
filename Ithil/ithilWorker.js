@@ -51,7 +51,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
 
     // connect to coordination ipc server
     const coord = new ipc.MessageClient('/tmp/ithil-coordination');
-    client.on('connection', (connection) => {
+    coord.on('connection', (connection) => {
         logState("connected to coord");
     });
 });

@@ -46,7 +46,7 @@ balancer = {
     },
     updateOnlineWorker: () => [...balancer.workers].forEach(worker => 
         portscanner.checkPortStatus(worker.port, "127.0.0.1", (error, status) =>
-            status == "open" ? balancer.removeWorker(worker.port) : 1)),
+            status == "closed" ? balancer.removeWorker(worker.port) : 1)),
     updateClients: (port, clients) => balancer.workers.find(worker => worker.port == port).clients = clients,
     getBalancedWorker: async () => {
         await new Promise((resolve, reject) => { // wait until minimum of workers are online
@@ -57,12 +57,6 @@ balancer = {
     },
     currentBalancing: () => balancer.workers.map(worker => `${worker.clients}@:${worker.port}`).join(", ")
 }
-
-setInterval(() => {
-    balancer.workers.forEach(wrk => {
-        portscanner.checkPortStatus(wrk.port, "127.0.0.1", (error, status) => console.log(wrk.port + ":" + status));
-    });
-},1000);
 
 // DEBUG
 //let dummy = 4001;
@@ -107,7 +101,7 @@ ipc.serve(() => {
         balancer.addWorker(data.port, socket);
     });
     ipc.server.on("socket.disconnected", (socket, id) => {
-        setTimeout(()=>balancer.updateOnlineWorker(),1000);
+        balancer.updateOnlineWorker();
     });
 });
 ipc.server.start();

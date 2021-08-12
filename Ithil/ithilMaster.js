@@ -57,7 +57,7 @@ balancer = {
     },
     currentBalancing: () => balancer.workers.map(worker => `${worker.clients}@:${worker.port}`).join(", ")
 }
-setInterval(balancer.updateOnlineWorker, 5000)
+
 // DEBUG
 //let dummy = 4001;
 //setInterval(() => balancer.addWorker(++dummy, "test"), 3000);
@@ -101,7 +101,7 @@ ipc.serve(() => {
         balancer.addWorker(data.port, socket);
     });
     ipc.server.on("socket.disconnected", (socket, id) => {
-        // wtf this is broken somehow
+        setTimeout(()=>balancer.updateOnlineWorker(),100);
     });
 });
 ipc.server.start();

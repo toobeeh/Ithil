@@ -74,7 +74,7 @@ const masterSocket = require('socket.io')(server, { // start socket server
 });
 logLoading("Initiating public endpoint connection event");
 io.on('connection', async (socket) => { // on socket connect, get free balance 
-    socket.on("request port", (data) => {
+    socket.on("request port", async (data) => {
         let port = config.publicPort;
         if (data.auth === "member") port = await balancer.getBalancedWorker(); // get balanced port if client wants to login
         socket.emit("balanced port", { port: port }); // send balanced port

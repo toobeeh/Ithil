@@ -40,7 +40,7 @@ balancer = {
         logState("New Ithil Worker online on port " + port);
     },
     removeWorker: (port) => {
-        balancer.workers = balancer.workers.filter(worker => worker.port !== port); // remove worker
+        balancer.workers = balancer.workers.filter(worker => worker.port != port); // remove worker
         logState("Ithil Worker disconnected on port " + port);
     },
     updateClients: (port, clients) => balancer.workers.find(worker => worker.port == port).clients = clients,
@@ -95,6 +95,9 @@ ipc.config.logDepth = 1;
 ipc.serve(() => {
     ipc.server.on("workerConnect", (data, socket) => {
         balancer.addWorker(data.port, socket);
+    });
+    ipc.server.on("socket.disconnected", (socket, id) => {
+        balancer.removeWorker(id.replace("worker", ""));
     });
 });
 ipc.server.start();

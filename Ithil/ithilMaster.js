@@ -96,7 +96,10 @@ const coordServer = coordHttps.createServer({ // create server
     ca: fs.readFileSync(config.certificatePath + '/chain.pem', 'utf8')
 },coordExpress);
 const coordSocket = require('socket.io')(coordServer, { // start socket coordination server
-    pingTimeout: 5
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST", "OPTIONS"]
+    }, pingTimeout: 5
 });
 coordServer.listen(config.coordinationPort); // start listening on master worker port
 logLoading("Initiating coordination socket connection event");

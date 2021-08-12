@@ -34,7 +34,7 @@ logLoading("Searching for free cluster port...");
 // get first free port from clusters and open
 (async () => {
     await new Promise((resolve, reject) => {
-        portscanner.findAPortNotInUse(4000, 4010, '127.0.0.1', function (error, port) {
+        portscanner.findAPortNotInUse(4001, 4010, '127.0.0.1', function (error, port) {
             server.listen(port); // start listening on first free port
             logState("Ithil socketio server listening now on port " + port);
         });
@@ -48,6 +48,7 @@ const io = require('socket.io')(server, { // start io server with cors allowed
     },
     pingTimeout: 20000
 });
+console.log()
 
 logLoading("Initiating shared data...");
 class SharedData {

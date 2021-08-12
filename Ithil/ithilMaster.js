@@ -98,7 +98,9 @@ ipc.serve(() => {
         console.log(JSON.stringify(socket));
     });
     ipc.server.on("socket.disconnected", (socket, id) => {
-        balancer.removeWorker(id.replace("worker", ""));
+        console.log(socket);
+        console.log(id);
+        balancer.removeWorker(id.toString().replace("worker", ""));
     });
 });
 ipc.server.start();

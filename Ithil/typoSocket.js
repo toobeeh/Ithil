@@ -107,7 +107,7 @@ class TypoSocket {
         this.username = member.member.UserName;
         this.id = member.member.UserID;
         this.socket.off("login", this.login);
-        this.prodb = new (require("./prodb"))(this.loginToken);
+        this.prodb = new (require("./imageDatabase"))(this.loginToken);
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata

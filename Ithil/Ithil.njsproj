@@ -30,25 +30,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
-    <Content Include="chatbot\interface.js">
+    <Content Include="ithilMaster.js">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="client.js">
+    <Content Include="ithilWorker.js">
       <SubType>Code</SubType>
     </Content>
     <Content Include="server.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="prodb.js" />
-    <Content Include="sqlite.js">
+    <Content Include="imageDatabase.js" />
+    <Content Include="palantirDatabase.js">
       <SubType>Code</SubType>
     </Content>
     <Content Include="typoSocket.js">
       <SubType>Code</SubType>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="chatbot\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
   <ProjectExtensions>

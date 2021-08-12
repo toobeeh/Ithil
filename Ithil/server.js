@@ -4,7 +4,7 @@ const https = require('https');
 const fs = require('fs');
 const cors = require('cors');
 const TypoSocket = require("./typoSocket");
-const palantirDb = require("./sqlite");
+const palantirDb = require("./palantirDatabase");
 const tynt = require("tynt");
 const portscanner = require('portscanner');
 
@@ -48,7 +48,6 @@ const io = require('socket.io')(server, { // start io server with cors allowed
     },
     pingTimeout: 20000
 });
-console.log()
 
 logLoading("Initiating shared data...");
 class SharedData {

@@ -95,7 +95,7 @@ const coordSocket = require('socket.io')(coordServer, { // start socket coordina
 });
 coordServer.listen(config.coordinationPort); // start listening on master worker port
 logLoading("Initiating coordination socket connection event");
-coordSocket.on("conenction", async (socket) => {
+coordSocket.on("connection", async (socket) => {
     logState("Worker connected!");
-})
+});
 

@@ -15,7 +15,8 @@ const config = {
 }
 
 // require packets
-const app = require('express')();
+const masterExpress = require('express')();
+const coordExpress = require('express')();
 const masterHttps = require('https');
 const coordHttps = require('https');
 const fs = require('fs');
@@ -60,12 +61,12 @@ setInterval(() => balancer.addWorker(++dummy, "test"), 3000);
 
 // start public server with cors & ssl
 logLoading("Starting public endpoint with CORS & SSL");
-app.use(cors()); // use cors
+masterExpress.use(cors()); // use cors
 const masterServer = masterHttps.createServer({ // create server
     key: fs.readFileSync(config.certificatePath + '/privkey.pem', 'utf8'),
     cert: fs.readFileSync(config.certificatePath + '/cert.pem', 'utf8'),
     ca: fs.readFileSync(config.certificatePath + '/chain.pem', 'utf8')
-}, app);
+}, masterExpress);
 masterServer.listen(config.masterPort); // start listening on master worker port
 const masterSocket = require('socket.io')(masterServer, { // start socket master server
     cors: {
@@ -89,7 +90,7 @@ masterSocket.on('connection', async (socket) => { // on socket connect, get free
 
 // start coordination server 
 logLoading("Starting internal endpoint");
-const coordServer = coordHttps.createServer(app);
+const coordServer = coordHttps.createServer(coordExpress);
 const coordSocket = require('socket.io')(coordServer, { // start socket coordination server
     pingTimeout: 5
 });

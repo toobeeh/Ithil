@@ -50,7 +50,7 @@ balancer = {
         });
         return balancer.workers.sort(worker => worker.clients)[0]; // return worker with fewest clients
     },
-    currentBalancing: () => workers.map(worker => `[:${worker.port} - ${worker.clients}]`).join(", ")
+    currentBalancing: () => balancer.workers.map(worker => `[:${worker.port} - ${worker.clients}]`).join(", ")
 }
 
 // DEBUG

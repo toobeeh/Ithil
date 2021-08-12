@@ -49,7 +49,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     });
 
     // connect to coordination server
-    const coord = require('socket.io-client')("localhost:" + config.coordinationPort);
+    const coord = require('socket.io-client')("https://127.0.0.1:" + config.coordinationPort);
     coord.on("connect", async () => {
         logState("connected to coord");
     });

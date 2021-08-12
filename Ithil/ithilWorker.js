@@ -33,6 +33,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         logState("No free port found - exiting worker process");
         process.exit(1);
     }
+    const workerPort = port;
     logState("Ithil Worker Server - Starting on port " + workerPort);
 
     // start worker server 

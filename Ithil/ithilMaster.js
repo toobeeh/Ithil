@@ -15,8 +15,9 @@ const config = {
 }
 
 // require packets
-const app = require('express')();
-const https = require('https');
+const App = require('express')();
+const masterHttps = require('https');
+const coordHttps = require('https');
 const fs = require('fs');
 const cors = require('cors');
 const palantirDb = require("./palantirDatabase");
@@ -50,7 +51,7 @@ balancer = {
         });
         return balancer.workers.sort(worker => worker.clients)[0]; // return worker with fewest clients
     },
-    currentBalancing: () => balancer.workers.map(worker => `${worker.clients}@ :${worker.port}`).join(", ")
+    currentBalancing: () => balancer.workers.map(worker => `${worker.clients}@:${worker.port}`).join(", ")
 }
 
 // DEBUG
@@ -60,30 +61,41 @@ setInterval(() => balancer.addWorker(++dummy, "test"), 3000);
 // start public server with cors & ssl
 logLoading("Starting public endpoint with CORS & SSL");
 app.use(cors()); // use cors
-const server = https.createServer({ // create server
+const masterServer = masterHttps.createServer({ // create server
     key: fs.readFileSync(config.certificatePath + '/privkey.pem', 'utf8'),
     cert: fs.readFileSync(config.certificatePath + '/cert.pem', 'utf8'),
     ca: fs.readFileSync(config.certificatePath + '/chain.pem', 'utf8')
 }, app);
-server.listen(config.masterPort); // start listening on master worker port
-const masterSocket = require('socket.io')(server, { // start socket server
+masterServer.listen(config.masterPort); // start listening on master worker port
+const masterSocket = require('socket.io')(masterServer, { // start socket master server
     cors: {
         origin: "*",
         methods: ["GET", "POST", "OPTIONS"]
     },
     pingTimeout: 20000
 });
-logLoading("Initiating public endpoint connection event");
+logLoading("Initiating master socket connection event");
 masterSocket.on('connection', async (socket) => { // on socket connect, get free balance 
     socket.on("request port", async (data) => {
         let port = config.publicPort;
         if (data.auth === "member") port = (await balancer.getBalancedWorker()).port; // get balanced port if client wants to login
         socket.emit("balanced port", { port: port }); // send balanced port
         socket.disconnect(); // disconnect from client
-        console.log("Sent client to port " + port);
         logState("Balancing: " + balancer.currentBalancing());
+        console.log("Sent client to port " + port);
     });
     setTimeout(() => socket.connected ? socket.disconnect() : 1, 5*60*1000); // socket has max 5 mins idling to request port
 });
 
+// start coordination server 
+logLoading("Starting internal endpoint");
+const coordServer = coordHttps.createServer();
+const coordSocket = require('socket.io')(coordServer, { // start socket coordination server
+    pingTimeout: 5
+});
+coordServer.listen(config.coordinationPort); // start listening on master worker port
+logLoading("Initiating coordination socket connection event");
+coordSocket.on("conenction", async (socket) => {
+    logState("Worker connected!");
+})
 

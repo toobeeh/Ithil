@@ -23,8 +23,8 @@ const palantirDb = require("./palantirDatabase");
 const tynt = require("tynt");
 
 // logging function
-const logLoading = (msg) => { console.log(tynt.BgWhite(tynt.Blue(msg))); }
-const logState = (msg) => { console.log(tynt.Cyan(msg)); }
+const logState = (msg) => { console.log(tynt.BgWhite(tynt.Blue(msg))); }
+const logLoading = (msg) => { console.log(tynt.Cyan(msg)); }
 logState("owo owo owo || Ithil Master Server || owo owo owo");
 
 // balancing object
@@ -54,7 +54,7 @@ balancer = {
 
 // DEBUG
 let dummy = 0;
-setTimeout(() => balancer.addWorker(++dummy, "test"), 10000);
+setInterval(() => balancer.addWorker(++dummy, "test"), 10000);
 
 // start public server with cors & ssl
 logLoading("Starting public endpoint with CORS & SSL");
@@ -80,7 +80,7 @@ masterSocket.on('connection', async (socket) => { // on socket connect, get free
         socket.emit("balanced port", { port: port }); // send balanced port
         socket.disconnect(); // disconnect from client
     });
-    setTimeout(() => socket.connected ? socket.disconnect() : 1, 5000); // socket has 5 seconds to request port
+    setTimeout(() => socket.connected ? socket.disconnect() : 1, 5*60*1000); // socket has 5 mins idling to request port
 });
 
 

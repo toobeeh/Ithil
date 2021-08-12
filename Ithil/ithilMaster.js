@@ -95,7 +95,7 @@ const coordServer = coordHttps.createServer({ // create server
     key: fs.readFileSync(config.certificatePath + '/privkey.pem', 'utf8'),
     cert: fs.readFileSync(config.certificatePath + '/cert.pem', 'utf8'),
     ca: fs.readFileSync(config.certificatePath + '/chain.pem', 'utf8')
-},coordExpress);
+}, coordExpress);
 const coordSocket = require('socket.io')(coordServer, { // start socket coordination server
     cors: {
         origin: "*",

@@ -96,6 +96,7 @@ ipc.config.logDepth = 6;
 ipc.serve(() => {
     ipc.server.on("workerConnect", (data, socket) => {
         balancer.addWorker(data.port, socket);
+        console.log(socket.id);
     });
     ipc.server.on("socket.disconnected", (socket, id) => {
         balancer.updateWorker();

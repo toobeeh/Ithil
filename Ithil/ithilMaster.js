@@ -49,12 +49,13 @@ balancer = {
             else resolve();
         });
         return balancer.workers.sort(worker => worker.clients)[0]; // return worker with fewest clients
-    }
+    },
+    currentBalancing: () => workers.map(worker => `[:${worker.port} - ${worker.clients}]`).join(", ")
 }
 
 // DEBUG
 let dummy = 0;
-setInterval(() => balancer.addWorker(++dummy, "test"), 10000);
+setInterval(() => balancer.addWorker(++dummy, "test"), 3000);
 
 // start public server with cors & ssl
 logLoading("Starting public endpoint with CORS & SSL");
@@ -79,8 +80,10 @@ masterSocket.on('connection', async (socket) => { // on socket connect, get free
         if (data.auth === "member") port = await balancer.getBalancedWorker(); // get balanced port if client wants to login
         socket.emit("balanced port", { port: port }); // send balanced port
         socket.disconnect(); // disconnect from client
+        console.log("Sent client to port " + port);
+        logState(balancer.currentBalancing());
     });
-    setTimeout(() => socket.connected ? socket.disconnect() : 1, 5*60*1000); // socket has 5 mins idling to request port
+    setTimeout(() => socket.connected ? socket.disconnect() : 1, 5*60*1000); // socket has max 5 mins idling to request port
 });
 
 

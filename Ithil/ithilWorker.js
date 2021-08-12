@@ -54,10 +54,6 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     client.on('connection', (connection) => {
         logState("connected to coord");
     });
-    //const coord = require('socket.io-client')("localhost:3999");
-    //coord.on("connect", async () => {
-    //    logState("connected to coord");
-    //});
 });
 
 

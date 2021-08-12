@@ -16,9 +16,7 @@ const config = {
 
 // require packets
 const masterExpress = require('express')();
-const coordExpress = require('express')();
 const masterHttps = require('https');
-const coordHttps = require('https');
 const fs = require('fs');
 const cors = require('cors');
 const palantirDb = require("./palantirDatabase");
@@ -89,28 +87,10 @@ masterSocket.on('connection', async (socket) => { // on socket connect, get free
     setTimeout(() => socket.connected ? socket.disconnect() : 1, 5*60*1000); // socket has max 5 mins idling to request port
 });
 
+logLoading("Initiating coordinating IPC");
 // start coordination ipc server 
 const coord = new ipc.MessageServer('/tmp/ithil-coordination');
-server.on('connection', (connection) => {
+coord.on('connection', (connection) => {
     logState("Worker connected!");
-})
-//// start coordination server 
-//logLoading("Starting internal endpoint");
-//coordExpress.use(cors()); // use cors
-//const coordServer = coordHttps.createServer({ // create server
-//    key: fs.readFileSync(config.certificatePath + '/privkey.pem', 'utf8'),
-//    cert: fs.readFileSync(config.certificatePath + '/cert.pem', 'utf8'),
-//    ca: fs.readFileSync(config.certificatePath + '/chain.pem', 'utf8')
-//}, coordExpress);
-//const coordSocket = require('socket.io')(coordServer, { // start socket coordination server
-//    cors: {
-//        origin: "*",
-//        methods: ["GET", "POST", "OPTIONS"]
-//    }, pingTimeout: 5
-//});
-//coordServer.listen(config.coordinationPort); // start listening on master worker port
-//logLoading("Initiating coordination socket connection event");
-//coordSocket.on("connection", async (socket) => {
-//    logState("Worker connected!");
-//});
+});
 

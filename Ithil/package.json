@@ -1,6 +1,5 @@
 {
   "name": "ithil",
-  "type": "module",
   "version": "0.0.0",
   "description": "Ithil is a soketio server which enables client access to the palantir database.",
   "main": "server.js",

@@ -27,32 +27,31 @@ const portscanner = require('portscanner');
 const logState = (msg) => { console.log(tynt.BgWhite(tynt.Blue(msg))); }
 const logLoading = (msg) => { console.log(tynt.Cyan(msg)); }
 
-// find free port
-const workerPort = await new Promise((resolve, reject) => {
-    portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127.0.0.1', function (error, port) {
-        if (error) {
-            logState("No free port found - exiting worker process");
-            process.exit(1);
-        }
-        resolve(port);
+// wrap everything else after port was found
+portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127.0.0.1', function (error, port) {
+    if (error) {
+        logState("No free port found - exiting worker process");
+        process.exit(1);
+    }
+    logState("Ithil Worker Server - Starting on port " + workerPort);
+
+    // start worker server 
+    logLoading("Starting worker endpoint");
+    const workerServer = workerHttps.createServer(app);
+    const workerSocket = require('socket.io')(workerServer, { // start worker worker server
+        pingTimeout: 5
+    });
+    workerServer.listen(workerPort); // start listening on master worker port
+    logLoading("Initiating worker socket connection event");
+    workerSocket.on("connection", async (socket) => {
+        logState("Client connected!");
+    });
+
+    // connect to coordination server
+    const coord = require('socket.io-client')("localhost:" + config.coordinationPort);
+    coord.on("connect", async () => {
+        logState("connected to coord");
     });
 });
-logState("Ithil Worker Server - Starting on port " + workerPort);
 
-// start worker server 
-logLoading("Starting worker endpoint");
-const workerServer = workerHttps.createServer(app);
-const workerSocket = require('socket.io')(workerServer, { // start worker worker server
-    pingTimeout: 5
-});
-workerServer.listen(workerPort); // start listening on master worker port
-logLoading("Initiating worker socket connection event");
-workerSocket.on("connection", async (socket) => {
-    logState("Client connected!");
-});
 
-// connect to coordination server
-const coord = require('socket.io-client')("localhost:" + config.coordinationPort);
-coord.on("connect", async () => {
-    logState("connected to coord");
-});

@@ -46,7 +46,7 @@ balancer = {
     },
     updateOnlineWorker: () => [...balancer.workers].forEach(worker => 
         portscanner.checkPortStatus(worker.port, "127.0.0.1", (error, status) =>
-            status == "open" || balancer.workers.filter(open => open.port == worker.port).length > 1 ? balancer.removeWorker(worker.port) : 1)),
+            status == "open" ? balancer.removeWorker(worker.port) : 1)),
     updateClients: (port, clients) => balancer.workers.find(worker => worker.port == port).clients = clients,
     getBalancedWorker: async () => {
         await new Promise((resolve, reject) => { // wait until minimum of workers are online

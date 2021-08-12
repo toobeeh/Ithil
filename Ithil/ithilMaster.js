@@ -15,7 +15,7 @@ const config = {
 }
 
 // require packets
-const App = require('express')();
+const app = require('express')();
 const masterHttps = require('https');
 const coordHttps = require('https');
 const fs = require('fs');
@@ -89,7 +89,7 @@ masterSocket.on('connection', async (socket) => { // on socket connect, get free
 
 // start coordination server 
 logLoading("Starting internal endpoint");
-const coordServer = coordHttps.createServer();
+const coordServer = coordHttps.createServer(app);
 const coordSocket = require('socket.io')(coordServer, { // start socket coordination server
     pingTimeout: 5
 });

@@ -22,6 +22,7 @@ const cors = require('cors');
 const palantirDb = require("./palantirDatabase");
 const tynt = require("tynt");
 const ipc = require('node-ipc');
+const portscanner = require('portscanner');
 
 // logging function
 const logState = (msg) => { console.log(tynt.BgWhite(tynt.Blue(msg))); }
@@ -40,10 +41,12 @@ balancer = {
         logState("New Ithil Worker online on port " + port);
     },
     removeWorker: (port) => {
-        balancer.workers = balancer.workers.filter(worker => worker.port != port); // remove worker
+        balancer.workers.splice(balancer.workers.findIndex(worker => worker.port != port), 1); // remove worker
         logState("Ithil Worker disconnected on port " + port);
     },
-    updateWorker: () => [...balancer.workers].forEach(worker => { if (worker.socket.ended) balancer.removeWorker(worker.port); }),
+    updateOnlineWorker: () => [...balancer.workers].forEach(worker => 
+        portscanner.checkPortStatus(worker.port, "127.0.0.1", (error, status) =>
+            status == "open" || balancer.workers.filter(open => open.port == worker.port).length > 1 ? balancer.removeWorker(worker.port) : 1)),
     updateClients: (port, clients) => balancer.workers.find(worker => worker.port == port).clients = clients,
     getBalancedWorker: async () => {
         await new Promise((resolve, reject) => { // wait until minimum of workers are online
@@ -54,7 +57,7 @@ balancer = {
     },
     currentBalancing: () => balancer.workers.map(worker => `${worker.clients}@:${worker.port}`).join(", ")
 }
-
+setInterval(balancer.updateOnlineWorker, 5000)
 // DEBUG
 //let dummy = 4001;
 //setInterval(() => balancer.addWorker(++dummy, "test"), 3000);
@@ -96,10 +99,9 @@ ipc.config.logDepth = 6;
 ipc.serve(() => {
     ipc.server.on("workerConnect", (data, socket) => {
         balancer.addWorker(data.port, socket);
-        console.log(socket.id);
     });
     ipc.server.on("socket.disconnected", (socket, id) => {
-        balancer.updateWorker();
+        // wtf this is broken somehow
     });
 });
 ipc.server.start();

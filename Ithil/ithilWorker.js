@@ -29,7 +29,7 @@ const logLoading = (msg) => { console.log(tynt.Cyan(msg)); }
 
 // find free port
 const workerPort = (async () => {
-    return await new Promise((resolve, reject) => {
+    let port = await new Promise((resolve, reject) => {
         portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127.0.0.1', function (error, port) {
             if (error) {
                 logState("No free port found - exiting worker process");
@@ -38,6 +38,7 @@ const workerPort = (async () => {
             resolve(port);
         });
     });
+    return port;
 })();
 logState("Ithil Worker Server - Starting on port " + workerPort);
 

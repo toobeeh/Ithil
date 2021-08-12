@@ -21,7 +21,7 @@ const fs = require('fs');
 const cors = require('cors');
 const palantirDb = require("./palantirDatabase");
 const tynt = require("tynt");
-const ipc = require('socket-ipc');
+const ipc = require('node-ipc');
 
 // logging function
 const logState = (msg) => { console.log(tynt.BgWhite(tynt.Blue(msg))); }
@@ -89,8 +89,17 @@ masterSocket.on('connection', async (socket) => { // on socket connect, get free
 
 logLoading("Initiating coordinating IPC");
 // start coordination ipc server 
-const coord = new ipc.MessageServer('/tmp/ithil-coordination');
-coord.on('connection', (connection) => {
-    logState("Worker connected!");
+ipc.config.id = 'coord';
+ipc.config.retry = 1500;
+
+ipc.serve(() => {
+    ipc.on("workerConnect", (data, socket) => {
+        console.log(data);
+    });
 });
+ipc.server.start();
+//const coord = new ipc.MessageServer('/tmp/ithil-coordination');
+//coord.on('connection', (connection) => {
+//    logState("Worker connected!");
+//});
 

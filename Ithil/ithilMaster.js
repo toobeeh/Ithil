@@ -90,6 +90,7 @@ masterSocket.on('connection', async (socket) => { // on socket connect, get free
 
 // start coordination server 
 logLoading("Starting internal endpoint");
+coordExpress.use(cors()); // use cors
 const coordServer = coordHttps.createServer({ // create server
     key: fs.readFileSync(config.certificatePath + '/privkey.pem', 'utf8'),
     cert: fs.readFileSync(config.certificatePath + '/cert.pem', 'utf8'),

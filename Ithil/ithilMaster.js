@@ -58,6 +58,12 @@ balancer = {
     currentBalancing: () => balancer.workers.map(worker => `${worker.clients}@:${worker.port}`).join(", ")
 }
 
+setInterval(() => {
+    balancer.workers.forEach(wrk => {
+        portscanner.checkPortStatus(wrk.port, "127.0.0.1", (error, status) => console.log(wrk.port + ":" + status));
+    });
+},1000);
+
 // DEBUG
 //let dummy = 4001;
 //setInterval(() => balancer.addWorker(++dummy, "test"), 3000);

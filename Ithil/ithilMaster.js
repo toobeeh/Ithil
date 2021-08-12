@@ -43,6 +43,7 @@ balancer = {
         balancer.workers = balancer.workers.filter(worker => worker.port != port); // remove worker
         logState("Ithil Worker disconnected on port " + port);
     },
+    updateWorker: () => [...balancer.worker].forEach(worker => { if (worker.socket.ended) balancer.removeWorker(worker.port); }),
     updateClients: (port, clients) => balancer.workers.find(worker => worker.port == port).clients = clients,
     getBalancedWorker: async () => {
         await new Promise((resolve, reject) => { // wait until minimum of workers are online
@@ -98,9 +99,7 @@ ipc.serve(() => {
         console.log(JSON.stringify(socket));
     });
     ipc.server.on("socket.disconnected", (socket, id) => {
-        console.log(socket);
-        console.log(id);
-        balancer.removeWorker(id.toString().replace("worker", ""));
+        balancer.updateWorker();
     });
 });
 ipc.server.start();

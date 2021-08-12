@@ -90,7 +90,11 @@ masterSocket.on('connection', async (socket) => { // on socket connect, get free
 
 // start coordination server 
 logLoading("Starting internal endpoint");
-const coordServer = coordHttps.createServer(coordExpress);
+const coordServer = coordHttps.createServer({ // create server
+    key: fs.readFileSync(config.certificatePath + '/privkey.pem', 'utf8'),
+    cert: fs.readFileSync(config.certificatePath + '/cert.pem', 'utf8'),
+    ca: fs.readFileSync(config.certificatePath + '/chain.pem', 'utf8')
+},coordExpress);
 const coordSocket = require('socket.io')(coordServer, { // start socket coordination server
     pingTimeout: 5
 });

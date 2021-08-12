@@ -22,7 +22,7 @@ const cors = require('cors');
 const palantirDb = require("./palantirDatabase");
 const tynt = require("tynt");
 const portscanner = require('portscanner');
-import ipc from 'node-ipc';
+const ipc = require('node-ipc');
 
 // logging function
 const logState = (msg) => { console.log(tynt.BgWhite(tynt.Blue(msg))); }

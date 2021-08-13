@@ -7,7 +7,7 @@ module.exports = {
             name: "Ithil Worker Server",
             script: "ithilWorker.js",
             exec_mode: "cluster",
-            instances: 8,
+            instances: 4,
             wait_ready: true,
             listen_timeout: 10000
         }]

@@ -94,7 +94,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         let typosocket = new TypoSocket(socket, palantirDb, sharedData, logSocketInfo, tynt);
         typoSockets.push(typosocket);
         emit("updatePortBalance", { port: workerPort, clients: typoSockets.length });
-        socket.on("disconnect", () => {
+        socket.on("disconnect", (reason) => {
             typoSockets = typoSockets.filter(s => s.socket.id != typosocket.socket.id);
             typosoket = null;
             logSocketInfo(socket.id, tynt.Red("disconnected"), reason);

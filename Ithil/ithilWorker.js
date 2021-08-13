@@ -38,7 +38,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     logState("Ithil Worker Server - Starting on port " + workerPort);
 
     // connect to coordination ipc server
-    logState("Connecting to oordination IPC");
+    logState("Connecting to oordination IPC...");
     ipc.config.id = 'worker' + workerPort;
     ipc.config.retry = 1500;
     ipc.config.silent = true;
@@ -48,6 +48,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
                 const on = (event, callback) => ipc.of.coord.on(event, callback);
                 const emit = (event, data) => ipc.if.coord.emit(event, data);
                 emit("workerConnect", { port: workerPort });
+                logState("...done.");
                 resolve({ on, emit });
             });
         });

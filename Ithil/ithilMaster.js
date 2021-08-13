@@ -91,18 +91,22 @@ logLoading("Initiating coordinating IPC");
 // start coordination ipc server 
 ipc.config.id = 'coord';
 ipc.config.retry = 1500;
-ipc.config.logDepth = 6;
+ipc.config.silent = true;
 ipc.serve(() => {
-    ipc.server.on("workerConnect", (data, socket) => {
+    const on = (event, callback) => ipc.server.on(event, callback);
+    on("workerConnect", (data, socket) => {
         balancer.addWorker(data.port, socket);
         logState("Balancing: " + balancer.currentBalancing());
     });
-    ipc.server.on("socket.disconnected", (socket, id) => {
+    on("socket.disconnected", (socket, id) => {
         setTimeout(() => {
             balancer.updateOnlineWorker();
             logState("Balancing: " + balancer.currentBalancing());
         }, 100);
-        
+    });
+    on("updatePortBalance", (data, socket) => {
+        if (data.port && data.clients) balancer.updateClients(data.port, data.clients);
+        logState("Balancing: " + balancer.currentBalancing());
     });
 });
 ipc.server.start();

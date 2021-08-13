@@ -29,7 +29,7 @@ const logState = (msg) => { console.log(tynt.BgWhite(tynt.Blue(msg))); }
 const logLoading = (msg) => { console.log(tynt.Cyan(msg)); }
 
 // wrap everything else after port was found
-portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127.0.0.1', function (error, port) {
+portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127.0.0.1', async (error, port) => {
     if (error) {
         logState("No free port found - exiting worker process");
         process.exit(1);
@@ -37,8 +37,24 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     const workerPort = port;
     logState("Ithil Worker Server - Starting on port " + workerPort);
 
+    // connect to coordination ipc server
+    logState("Connecting to oordination IPC");
+    ipc.config.id = 'worker' + workerPort;
+    ipc.config.retry = 1500;
+    ipc.config.silent = true;
+    const { on, emit } = await new Promise(resolve => {
+        ipc.connectTo("coord", () => {
+            const on = (event, callback) => ipc.of.coord.on(event, callback);
+            const emit = (event, data) => ipc.if.coord.emit(event, data);
+            on("connect", () => {
+                ipc.of.coord.emit("workerConnect", { port: workerPort });
+                resolve({ on, emit });
+            });
+        });
+    });
+
     // start worker server with cors and ssl
-    logLoading("Starting worker endpoint");
+    logLoading("Starting worker socket endpoint with CORS & SSL");
     app.use(cors());
     const workerServer = workerHttps.createServer({ // create server
         key: fs.readFileSync(config.certificatePath + '/privkey.pem', 'utf8'),
@@ -55,22 +71,20 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     });
     workerServer.listen(workerPort); // start listening on master worker port
     logLoading("Initiating worker socket connection event");
+    let sockets = [];
     workerSocket.on("connection", async (socket) => {
-        logState("Client connected!");
-    });
-    setTimeout(() => process.send("ready"), 1000);
-
-    // connect to coordination ipc server
-    ipc.config.id = 'worker' + workerPort;
-    ipc.config.retry = 1500;
-    ipc.config.logDepth = 1;
-    ipc.connectTo("coord", () => {
-        ipc.of.coord.on("connect", () => {
-            logState("connected to coord");
-            ipc.of.coord.emit("workerConnect", { port: workerPort });
+        sockets.push(socket.id);
+        socket.on("disconnect", () => {
+            sockets = sockets.filter(conn => conn.id != socket.id);
+            logState("Disconnected client on port " + workerPort);
+            emit("updatePortBalance", { port: workerPort, clients: sockets.length });
         });
-
+        logState("New client on port " + workerPort);
+        emit("updatePortBalance", { port: workerPort, clients: sockets.length });
     });
+    setTimeout(() => process.send("ready"), 500);
+
+    
 });
 
 

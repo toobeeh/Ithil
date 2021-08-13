@@ -58,7 +58,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     workerSocket.on("connection", async (socket) => {
         logState("Client connected!");
     });
-    setTimeout(() => process.send("ready"), 500);
+    setTimeout(() => process.send("ready"), 1000);
 
     // connect to coordination ipc server
     ipc.config.id = 'worker' + workerPort;

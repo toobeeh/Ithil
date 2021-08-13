@@ -36,6 +36,9 @@
     <Content Include="ithilWorker.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="pm2-ecosystem.config.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="server.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />

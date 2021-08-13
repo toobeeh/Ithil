@@ -58,10 +58,6 @@ balancer = {
     currentBalancing: () => balancer.workers.map(worker => `${worker.clients}@:${worker.port}`).join(", ")
 }
 
-// DEBUG
-//let dummy = 4001;
-//setInterval(() => balancer.addWorker(++dummy, "test"), 3000);
-
 // start public server with cors & ssl
 logLoading("Starting public endpoint with CORS & SSL");
 masterExpress.use(cors()); // use cors

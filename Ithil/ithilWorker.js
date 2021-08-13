@@ -38,7 +38,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     logState("Ithil Worker Server - Starting on port " + workerPort);
 
     // connect to coordination ipc server
-    logState("Connecting to oordination IPC...");
+    logState("Connecting to coordination IPC...");
     ipc.config.id = 'worker' + workerPort;
     ipc.config.retry = 1500;
     ipc.config.silent = true;
@@ -54,6 +54,14 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         });
     });
 
+    // listen for public data & active lobbies
+    const sharedData = {
+        publicData: { onlineSprites: [], drops: [], sprites: [] },
+        activeLobbies: []
+    }
+    on("publicData", data => { sharedData.publicData = data; logLoading(data); });
+    on("activeLobbies", data => { sharedData.activeLobbies = data; logLoading(data); });
+
     // start worker server with cors and ssl
     logLoading("Starting worker socket endpoint with CORS & SSL");
     app.use(cors());
@@ -62,7 +70,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         cert: fs.readFileSync(config.certificatePath + '/cert.pem', 'utf8'),
         ca: fs.readFileSync(config.certificatePath + '/chain.pem', 'utf8')
     },app);
-    const workerSocket = require('socket.io')(workerServer, { // start worker worker server
+    const workerSocket = require('socket.io')(workerServer, { // start worker server
         cors: {
             origin: "*",
             methods: ["GET", "POST", "OPTIONS"],
@@ -72,16 +80,13 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     });
     workerServer.listen(workerPort); // start listening on master worker port
     logLoading("Initiating worker socket connection event");
-    let sockets = [];
     workerSocket.on("connection", async (socket) => {
-        sockets.push(socket.id);
         socket.on("disconnect", () => {
-            sockets = sockets.filter(id => id != socket.id);
             logState("Disconnected client on port " + workerPort);
-            emit("updatePortBalance", { port: workerPort, clients: sockets.length });
+            //emit("updatePortBalance", { port: workerPort, clients: sockets.length });
         });
         logState("New client on port " + workerPort);
-        emit("updatePortBalance", { port: workerPort, clients: sockets.length });
+        //emit("updatePortBalance", { port: workerPort, clients: sockets.length });
     });
     setTimeout(() => process.send("ready"), 1000);
 });

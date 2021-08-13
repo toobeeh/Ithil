@@ -87,6 +87,43 @@ masterSocket.on('connection', async (socket) => { // on socket connect, get free
     setTimeout(() => socket.connected ? socket.disconnect() : 1, 5*60*1000); // socket has max 5 mins idling to request port
 });
 
+// init shared data
+class SharedData {
+    constructor(database, ipcBroadcast) {
+        // refresh active lobbies every 4 seconds 
+        this.db = database;
+        this.activeLobbies = [];
+        this.publicData = { onlineSprites: [], drops: [], sprites: [] };
+        const refreshLobbies = () => {
+            let refreshedLobbies = this.db.getActiveLobbies();
+            // if database request is valid
+            if (refreshedLobbies.valid) {
+                // if data has changed
+                if (JSON.stringify(this.activeLobbies) != JSON.stringify(refreshedLobbies.lobbies))
+                    ipcBroadcast("activeLobbies", this.activeLobbies);
+                this.activeLobbies = refreshedLobbies.lobbies;
+            }
+        }
+        refreshLobbies();
+        setInterval(refreshLobbies, 3000);
+        // refresh sprites all 10s
+        const refreshPublic = () => {
+            let refreshedPublic = this.db.getPublicData();
+            // if database request is valid 
+            if (refreshedPublic.valid) {
+                // if data has changed
+                if (JSON.stringify(refreshedPublic.publicData.onlineSprites) != JSON.stringify(this.publicData.onlineSprites))
+                    ipcBroadcast("publicData", this.publicData);
+                this.publicData = refreshedPublic.publicData;
+            }
+        }
+        refreshPublic();
+        setInterval(refreshPublic, 5000);
+        // clean volatile db tables
+        setInterval(this.db.clearVolatile, 2000);
+    }
+}
+
 logLoading("Initiating coordinating IPC");
 // start coordination ipc server 
 ipc.config.id = 'coord';
@@ -94,6 +131,7 @@ ipc.config.retry = 1500;
 ipc.config.silent = true;
 ipc.serve(() => {
     const on = (event, callback) => ipc.server.on(event, callback);
+    const broadcast = (event, callback) => ipc.server.broadcast(event, callback);
     on("workerConnect", (data, socket) => {
         balancer.addWorker(data.port, socket);
         logState("Balancing: " + balancer.currentBalancing());
@@ -108,6 +146,10 @@ ipc.serve(() => {
         if (data.port && data.clients) balancer.updateClients(data.port, data.clients);
         logState("Balancing: " + balancer.currentBalancing());
     });
+
+    logLoading("Initiating shared data");
+    const sharedData = new SharedData(palantirDb, broadcast);
 });
 ipc.server.start();
+
 

@@ -151,7 +151,7 @@ class Drops {
             ipcBroadcast("clearDrop", result);
         };
         const dropIsClaimed = (id) => {
-            return this.db.getDrop(id).drop.CaughtLobbyKey != "";
+            return database.getDrop(id).drop.CaughtLobbyKey != "";
         }
         // broadcast clear for all 
         ipcOn("clearDrop", (result) => this.clearDrop(result));

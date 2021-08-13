@@ -38,7 +38,7 @@ class TypoSocket {
                             let status = { PlayerMember: member, Status: "playing", LobbyID: lobbyRaw.ID, LobbyPlayerID: playerid };
                             this.db.writePlayerStatus(status, this.socket.id); 
                         }
-                        catch (e) { this.log(this.socket.id, this.username, this.tynt.Red("Error writing report data: ") + e); }
+                        catch (e) { 0 && this.log(this.socket.id, this.username, this.tynt.Red("Error writing report data: ") + e); }
                         finally {
                             setTimeout(writeLobbyPlaying, 2500);
                         }

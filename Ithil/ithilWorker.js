@@ -102,6 +102,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     logLoading("Initiating worker socket connection events");
     let typoSockets = [];
     workerSocket.on("connection", async (socket) => {
+        typoSockets = typoSockets.filter(s => s.socket.connected === true);
         logState(`Connected socket ${socket.id} on port ${workerPort}`);
         let typosocket = new TypoSocket(socket, palantirDb, sharedData, logSocketInfo, tynt);
         typoSockets.push(typosocket);

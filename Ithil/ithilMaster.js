@@ -99,9 +99,11 @@ ipc.config.logDepth = 6;
 ipc.serve(() => {
     ipc.server.on("workerConnect", (data, socket) => {
         balancer.addWorker(data.port, socket);
+        logState("Balancing: " + balancer.currentBalancing());
     });
     ipc.server.on("socket.disconnected", (socket, id) => {
-        setTimeout(()=>balancer.updateOnlineWorker(),100);
+        setTimeout(() => balancer.updateOnlineWorker(), 100);
+        logState("Balancing: " + balancer.currentBalancing());
     });
 });
 ipc.server.start();

@@ -224,7 +224,7 @@ class TypoSocket {
         }
         this.emitEvent(data.event + " response", result); // reply with result
         // clear drop
-        this.sharedData.clearDrop({ caughtPlayer: `<a href='#${data.payload.drop.DropID}'>${data.payload.name}</a>`, caughtLobbyKey: data.payload.lobbyKey });
+        this.sharedData.clearDrop({ dropID: data.payload.drop.DropID, caughtPlayer: `<a href='#${data.payload.drop.DropID}'>${data.payload.name}</a>`, caughtLobbyKey: data.payload.lobbyKey });
     }
     storeDrawing = (data) => {
         let meta = data.payload.meta;

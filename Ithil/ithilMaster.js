@@ -143,9 +143,16 @@ class Drops {
             await idle(ms);
             return nextDrop.drop;
         };
+        let lastCleared = 0;
         this.clearDrop = (result) => {
+            if (lastCleared == result.dropID) return; // drop is already cleared
+            lastCleared = result.dropID;
+            logState("Cleared drop ID " + lastCleared);
             ipcBroadcast("clearDrop", result);
         };
+        const dropIsClaimed = (id) => {
+            return this.db.getDrop(id).drop.CaughtLobbyKey != "";
+        }
         // broadcast clear for all 
         ipcOn("clearDrop", (result) => this.clearDrop(result));
         // check async for drops once in 5s
@@ -155,11 +162,21 @@ class Drops {
                 if (drop !== false) ipcBroadcast("newDrop", drop);
                 // drop catch timeout
                 await idle(5000);
+                const timeout = 5000;
+                const poll = 80;
+                let passed = 0;
+                while (passed < timeout) {
+                    if (dropIsClaimed(drop.DropID)) {
+                        this.clearDrop({ dropID: drop.DropID, caughtPlayer: `<a href='#${drop.DropID}'>#drop clearer#</a>`, caughtLobbyKey: drop.CaughtLobbyKey });
+                        break;
+                    }
+                    passed += poll;
+                    await idle(poll);
+                }
             }
         }, 1);
     }
 }
-
 
 logLoading("Initiating coordinating IPC");
 // start coordination ipc server 

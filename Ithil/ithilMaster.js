@@ -41,7 +41,7 @@ balancer = {
         logState("New Ithil Worker online on port " + port);
     },
     removeWorker: (port) => {
-        balancer.workers.splice(balancer.workers.findIndex(worker => worker.port != port), 1); // remove worker
+        balancer.workers.splice(balancer.workers.findIndex(worker => worker.port == port), 1); // remove worker
         logState("Ithil Worker disconnected on port " + port);
     },
     updateOnlineWorker: () => [...balancer.workers].forEach(worker => 

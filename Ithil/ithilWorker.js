@@ -76,7 +76,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     workerSocket.on("connection", async (socket) => {
         sockets.push(socket.id);
         socket.on("disconnect", () => {
-            sockets = sockets.filter(conn => conn.id != socket.id);
+            sockets = sockets.filter(id => id != socket.id);
             logState("Disconnected client on port " + workerPort);
             emit("updatePortBalance", { port: workerPort, clients: sockets.length });
         });

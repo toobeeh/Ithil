@@ -53,7 +53,7 @@ balancer = {
             if (balancer.workers.length < config.minAvailableWorker) balancer.queue.push(resolve);
             else resolve();
         });
-        return balancer.workers.sort(worker => worker.clients)[0]; // return worker with fewest clients
+        return balancer.workers.sort((a, b) => a.clients - b.clients)[0]; // return worker with fewest clients
     },
     currentBalancing: () => balancer.workers.map(worker => `${worker.clients}@:${worker.port}`).join(", ")
 }

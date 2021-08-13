@@ -73,9 +73,9 @@ const masterServer = masterHttps.createServer({ // create server
 masterServer.listen(config.masterPort); // start listening on master worker port
 const masterSocket = require('socket.io')(masterServer, { // start socket master server
     cors: {
-        origin: "*",
+        origin: true,
         methods: ["GET", "POST", "OPTIONS"],
-        credentials:false
+        credentials:true
     },
     pingTimeout: 20000
 });

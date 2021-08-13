@@ -161,9 +161,8 @@ class Drops {
                 let drop = await this.getNextDrop();
                 if (drop !== false) ipcBroadcast("newDrop", drop);
                 // drop catch timeout
-                await idle(5000);
                 const timeout = 5000;
-                const poll = 80;
+                const poll = 100;
                 let passed = 0;
                 while (passed < timeout) {
                     if (dropIsClaimed(drop.DropID)) {

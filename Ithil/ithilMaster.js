@@ -187,7 +187,7 @@ ipc.serve(() => {
     logLoading("Initiating shared data");
     const sharedData = new SharedData(palantirDb, broadcast);
     logLoading("Initiating drops");
-    const drops = new Drops(palantirDb, broadcast);
+    const drops = new Drops(palantirDb, broadcast, on);
 });
 ipc.server.start();
 

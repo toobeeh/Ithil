@@ -124,6 +124,43 @@ class SharedData {
     }
 }
 
+// init drops 
+class Drops {
+    constructor(database, ipcBroadcast, ipcOn) {
+        // async timeout func
+        const idle = async (timeMs) => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => resolve(), timeMs);
+            });
+        };
+        this.getNextDrop = async () => {
+            let nextDrop;
+            // wait for next drop to appear, check in 5s intervals
+            while (!(nextDrop = database.getDrop()).drop || nextDrop.drop.CaughtLobbyKey != "") await idle(5000);
+            let ms = (new Date(nextDrop.drop.ValidFrom + " UTC")).getTime() - Date.now();
+            if (ms < 0) return false; // old drop hasnt been claimed
+            logLoading("Next drop in " + ms / 1000 + "s");
+            await idle(ms);
+            return nextDrop.drop;
+        };
+        this.clearDrop = (result) => {
+            ipcBroadcast("clearDrop", result);
+        };
+        // broadcast clear for all 
+        ipcOn("clearDrop", (result) => this.clearDrop(result));
+        // check async for drops once in 5s
+        setTimeout(async () => {
+            while (true) {
+                let drop = await this.getNextDrop();
+                if (drop !== false) ipcBroadcast("newDrop", drop);
+                // drop catch timeout
+                await idle(5000);
+            }
+        }, 1);
+    }
+}
+
+
 logLoading("Initiating coordinating IPC");
 // start coordination ipc server 
 ipc.config.id = 'coord';
@@ -149,6 +186,8 @@ ipc.serve(() => {
 
     logLoading("Initiating shared data");
     const sharedData = new SharedData(palantirDb, broadcast);
+    logLoading("Initiating drops");
+    const drops = new Drops(palantirDb, broadcast);
 });
 ipc.server.start();
 

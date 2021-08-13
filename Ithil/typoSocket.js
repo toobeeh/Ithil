@@ -71,7 +71,6 @@ class TypoSocket {
         return new Promise((resolve, reject) => {
             if (listenResponse) this.socket.once(event + " response", (data) => {
                 resolve(data.payload);
-                //console.log(`Received response: ${event} @ ${this.loginToken}\n${data.payload}`);
             });
             try {
                 this.socket.emit(event, { event: event, payload: payload });
@@ -97,17 +96,20 @@ class TypoSocket {
             this.socket.join("public");
             return;
         }
-        if (flags[3] == "1" || flags[4] == "1") { this.riproEnabled = true; console.log("patron / cloud connected"); }
-        else this.riproEnabled = false;
+        if (flags[3] == "1" || flags[4] == "1") {
+            this.patron = true;
+            this.log(this.socket.id, this.username, "Recognized Patron");
+        }
+        else this.patron = false;
         member.member.Guilds.forEach(guild => {
-            this.socket.join("guild" + guild.GuildID.slice(0, -2));
+            this.socket.join("guild" + guild.GuildID);
         });
         this.loginDate = Math.ceil(Date.now());
         this.loginToken = data.payload.loginToken; // set login
         this.username = member.member.UserName;
         this.id = member.member.UserID;
         this.socket.off("login", this.login);
-        this.prodb = new (require("./imageDatabase"))(this.loginToken);
+        this.imageDatabase = new (require("./imageDatabase"))(this.loginToken);
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
@@ -123,7 +125,7 @@ class TypoSocket {
         this.socket.on("disconnect", this.clearCloud); // clear image cloud
         this.emitEvent(data.event + " response", {
             authorized: true,
-            activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
+            activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID))
         }); // reply with status
         this.log(this.socket.id, this.username, this.tynt.Green("Logged in: ") + this.loginToken);
     }
@@ -140,7 +142,7 @@ class TypoSocket {
         let lobbyData = this.db.getLobby(data.payload.key);
         responseData.valid = lobbyData.valid;
         if (!lobbyData.found) {
-            responseData.valid = this.db.setLobby(Date.now(), data.payload.key, "").valid; // Math.random().toString(10).substr(2, 8)
+            responseData.valid = this.db.setLobby(Date.now(), data.payload.key, "").valid; 
             lobbyData = this.db.getLobby(data.payload.key);
         }
         this.searchData = null;
@@ -194,7 +196,7 @@ class TypoSocket {
         this.searchData = null;
         if (data.payload.joined) {
             this.emitEvent(data.event + " response", {
-                activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
+                activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID))
             }); // reply with active lobbies
             this.log(this.socket.id, this.username, "Left a lobby");
         }
@@ -222,7 +224,7 @@ class TypoSocket {
         }
         this.emitEvent(data.event + " response", result); // reply with result
         // clear drop
-        this.socket.to("playing").emit("clear drop", { payload: { result: { caughtPlayer: `<a href='#${data.payload.drop.DropID}'>${data.payload.name}</a>`, caughtLobbyKey: data.payload.lobbyKey } } });
+        this.sharedData.clearDrop({ caughtPlayer: `<a href='#${data.payload.drop.DropID}'>${data.payload.name}</a>`, caughtLobbyKey: data.payload.lobbyKey });
     }
     storeDrawing = (data) => {
         let meta = data.payload.meta;
@@ -232,12 +234,12 @@ class TypoSocket {
         if (!meta.author) meta.author = "Unknown";
         if (!meta.date) meta.date = (new Date()).toString();
         meta.login = this.loginToken;
-        meta.save = this.riproEnabled;
+        meta.save = this.patron;
         let id = Math.ceil(Date.now()).toString();
 
-        if (this.prodb.addDrawing(this.loginToken, id, meta)) {
-            this.prodb.addDrawCommands(id, commands);
-            this.prodb.addURI(id, uri);
+        if (this.imageDatabase.addDrawing(this.loginToken, id, meta)) {
+            this.imageDatabase.addDrawCommands(id, commands);
+            this.imageDatabase.addURI(id, uri);
         }
         this.emitEvent(data.event + " response", {
             id: id
@@ -245,11 +247,11 @@ class TypoSocket {
     }
     removeDrawing = data => {
         let id = data.payload.id;
-        this.prodb.removeDrawing(id, this.loginToken);
+        this.imageDatabase.removeDrawing(id, this.loginToken);
     }
     fetchDrawing = data => {
         let id = data.payload.id;
-        let result = this.prodb.getDrawing(id);
+        let result = this.imageDatabase.getDrawing(id);
         if (data.payload.withCommands != true) result.commands = null;
         this.emitEvent(data.event + " response", {
             drawing: result
@@ -257,7 +259,7 @@ class TypoSocket {
     }
     getCommands = data => {
         let id = data.payload.id;
-        let result = this.prodb.getDrawing(id);
+        let result = this.imageDatabase.getDrawing(id);
         this.emitEvent(data.event + " response", {
             commands: result.commands
         });
@@ -266,13 +268,13 @@ class TypoSocket {
         let limit = data.payload.limit;
         if (!limit) limit = -1;
         let query = data.payload.query;
-        let result = this.prodb.getUserMeta(this.loginToken, limit, query);
+        let result = this.imageDatabase.getUserMeta(this.loginToken, limit, query);
         this.emitEvent(data.event + " response", {
             drawings: result.drawings
         }); 
     }
     clearCloud = () => {
-        if(!this.riproEnabled) this.prodb.removeEntries(this.loginToken, this.loginDate - 1000 * 60 * 60 * 24 * 30); // delete older than 30 days
+        if(!this.patron) this.imageDatabase.removeEntries(this.loginToken, this.loginDate - 1000 * 60 * 60 * 24 * 30); // delete older than 30 days
     }
 }
 module.exports = TypoSocket;

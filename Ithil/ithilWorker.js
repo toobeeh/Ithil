@@ -83,9 +83,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         logState("New client on port " + workerPort);
         emit("updatePortBalance", { port: workerPort, clients: sockets.length });
     });
-    setTimeout(() => process.send("ready"), 500);
-
-    
+    setTimeout(() => process.send("ready"), 1000);
 });
 
 

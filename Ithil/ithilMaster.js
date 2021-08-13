@@ -147,10 +147,9 @@ class Drops {
         this.clearDrop = (dropID) => {
             if (lastCleared == dropID) return; // drop is already cleared
             lastCleared = dropID;
-            const drop = database.getDrop(dropID);
+            const drop = database.getDrop(dropID).drop;
             logState("Cleared drop ID " + lastCleared);
             const result = { dropID: drop.DropID, caughtPlayer: drop.CaughtLobbyPlayerID, caughtLobbyKey: drop.CaughtLobbyKey };
-            console.log(result);
             ipcBroadcast("clearDrop", result);
         };
         const dropIsClaimed = (id) => {

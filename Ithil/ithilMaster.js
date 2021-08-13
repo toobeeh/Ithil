@@ -101,7 +101,7 @@ ipc.serve(() => {
         balancer.addWorker(data.port, socket);
     });
     ipc.server.on("socket.disconnected", (socket, id) => {
-        balancer.updateOnlineWorker();
+        setTimeout(()=>balancer.updateOnlineWorker(),100);
     });
 });
 ipc.server.start();

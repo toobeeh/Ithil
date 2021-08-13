@@ -115,11 +115,11 @@ class ImageDatabase {
             result.valid = false;
             try {
                 open(); // delete drawings
-                console.log((new Date()).toLocaleTimeString() + " start delete " + path);
+                //console.log((new Date()).toLocaleTimeString() + " start delete " + path);
                 db.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE login = ? AND id < ?)").run(login, logindate);
                 db.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE login = ? AND id < ?)").run(login, logindate);
                 db.prepare("DELETE FROM Drawings WHERE login = ? AND id < ?").run(login, logindate);
-                console.log((new Date()).toLocaleTimeString() + " end delete ");
+                //console.log((new Date()).toLocaleTimeString() + " end delete ");
                 close();
                 result.valid = true;
             }

@@ -81,8 +81,16 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         activeLobbies: [],
         clearDrop: (result) => emit("clearDrop", result)
     }
-    on("publicData", data => { sharedData.publicData = data; });
-    on("activeLobbies", data => { sharedData.activeLobbies = data; });
+    on("publicData", data => {
+        sharedData.publicData = data;
+        workerSocket.volatile.emit("online sprites", { event: "online sprites", payload: { onlineSprites: sharedData.publicData.onlineSprites } });
+    });
+    on("activeLobbies", data => {
+        sharedData.activeLobbies = data;
+        sharedData.activeLobbies.forEach(guildLobbies => {
+            workerSocket.to("guild" + guildLobbies.guildID).emit("active lobbies", { event: "active lobbies", payload: { activeGuildLobbies: guildLobbies } });
+        });
+    });
     on("newDrop", drop => { workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } }); });
     on("clearDrop", result => { workerSocket.to("playing").emit("clear drop", { payload: { result: result } }); });
 

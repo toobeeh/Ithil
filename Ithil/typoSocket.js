@@ -36,7 +36,7 @@ class TypoSocket {
                             this.db.writeLobbyReport(guildLobbies);
                             let playerid = lobbyRaw.Players.find(player => player.Sender).LobbyPlayerID;
                             let status = { PlayerMember: member, Status: "playing", LobbyID: lobbyRaw.ID, LobbyPlayerID: playerid };
-                            this.db.writePlayerStatus(status, this.socket.id);
+                            this.db.writePlayerStatus(status, this.socket.id); 
                         }
                         catch (e) { this.log(this.socket.id, this.username, this.tynt.Red("Error writing report data: ") + e); }
                         finally {

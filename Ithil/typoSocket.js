@@ -217,14 +217,12 @@ class TypoSocket {
         }
         else {
             result = {
-                caught: false,
-                playerName: res.CaughtLobbyPlayerID,
-                caughtLobbyKey: res.CaughtLobbyKey 
+                caught: false
             }
         }
         this.emitEvent(data.event + " response", result); // reply with result
-        // clear drop
-        this.sharedData.clearDrop({ dropID: data.payload.drop.DropID, caughtPlayer: `<a href='#${data.payload.drop.DropID}'>${data.payload.name}</a>`, caughtLobbyKey: data.payload.lobbyKey });
+        // request clear drop, no matter if caught or not
+        this.sharedData.clearDrop(data.payload.drop.DropID);
     }
     storeDrawing = (data) => {
         let meta = data.payload.meta;

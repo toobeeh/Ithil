@@ -79,7 +79,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     const sharedData = {
         publicData: { onlineSprites: [], drops: [], sprites: [] },
         activeLobbies: [],
-        clearDrop: (result) => emit("clearDrop", result)
+        clearDrop: (dropID) => emit("clearDrop", dropID)
     }
     on("publicData", data => {
         sharedData.publicData = data;

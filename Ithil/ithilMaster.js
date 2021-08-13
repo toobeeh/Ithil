@@ -144,11 +144,13 @@ class Drops {
             return nextDrop.drop;
         };
         let lastCleared = 0;
-        this.clearDrop = (result) => {
-            if (lastCleared == result.dropID) return; // drop is already cleared
-            lastCleared = result.dropID;
+        this.clearDrop = (dropID) => {
+            if (lastCleared == dropID) return; // drop is already cleared
+            lastCleared = dropID;
+            const drop = database.getDrop(dropID);
             logState("Cleared drop ID " + lastCleared);
-            ipcBroadcast("clearDrop", result);
+            logState(JSON.stringify(drop));
+            ipcBroadcast("clearDrop", { dropID: drop.DropID, caughtPlayer: drop.CaughtLobbyPlayerID, caughtLobbyKey: drop.CaughtLobbyKey });
         };
         const dropIsClaimed = (id) => {
             return database.getDrop(id).drop.CaughtLobbyKey != "";
@@ -162,11 +164,11 @@ class Drops {
                 if (drop !== false) ipcBroadcast("newDrop", drop);
                 // drop catch timeout
                 const timeout = 5000;
-                const poll = 100;
+                const poll = 50;
                 let passed = 0;
                 while (passed < timeout) {
                     if (dropIsClaimed(drop.DropID)) {
-                        this.clearDrop({ dropID: drop.DropID, caughtPlayer: `<a href='#${drop.DropID}'>#drop clearer#</a>`, caughtLobbyKey: drop.CaughtLobbyKey });
+                        this.clearDrop(drop.DropID);
                         break;
                     }
                     passed += poll;

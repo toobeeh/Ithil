@@ -8,7 +8,6 @@ module.exports = {
             script: "ithilWorker.js",
             exec_mode: "cluster",
             instances: 8,
-            wait_ready: true,
-            listen_timeout: 1000
+            wait_ready: true
         }]
 }

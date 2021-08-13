@@ -91,8 +91,13 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
             workerSocket.to("guild" + guildLobbies.guildID).emit("active lobbies", { event: "active lobbies", payload: { activeGuildLobbies: guildLobbies } });
         });
     });
-    on("newDrop", drop => { workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } }); });
-    on("clearDrop", result => { workerSocket.to("playing").emit("clear drop", { event: "clear drop", payload: { result: result } }); console.log(result) });
+    on("newDrop", drop => {
+        workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
+    });
+    on("clearDrop", result => {
+        console.log(result);
+        workerSocket.to("playing").emit("clear drop", { event: "clear drop", payload: { result: result } });
+    });
 
     // init typo socket on connection
     logLoading("Initiating worker socket connection events");

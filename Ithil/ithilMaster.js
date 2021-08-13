@@ -149,8 +149,9 @@ class Drops {
             lastCleared = dropID;
             const drop = database.getDrop(dropID);
             logState("Cleared drop ID " + lastCleared);
-            logState(JSON.stringify(drop));
-            ipcBroadcast("clearDrop", { dropID: drop.DropID, caughtPlayer: drop.CaughtLobbyPlayerID, caughtLobbyKey: drop.CaughtLobbyKey });
+            const result = { dropID: drop.DropID, caughtPlayer: drop.CaughtLobbyPlayerID, caughtLobbyKey: drop.CaughtLobbyKey };
+            console.log(result);
+            ipcBroadcast("clearDrop", result);
         };
         const dropIsClaimed = (id) => {
             return database.getDrop(id).drop.CaughtLobbyKey != "";

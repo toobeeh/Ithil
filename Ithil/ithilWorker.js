@@ -44,10 +44,10 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     ipc.config.silent = true;
     const { on, emit } = await new Promise(resolve => {
         ipc.connectTo("coord", () => {
-            const on = (event, callback) => ipc.of.coord.on(event, callback);
-            const emit = (event, data) => ipc.if.coord.emit(event, data);
             on("connect", () => {
-                ipc.of.coord.emit("workerConnect", { port: workerPort });
+                const on = (event, callback) => ipc.of.coord.on(event, callback);
+                const emit = (event, data) => ipc.if.coord.emit(event, data);
+                emit("workerConnect", { port: workerPort });
                 resolve({ on, emit });
             });
         });

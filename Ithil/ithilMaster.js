@@ -102,8 +102,11 @@ ipc.serve(() => {
         logState("Balancing: " + balancer.currentBalancing());
     });
     ipc.server.on("socket.disconnected", (socket, id) => {
-        setTimeout(() => balancer.updateOnlineWorker(), 100);
-        logState("Balancing: " + balancer.currentBalancing());
+        setTimeout(() => {
+            balancer.updateOnlineWorker();
+            logState("Balancing: " + balancer.currentBalancing());
+        }, 100);
+        
     });
 });
 ipc.server.start();

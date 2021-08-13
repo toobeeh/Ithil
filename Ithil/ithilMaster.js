@@ -156,7 +156,7 @@ class Drops {
             return database.getDrop(id).drop.CaughtLobbyKey != "";
         }
         // broadcast clear for all 
-        ipcOn("clearDrop", (result) => this.clearDrop(result));
+        ipcOn("requestClearDrop", (result) => this.clearDrop(result));
         // check async for drops once in 5s
         setTimeout(async () => {
             while (true) {

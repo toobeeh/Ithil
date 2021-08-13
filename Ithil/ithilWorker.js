@@ -46,7 +46,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         ipc.connectTo("coord", () => {
             ipc.of.coord.on("connect", () => {
                 const on = (event, callback) => ipc.of.coord.on(event, callback);
-                const emit = (event, data) => ipc.if.coord.emit(event, data);
+                const emit = (event, data) => ipc.of.coord.emit(event, data);
                 emit("workerConnect", { port: workerPort });
                 logState("...done.");
                 resolve({ on, emit });

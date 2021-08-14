@@ -5,14 +5,14 @@
  * - internal socketio endpoint to coordinate Ithil Workers
  *   keeps track of drops, data & load balance
  */
-const config = {
-    masterPort: 4000,
-    coordinationPort: 3999,
-    publicPort: 4001,
-    workerRange: [4002, 4010],
-    minAvailableWorker: 7,
-    certificatePath: '/etc/letsencrypt/live/typo.rip'
-}
+//const config = {
+//    masterPort: 4000,
+//    coordinationPort: 3999,
+//    publicPort: 4001,
+//    workerRange: [4002, 4010],
+//    minAvailableWorker: 7,
+//    certificatePath: '/etc/letsencrypt/live/typo.rip'
+//}
 
 // require packets
 const masterExpress = require('express')();
@@ -23,6 +23,7 @@ const palantirDb = require("./palantirDatabase");
 const tynt = require("tynt");
 const ipc = require('node-ipc');
 const portscanner = require('portscanner');
+const config = require("./ecosystem.config").config;
 
 // logging function
 const logState = (msg) => { console.log(tynt.BgWhite(tynt.Blue(msg))); }

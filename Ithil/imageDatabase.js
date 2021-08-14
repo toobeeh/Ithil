@@ -95,12 +95,15 @@ class ImageDatabase {
                 if (query.name) where += " AND json_extract(meta,'$.name') like '%" + query.name + "%'";
                 if (query.author) where += " AND json_extract(meta,'$.author') like '%" + query.author + "%'";
                 if (query.date) where += " AND json_extract(meta,'$.date') like '%" + query.date + "%'";
+                let t = Date.now();
                 let rows = db.prepare("SELECT * FROM Drawings WHERE login = ? " + where + " ORDER BY id DESC").all(login);
+                console.log(Date.now() - t);
                 result.drawings = [];
                 rows.forEach(row => {
                     if (limit > 0 && result.drawings.length > limit) return;
                     result.drawings.push({ id: row.id, meta: JSON.parse(row.meta) });
                 });
+                console.log(Date.now() - t);
                 close();
                 result.valid = true;
             }

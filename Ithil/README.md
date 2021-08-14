@@ -16,9 +16,23 @@ const emitEvent = (event, payload, listenResponse = false, responseTimeout = 200
     }
 ```
 #### Connect to the socketio server
-Open the socket:
+
+Open a socket to the balancer server on port 4000:
 ```js
-const socket = io("https://typo.rip:3000");
+const balancer = io("https://typo.rip:4000", );
+balancer.on("connect", () => {
+    balancer.on("balanced port", (data) => console.log(data.port));
+    balancer.emit("request port", { auth: "member" });
+}
+```
+Use auth = "member" if the socket wants to login later.
+To connect a public socket, use auth = "public".
+data.port is a number which represents the server port with least load.
+After the port is received, the socket is closed by the server.
+
+Open the socket to a typo server on the balanced port:
+```js
+const socket = io("https://typo.rip:" + port);
 ```
 Authorize with the user login token, "true" means a response is awaited via the emitEvent function:
 ```js

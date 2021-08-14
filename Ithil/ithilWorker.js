@@ -5,14 +5,14 @@
  * - connects to internal socketio coordination server
  *   gets drops & shared data
  */
-const config = {
-    masterPort: 4000,
-    coordinationPort: 3999,
-    publicPort: 4001,
-    workerRange: [4002, 4010],
-    minAvailableWorker: 7,
-    certificatePath: '/etc/letsencrypt/live/typo.rip'
-}
+//const config = {
+//    masterPort: 4000,
+//    coordinationPort: 3999,
+//    publicPort: 4001,
+//    workerRange: [4002, 4010],
+//    minAvailableWorker: 7,
+//    certificatePath: '/etc/letsencrypt/live/typo.rip'
+//}
 
 // require packets
 const app = require('express')();
@@ -24,6 +24,7 @@ const TypoSocket = require("./typoSocket");
 const tynt = require("tynt");
 const portscanner = require('portscanner');
 const ipc = require('node-ipc');
+const config = require("./ecosystem.config").config;
 
 // logging function
 const logState = (msg) => { console.log(tynt.BgWhite(tynt.Blue(msg))); }

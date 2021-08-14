@@ -10,5 +10,13 @@ module.exports = {
             instances: 8,
             wait_ready: true,
             listen_timeout: 10000
-        }]
+        }],
+    config: {
+        masterPort: 4000,
+        coordinationPort: 3999,
+        publicPort: 4001,
+        workerRange: [4002, 4010],
+        minAvailableWorker: 7,
+        certificatePath: '/etc/letsencrypt/live/typo.rip'
+    }
 }

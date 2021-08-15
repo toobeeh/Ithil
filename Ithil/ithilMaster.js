@@ -48,7 +48,7 @@ balancer = {
         });
         return balancer.workers.sort((a, b) => a.clients - b.clients)[0]; // return worker with fewest clients
     },
-    currentBalancing: () => balancer.workers.map(worker => `${worker.clients}@:${worker.port}`).join(", ")
+    currentBalancing: () => balancer.workers.reduce((sum, worker) => sum + worker.clients) + " / " + balancer.workers.map(worker => `${worker.clients}@:${worker.port}`).join(", ")
 }
 
 // start public server with cors & ssl
@@ -74,7 +74,7 @@ masterSocket.on('connection', async (socket) => { // on socket connect, get free
         if (data.auth === "member") port = (await balancer.getBalancedWorker()).port; // get balanced port if client wants to login
         socket.emit("balanced port", { port: port }); // send balanced port
         socket.disconnect(); // disconnect from client
-        logState("Balancing: " + balancer.currentBalancing());
+        //logState("Balancing: " + balancer.currentBalancing());
         console.log("Sent client to port " + port);
     });
     setTimeout(() => socket.connected ? socket.disconnect() : 1, 5*60*1000); // socket has max 5 mins idling to request port
@@ -187,7 +187,6 @@ ipc.serve(() => {
     on("socket.disconnected", (socket, id) => {
         setTimeout(() => {
             balancer.updateOnlineWorker();
-            logState("Balancing: " + balancer.currentBalancing());
         }, 100);
     });
     on("updatePortBalance", (data, socket) => {

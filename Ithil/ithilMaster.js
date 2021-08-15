@@ -48,7 +48,7 @@ balancer = {
         });
         return balancer.workers.sort((a, b) => a.clients - b.clients)[0]; // return worker with fewest clients
     },
-    currentBalancing: () => balancer.workers.reduce((sum, worker) => sum + worker.clients) + " / " + balancer.workers.map(worker => `${worker.clients}@:${worker.port}`).join(", ")
+    currentBalancing: () => balancer.workers.reduce((sum, worker) => sum + Number(worker.clients), 0) + " / " + balancer.workers.map(worker => `${worker.clients}@:${worker.port}`).join(", ")
 }
 
 // start public server with cors & ssl

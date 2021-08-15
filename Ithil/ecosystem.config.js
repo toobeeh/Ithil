@@ -2,14 +2,16 @@ module.exports = {
     apps: [
         {
             name: "Ithil Master Server",
-            script: "ithilMaster.js"
+            script: "ithilMaster.js",
+            time: true
         }, {
             name: "Ithil Worker Server",
             script: "ithilWorker.js",
             exec_mode: "cluster",
             instances: 8,
             wait_ready: true,
-            listen_timeout: 10000
+            listen_timeout: 10000,
+            time: true
         }],
     config: {
         masterPort: 4000,

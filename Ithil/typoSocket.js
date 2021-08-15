@@ -1,8 +1,8 @@
 class TypoSocket {
-    constructor(socket, palantirdb, sharedData, log, tynt) {
+    constructor(socket, db, sharedData, log, tynt) {
         this.log = log;
         this.tynt = tynt;
-        this.db = palantirdb;
+        this.db = db;
         this.sharedData = sharedData;
         this.socket = socket;
         this.socket.on("login", this.login);
@@ -109,7 +109,7 @@ class TypoSocket {
         this.loginToken = data.payload.loginToken; // set login
         this.id = member.member.UserID;
         this.socket.off("login", this.login);
-        //this.imageDatabase = new (require("./imageDatabase"))(this.loginToken);
+        this.imageDatabase = new (require("./imageDatabase"))(this.loginToken);
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata

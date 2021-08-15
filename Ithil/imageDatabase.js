@@ -1,3 +1,4 @@
+const { expose } = require("threads/worker");
 class ImageDatabase {
     constructor(login) {
         const fs = require('fs');
@@ -132,7 +133,7 @@ class ImageDatabase {
             }
             return result;
         }
-        this.removeDrawing = (id, login) => {
+        this.removeDrawing = (login, id) => {
             let result = {};
             result.valid = false;
             try {
@@ -152,5 +153,32 @@ class ImageDatabase {
         }
     }
 }
-
-module.exports = ImageDatabase;
+let _database = null;
+const database = (login) => {
+    if (!_database) _database = new ImageDatabase(login);
+    return _database;
+}
+const exposeInterface = {
+    addDrawing(login, id, meta) {
+        return database(login).addDrawing(login, id, meta);
+    },
+    addDrawCommands(login, id, commands) {
+        return database(login).addDrawCommands(id, commands);
+    },
+    addURI(login, id, uri) {
+        return database(login).addURI(id, uri);
+    },
+    getDrawing(login, id) {
+        return database(login).getDrawing(id);
+    },
+    getUserMeta(login, limit = -1, query = {}) {
+        return database(login).getUserMeta(login, limit, query);
+    },
+    removeEntries(login, logindate) {
+        return database(login).removeEntries(login, logindate);
+    },
+    removeDrawing(login, id) {
+        return database(login).removeDrawing(login, id);
+    }
+}
+expose(exposeInterface);

@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
-    <Content Include="imageDatabaseW.js" />
+    <Content Include="imageDatabase.js" />
     <Content Include="ithilMaster.js">
       <SubType>Code</SubType>
     </Content>
@@ -43,10 +43,6 @@
     </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="imageDatabase.js" />
-    <Content Include="palantirDatabase.js">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="typoSocket.js">
       <SubType>Code</SubType>
     </Content>

@@ -110,9 +110,7 @@ class TypoSocket {
         this.id = member.member.UserID;
         this.socket.off("login", this.login);
         const { spawn, Thread, Worker } = require("threads");
-        this.imageDatabase = new (require("./imageDatabase"))(this.loginToken);
-        const thread = this.imageDatabaseWorker = await spawn(new Worker("./imageDatabaseW"));
-        Thread.events(thread).subscribe(event => console.log("Thread evt:", event));
+        const thread = this.imageDatabaseWorker = await spawn(new Worker("./imageDatabase"));
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
@@ -127,7 +125,7 @@ class TypoSocket {
         this.socket.on("get meta", this.getUserMeta); // get all meta
         this.socket.on("disconnect", async () => { // clear up things
             this.clearCloud(); // clear image cloud
-            await Thread.terminate(thread);
+            await Thread.terminate(thread); // terminate imagecloud thread
         });
         this.emitEvent(data.event + " response", {
             authorized: true,
@@ -230,7 +228,7 @@ class TypoSocket {
         // request clear drop, no matter if caught or not
         this.sharedData.clearDrop(data.payload.drop.DropID);
     }
-    storeDrawing = (data) => {
+    storeDrawing = async (data) => {
         let meta = data.payload.meta;
         let uri = data.payload.uri;
         let commands = data.payload.commands;
@@ -241,29 +239,29 @@ class TypoSocket {
         meta.save = this.patron;
         let id = Math.ceil(Date.now()).toString();
 
-        if (this.imageDatabase.addDrawing(this.loginToken, id, meta)) {
-            this.imageDatabase.addDrawCommands(id, commands);
-            this.imageDatabase.addURI(id, uri);
+        if (await this.imageDatabase.addDrawing(this.loginToken, id, meta)) {
+            await this.imageDatabaseWorker.addDrawCommands(this.loginToken, id, commands);
+            await this.imageDatabaseWorker.addURI(this.loginToken, id, uri);
         }
         this.emitEvent(data.event + " response", {
             id: id
         }); 
     }
-    removeDrawing = data => {
+    removeDrawing = async (data) => {
         let id = data.payload.id;
-        this.imageDatabase.removeDrawing(id, this.loginToken);
+        await this.imageDatabaseWorker.removeDrawing(this.loginToken, id);
     }
-    fetchDrawing = data => {
+    fetchDrawing = async (data) => {
         let id = data.payload.id;
-        let result = this.imageDatabase.getDrawing(id);
+        let result = await this.imageDatabaseWorker.getDrawing(this.loginToken, id);
         if (data.payload.withCommands != true) result.commands = null;
         this.emitEvent(data.event + " response", {
             drawing: result
         }); 
     }
-    getCommands = data => {
+    getCommands = async (data) => {
         let id = data.payload.id;
-        let result = this.imageDatabase.getDrawing(id);
+        let result = await this.imageDatabaseWorker.getDrawing(this.loginToken, id);
         this.emitEvent(data.event + " response", {
             commands: result.commands
         });
@@ -277,8 +275,8 @@ class TypoSocket {
             drawings: result.drawings
         }); 
     }
-    clearCloud = () => {
-        if(!this.patron) this.imageDatabase.removeEntries(this.loginToken, this.loginDate - 1000 * 60 * 60 * 24 * 30); // delete older than 30 days
+    clearCloud = async () => {
+        if (!this.patron) await this.imageDatabaseWorker.removeEntries(this.loginToken, this.loginDate - 1000 * 60 * 60 * 24 * 30); // delete older than 30 days
     }
 }
 module.exports = TypoSocket;

@@ -126,7 +126,7 @@ class TypoSocket {
         this.socket.on("get meta", this.getUserMeta); // get all meta
         this.socket.on("disconnect", async () => { // clear up things
             this.clearCloud(); // clear image cloud
-            await Thread.terminate(this.imageDatabase);
+            //await Thread.terminate(this.imageDatabase);
         });
         this.emitEvent(data.event + " response", {
             authorized: true,

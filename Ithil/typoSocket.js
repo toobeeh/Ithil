@@ -1,5 +1,5 @@
 class TypoSocket {
-    constructor(socket, palantirdb, imagedb, sharedData, log, tynt) {
+    constructor(socket, palantirdb, sharedData, log, tynt) {
         this.log = log;
         this.tynt = tynt;
         this.db = palantirdb;

@@ -112,6 +112,7 @@ class TypoSocket {
         const { spawn, Thread, Worker } = require("threads");
         this.imageDatabase = new (require("./imageDatabase"))(this.loginToken);
         this.imageDatabaseWorker = await spawn(new Worker("./imageDatabaseW"));
+        Thread.events(this.imageDatabaseWorker).subscribe(event => console.log("Thread evt:", event));
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata

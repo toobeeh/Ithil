@@ -96,7 +96,7 @@ class ImageDatabase {
                 if (query.author) where += " AND json_extract(meta,'$.author') like '%" + query.author + "%'";
                 if (query.date) where += " AND json_extract(meta,'$.date') like '%" + query.date + "%'";
                 let t = Date.now();
-                let rows = db.prepare("SELECT * FROM Drawings WHERE login = ? " + where + " ORDER BY id DESC").all(login);
+                let rows = db.prepare("SELECT * FROM Drawings WHERE login = ? " + where + " ORDER BY id DESC" + (limit > 0 ? " LIMIT " + limit : "")).all(login);
                 console.log(Date.now() - t);
                 result.drawings = [];
                 rows.forEach(row => {

@@ -17,11 +17,7 @@ const tynt = require("tynt");
 const portscanner = require('portscanner');
 const ipc = require('node-ipc');
 const config = require("./ecosystem.config").config;
-
-try {
-    const { spawn, Thread, Worker } = require("threads");
-}
-catch (e) { console.log(e) }
+const { spawn, Thread, Worker } = require("threads");
 
 // logging function
 const logState = (msg) => { console.log(tynt.BgWhite(tynt.Blue(msg))); }
@@ -30,6 +26,15 @@ const logSocketInfo = (id, username, msg) => { console.log(tynt.Blue(id + ": ") 
 
 // wrap everything else after port was found
 portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127.0.0.1', async (error, port) => {
+    try {
+        setTimeout(async () => {
+            const imageDb = await spawn(new Worker("./imageDatabaseW"));
+            console.log(await imageDb.getUserMeta("65707469", 100));
+        });
+    }
+    catch (e) {
+        console.log(e);
+    }
     if (error) {
         logState("No free port found - exiting worker process");
         process.exit(1);

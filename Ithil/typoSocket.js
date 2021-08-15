@@ -111,8 +111,8 @@ class TypoSocket {
         this.socket.off("login", this.login);
         const { spawn, Thread, Worker } = require("threads");
         this.imageDatabase = new (require("./imageDatabase"))(this.loginToken);
-        this.imageDatabaseWorker = await spawn(new Worker("./imageDatabaseW"));
-        Thread.events(this.imageDatabaseWorker).subscribe(event => console.log("Thread evt:", event));
+        const thread = this.imageDatabaseWorker = await spawn(new Worker("./imageDatabaseW"));
+        Thread.events(thread).subscribe(event => console.log("Thread evt:", event));
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
@@ -127,7 +127,7 @@ class TypoSocket {
         this.socket.on("get meta", this.getUserMeta); // get all meta
         this.socket.on("disconnect", async () => { // clear up things
             this.clearCloud(); // clear image cloud
-            //await Thread.terminate(this.imageDatabase);
+            await Thread.terminate(thread);
         });
         this.emitEvent(data.event + " response", {
             authorized: true,
@@ -273,7 +273,6 @@ class TypoSocket {
         if (!limit) limit = -1;
         let query = data.payload.query;
         let result = await this.imageDatabaseWorker.getUserMeta(this.loginToken, limit, query);
-        //let result = this.imageDatabase.getUserMeta(this.loginToken, limit, query);
         this.emitEvent(data.event + " response", {
             drawings: result.drawings
         }); 

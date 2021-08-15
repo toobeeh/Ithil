@@ -5,14 +5,6 @@
  * - connects to internal socketio coordination server
  *   gets drops & shared data
  */
-//const config = {
-//    masterPort: 4000,
-//    coordinationPort: 3999,
-//    publicPort: 4001,
-//    workerRange: [4002, 4010],
-//    minAvailableWorker: 7,
-//    certificatePath: '/etc/letsencrypt/live/typo.rip'
-//}
 
 // require packets
 const app = require('express')();
@@ -110,8 +102,8 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         emit("updatePortBalance", { port: workerPort, clients: typoSockets.length });
         socket.on("disconnect", (reason) => {
             typoSockets = typoSockets.filter(s => s.socket.id != typosocket.socket.id);
-            typosoket = null;
-            logSocketInfo(socket.id, tynt.Red("disconnected"), reason);
+            logSocketInfo(socket.id, typosocket.username, "Disconnected: " + reason);
+            typosocket = null;
             emit("updatePortBalance", { port: workerPort, clients: typoSockets.length });
         });
     });

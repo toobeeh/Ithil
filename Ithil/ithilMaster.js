@@ -5,14 +5,6 @@
  * - internal socketio endpoint to coordinate Ithil Workers
  *   keeps track of drops, data & load balance
  */
-//const config = {
-//    masterPort: 4000,
-//    coordinationPort: 3999,
-//    publicPort: 4001,
-//    workerRange: [4002, 4010],
-//    minAvailableWorker: 7,
-//    certificatePath: '/etc/letsencrypt/live/typo.rip'
-//}
 
 // require packets
 const masterExpress = require('express')();

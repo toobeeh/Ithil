@@ -88,6 +88,7 @@ class TypoSocket {
             this.socket.join("public");
             return;
         }
+        this.username = member.member.UserName;
         let flags = ("00000000" + (Number(member.flag) >>> 0).toString(2)).slice(-8).split("").reverse();
         this.flags = flags;
         if (flags[5] == "1") {
@@ -106,7 +107,6 @@ class TypoSocket {
         });
         this.loginDate = Math.ceil(Date.now());
         this.loginToken = data.payload.loginToken; // set login
-        this.username = member.member.UserName;
         this.id = member.member.UserID;
         this.socket.off("login", this.login);
         this.imageDatabase = new (require("./imageDatabase"))(this.loginToken);

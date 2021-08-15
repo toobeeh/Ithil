@@ -18,6 +18,11 @@ const portscanner = require('portscanner');
 const ipc = require('node-ipc');
 const config = require("./ecosystem.config").config;
 
+try {
+    const { spawn, Thread, Worker } = require("threads");
+}
+catch (e) { console.log(e) }
+
 // logging function
 const logState = (msg) => { console.log(tynt.BgWhite(tynt.Blue(msg))); }
 const logLoading = (msg) => { console.log(tynt.Cyan(msg)); }

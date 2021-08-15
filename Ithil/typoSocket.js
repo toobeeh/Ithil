@@ -268,11 +268,12 @@ class TypoSocket {
             commands: result.commands
         });
     }
-    getUserMeta = data => {
+    getUserMeta = async (data) => {
         let limit = data.payload.limit;
         if (!limit) limit = -1;
         let query = data.payload.query;
-        let result = this.imageDatabase.getUserMeta(this.loginToken, limit, query);
+        let result = await this.imageDatabaseWorker.getUserMeta(this.loginToken, limit, query);
+        //let result = this.imageDatabase.getUserMeta(this.loginToken, limit, query);
         this.emitEvent(data.event + " response", {
             drawings: result.drawings
         }); 

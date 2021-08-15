@@ -239,7 +239,7 @@ class TypoSocket {
         meta.save = this.patron;
         let id = Math.ceil(Date.now()).toString();
 
-        if (await this.imageDatabase.addDrawing(this.loginToken, id, meta)) {
+        if (await this.imageDatabaseWorker.addDrawing(this.loginToken, id, meta)) {
             await this.imageDatabaseWorker.addDrawCommands(this.loginToken, id, commands);
             await this.imageDatabaseWorker.addURI(this.loginToken, id, uri);
         }

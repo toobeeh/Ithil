@@ -81,7 +81,7 @@ class TypoSocket {
         });
     }
     // On login event: authorize user, set room public if unauthorized
-    login = (data) => {
+    login = async (data) => {
         let member = this.db.getUserByLogin(data.payload.loginToken); // check if member exists with login
         if (!member.valid) {
             this.emitEvent(data.event + " response", { authorized: false});
@@ -109,7 +109,9 @@ class TypoSocket {
         this.loginToken = data.payload.loginToken; // set login
         this.id = member.member.UserID;
         this.socket.off("login", this.login);
+        const { spawn, Thread, Worker } = require("threads");
         this.imageDatabase = new (require("./imageDatabase"))(this.loginToken);
+        this.imageDatabaseWorker = await spawn(new Worker("./imageDatabaseW"));
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
@@ -122,7 +124,10 @@ class TypoSocket {
         this.socket.on("remove drawing", this.removeDrawing); // get stored drawing
         this.socket.on("get commands", this.getCommands); // get stored drawing commands
         this.socket.on("get meta", this.getUserMeta); // get all meta
-        this.socket.on("disconnect", this.clearCloud); // clear image cloud
+        this.socket.on("disconnect", async () => { // clear up things
+            this.clearCloud(); // clear image cloud
+            await Thread.terminate(this.imageDatabase);
+        });
         this.emitEvent(data.event + " response", {
             authorized: true,
             activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID))

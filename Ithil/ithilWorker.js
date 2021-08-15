@@ -26,15 +26,15 @@ const logSocketInfo = (id, username, msg) => { console.log(tynt.Blue(id + ": ") 
 
 // wrap everything else after port was found
 portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127.0.0.1', async (error, port) => {
-    try {
-        setTimeout(async () => {
-            const imageDb = await spawn(new Worker("./imageDatabaseW"));
-            console.log(await imageDb.getUserMeta("65707469", 100));
-        });
-    }
-    catch (e) {
-        console.log(e);
-    }
+    //try {
+    //    setTimeout(async () => {
+    //        const imageDb = await spawn(new Worker("./imageDatabaseW"));
+    //        console.log(await imageDb.getUserMeta("65707469", 100));
+    //    });
+    //}
+    //catch (e) {
+    //    console.log(e);
+    //}
     if (error) {
         logState("No free port found - exiting worker process");
         process.exit(1);

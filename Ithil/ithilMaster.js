@@ -153,20 +153,23 @@ class Drops {
         // check async for drops once in 5s
         setTimeout(async () => {
             while (true) {
-                let drop = await this.getNextDrop();
-                if (drop !== false) ipcBroadcast("newDrop", drop);
-                // drop catch timeout
-                const timeout = 5000;
-                const poll = 50;
-                let passed = 0;
-                while (passed < timeout) {
-                    if (dropIsClaimed(drop.DropID)) {
-                        this.clearDrop(drop.DropID);
-                        break;
+                try {
+                    let drop = await this.getNextDrop();
+                    if (drop !== false) ipcBroadcast("newDrop", drop);
+                    // drop catch timeout
+                    const timeout = 5000;
+                    const poll = 50;
+                    let passed = 0;
+                    while (passed < timeout) {
+                        if (dropIsClaimed(drop.DropID)) {
+                            this.clearDrop(drop.DropID);
+                            break;
+                        }
+                        passed += poll;
+                        await idle(poll);
                     }
-                    passed += poll;
-                    await idle(poll);
                 }
+                catch (e) {console.warn("Error in drops:",e)}
             }
         }, 1);
     }

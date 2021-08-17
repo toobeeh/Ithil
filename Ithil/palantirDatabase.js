@@ -42,7 +42,7 @@ const palantirDb = {
             rows.forEach(row => {
                 result.lobbies.push({ guildID: JSON.parse(row.GuildID), guildLobbies: JSON.parse(row.Lobbies) });
             });
-            result.lobbies.forEach(g => g.guildLobbies.forEach(l => l.Players = l.Players.length));
+            result.lobbies.forEach(g => { if (g.guildLobbies) g.guildLobbies.forEach(l => l.Players = l.Players.length) });
             result.valid = true;
         }
         catch(e){

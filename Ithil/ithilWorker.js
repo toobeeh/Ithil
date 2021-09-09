@@ -72,7 +72,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     const sharedData = {
         publicData: { onlineSprites: [], drops: [], sprites: [] },
         activeLobbies: [],
-        clearDrop: (dropID) => emit("requestClearDrop", dropID)
+        claimDrop: (claim) => emit("claimDrop", claim)
     }
     on("publicData", data => {
         sharedData.publicData = data;
@@ -88,6 +88,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
     });
     on("clearDrop", result => {
+        console.log("Clearing drop:", result);
         workerSocket.to("playing").emit("clear drop", { event: "clear drop", payload: { result: result } });
     });
 

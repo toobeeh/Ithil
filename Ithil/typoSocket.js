@@ -205,28 +205,16 @@ class TypoSocket {
             this.log(this.socket.id, this.username, "Left a lobby");
         }
     }
-    claimDrop = (data) => {
+    claimDrop = async (data) => {
         this.log(this.socket.id, this.username, "Claims a drop: " + (data.payload.drop ? data.payload.drop.DropID : " no drop - invalid."));
-        if (!data.payload.drop || this.flags[6] == "1") return;
-        let res = this.db.getDrop(data.payload.drop.DropID);
-        console.log(JSON.stringify(res));
-        res = res.drop;
-        let result;
-        if (res.CaughtLobbyKey == "" && data.payload.timedOut === false) {
-            this.db.claimDrop(data.payload.lobbyKey, `<a href='#${data.payload.drop.DropID}'>${data.payload.name}</a>`, data.payload.drop.DropID, this.id);
-            this.db.rewardDrop(this.loginToken, data.payload.drop.EventDropID);
-            result = {
-                caught: true,
-            }
-        }
-        else {
-            result = {
-                caught: false
-            }
-        }
-        this.emitEvent(data.event + " response", result); // reply with result
-        // request clear drop, no matter if caught or not
-        this.sharedData.clearDrop(data.payload.drop.DropID);
+        if (!data.payload.drop || data.timedOut == true || this.flags[6] == "1") return;
+        this.sharedData.claimDrop({
+            login: this.loginToken,
+            username: this.username,
+            lobbyID: data.payload.lobbyID,
+            dropID: data.payload.dropID,
+            claimSocketID: this.socket.id
+        });
     }
     storeDrawing = async (data) => {
         let meta = data.payload.meta;

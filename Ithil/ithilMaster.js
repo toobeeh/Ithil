@@ -145,7 +145,7 @@ class Drops {
                 dropID: lastClaimed.dropID,
                 caughtPlayer: "<a href='" + lastClaimed.dropID + "'>" + lastClaimed.username + "</a>",
                 caughtLobbyKey: lastClaimed.CaughtLobbyKey,
-                claimSocketID: lastClaimed.claimSocketID;
+                claimSocketID: lastClaimed.claimSocketID
             };
             ipcBroadcast("clearDrop", result);
         };

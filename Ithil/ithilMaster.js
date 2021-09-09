@@ -136,53 +136,57 @@ class Drops {
             await idle(ms);
             return nextDrop.drop;
         };
-        // the last claimed drop
-        let lastClaimed = { dropID: null, username: null, lobbyKey: null, claimSocketID: null };
+        // buffer of claims - gets filled and procedurally processed to prevent concurrent claim processing
+        let claimBuffer = [];
         // clears the last claimed drop
-        const clearDrop = () => {
-            logState("Cleared drop ID " + lastClaimed.dropID + " by " + lastClaimed.username);
+        const clearDrop = (clearData) => {
+            logState("Clearing drop ID " + clearData.dropID + " by " + clearData.username);
             const result = {
-                dropID: lastClaimed.dropID,
-                caughtPlayer: "<a href='" + lastClaimed.dropID + "'>" + lastClaimed.username + "</a>",
-                caughtLobbyKey: lastClaimed.CaughtLobbyKey,
-                claimSocketID: lastClaimed.claimSocketID
+                dropID: clearData.dropID,
+                caughtPlayer: "<a href='" + clearData.dropID + "'>" + clearData.username + "</a>",
+                caughtLobbyKey: clearData.CaughtLobbyKey,
+                claimSocketID: clearData.claimSocketID
             };
+            console.log("Clear result:", result);
             ipcBroadcast("clearDrop", result);
         };
-        this.processClaim = claim => {
+        const processClaim = claim => {
+            let claimSuccess = false;
             console.log("Processing drop claim:", claim);
-            console.log("Last claimed is:", lastClaimed);
-            // if last claimed is this drop -> already claimed
-            if (claim.dropID != lastClaimed.dropID) {
-                // check if drop is current drop
-                let result = database.getDrop(dropID);
-                if (result.valid === true) {
-                    console.log("Drop fetch result:", result);
-                    // if drop is not claimed, claim and reward
-                    if (result.drop.CaughtLobbyKey == "") {
-                        this.db.claimDrop(claim.lobbyKey, claim.username, result.drop.DropID, claim.login);
-                        this.db.rewardDrop(claim.login, result.drop.EventDropID);
-                        // set last claim
-                        lastClaimed.dropID = result.drop.DropID;
-                        lastClaimed.username = claim.username;
-                        lastClaimed.lobbyKey = claim.lobbyKey;
-                        lastClaimed.claimSocketID = 0;
-                    }
-                    else { // drop however is already claimed, update lastclaim
-                        lastClaimed.dropID = result.drop.DropID;
-                        lastClaimed.username = result.drop.CaughtLobbyPlayerID;
-                        lastClaimed.lobbyKey = result.drop.caughtLobbyKey;
-                        lastClaimed.claimSocketID = claim.claimSocketID;
-                    }
-                    console.log("Last claimed is now:", lastClaimed);
-                    clearDrop();
+            // check if drop is current drop
+            const  result = database.getDrop(dropID);
+            if (result.valid === true) {
+                console.log("Drop fetch result:", result);
+                const clearData = {
+                    dropID: null,
+                    username: null,
+                    lobbyKey: null,
+                    claimSocketID: 0
+                };
+                // if drop is not claimed, claim and reward
+                if (result.drop.CaughtLobbyKey == "") {
+                    this.db.claimDrop(claim.lobbyKey, claim.username, result.drop.DropID, claim.login);
+                    this.db.rewardDrop(claim.login, result.drop.EventDropID);
+                    // set last claim
+                    clearData.dropID = result.drop.DropID;
+                    clearData.username = claim.username;
+                    clearData.lobbyKey = claim.lobbyKey;
+                    clearData.claimSocketID = 0;
                 }
+                else { // drop however is already claimed, set clear info 
+                    clearData.dropID = result.drop.DropID;
+                    clearData.username = result.drop.CaughtLobbyPlayerID;
+                    clearData.lobbyKey = result.drop.caughtLobbyKey;
+                    clearData.claimSocketID = 0;
+                }
+                console.log("Clear info is:", clearData);
+                clearDrop(clearData);
+                claimSuccess = true;
             }
-            // else respond with a clear for the drop
-            //else clearDrop();
+            return claimSuccess;
         }
         // claim drop
-        ipcOn("claimDrop", (claim) => this.processClaim(claim));
+        ipcOn("claimDrop", (claim) => claimBuffer.push(claim));
         // check async for drops once in 5s
         setTimeout(async () => {
             while (true) {
@@ -193,18 +197,19 @@ class Drops {
                     const timeout = 5000;
                     const poll = 50;
                     let passed = 0;
-                    while (passed < timeout) { // wait until claimed drop is current drop
-                        if (lastClaimed.dropID == drop.DropID) {
-                            clearDrop();
-                            break;
+                    let claimed = false;
+                    while (passed < timeout && !claimed) { // process claim buffer while drop not claimed
+                        while (claimBuffer.length > 0) { // while buffer has claims
+                            claim = claimBuffer.shift(); // get first claim of buffer
+                            if (processClaim(claim)) {
+                                claimed = true;
+                                claimBuffer = []; // if first claim is successful, reject all other claims
+                            }
+                            else claimed = false;
                         }
                         passed += poll;
                         await idle(poll);
                     }
-                    // set last claimed to current drop after timeout
-                    lastClaimed.dropID = drop.DropID;
-                    lastClaimed.username = "... no one";
-                    lastClaimed.lobbyKey = 0;
                 }
                 catch (e) {console.warn("Error in drops:",e)}
             }

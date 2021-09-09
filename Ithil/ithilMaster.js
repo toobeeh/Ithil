@@ -200,7 +200,7 @@ class Drops {
                     let claimed = false;
                     while (passed < timeout && !claimed) { // process claim buffer while drop not claimed
                         while (claimBuffer.length > 0) { // while buffer has claims
-                            claim = claimBuffer.shift(); // get first claim of buffer
+                            const claim = claimBuffer.shift(); // get first claim of buffer
                             if (processClaim(claim)) {
                                 claimed = true;
                                 claimBuffer = []; // if first claim is successful, reject all other claims

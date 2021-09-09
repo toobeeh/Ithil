@@ -154,7 +154,7 @@ class Drops {
             let claimSuccess = false;
             console.log("Processing drop claim:", claim);
             // check if drop is current drop
-            const  result = database.getDrop(dropID);
+            const result = database.getDrop(claim.dropID);
             if (result.valid === true) {
                 console.log("Drop fetch result:", result);
                 const clearData = {

@@ -210,7 +210,7 @@ class TypoSocket {
         if (!data.payload.drop || data.timedOut == true || this.flags[6] == "1") return;
         this.sharedData.claimDrop({
             login: this.loginToken,
-            username: this.username,
+            username: data.payload.name,
             userID: this.id,
             lobbyKey: data.payload.lobbyKey,
             dropID: data.payload.drop.DropID,

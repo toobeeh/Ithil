@@ -154,7 +154,7 @@ class Drops {
             let claimSuccess = false;
             // check if drop is current drop
             const result = database.getDrop(claim.dropID);
-            if (result.valid === true) {
+            if (result.valid === true && result.drop != undefined) {
                 const clearData = {
                     dropID: null,
                     username: null,

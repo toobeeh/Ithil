@@ -211,6 +211,7 @@ class TypoSocket {
         this.sharedData.claimDrop({
             login: this.loginToken,
             username: this.username,
+            userID: this.id,
             lobbyKey: data.payload.lobbyKey,
             dropID: data.payload.drop.DropID,
             claimSocketID: this.socket.id

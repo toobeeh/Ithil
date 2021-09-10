@@ -144,7 +144,7 @@ class Drops {
             const result = {
                 dropID: clearData.dropID,
                 caughtPlayer: "<a href='" + clearData.dropID + "'>" + clearData.username + "</a>",
-                caughtLobbyKey: clearData.CaughtLobbyKey,
+                caughtLobbyKey: clearData.lobbyKey,
                 claimSocketID: clearData.claimSocketID
             };
             console.log("Clear result:", result);

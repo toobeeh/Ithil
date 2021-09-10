@@ -88,7 +88,6 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
     });
     on("clearDrop", result => {
-        console.log("Clearing drop:", result);
         workerSocket.to("playing").emit("clear drop", { event: "clear drop", payload: { result: result } });
     });
 

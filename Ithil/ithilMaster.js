@@ -152,11 +152,9 @@ class Drops {
         };
         const processClaim = claim => {
             let claimSuccess = false;
-            console.log("Processing drop claim:", claim);
             // check if drop is current drop
             const result = database.getDrop(claim.dropID);
             if (result.valid === true) {
-                console.log("Drop fetch result:", result);
                 const clearData = {
                     dropID: null,
                     username: null,
@@ -171,15 +169,14 @@ class Drops {
                     clearData.dropID = result.drop.DropID;
                     clearData.username = claim.username;
                     clearData.lobbyKey = claim.lobbyKey;
-                    clearData.claimSocketID = 0;
+                    clearData.claimSocketID = claim.claimSocketID;
                 }
                 else { // drop however is already claimed, set clear info 
                     clearData.dropID = result.drop.DropID;
                     clearData.username = result.drop.CaughtLobbyPlayerID;
-                    clearData.lobbyKey = result.drop.caughtLobbyKey;
+                    clearData.lobbyKey = result.drop.CaughtLobbyKey;
                     clearData.claimSocketID = 0;
                 }
-                console.log("Clear info is:", clearData);
                 clearDrop(clearData);
                 claimSuccess = true;
             }

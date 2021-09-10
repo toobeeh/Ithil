@@ -143,7 +143,7 @@ class Drops {
             logState("Clearing drop ID " + clearData.dropID + " by " + clearData.username);
             const result = {
                 dropID: clearData.dropID,
-                caughtPlayer: "<a href='" + clearData.dropID + "'>" + clearData.username + "</a>",
+                caughtPlayer: "<abbr title='Drop ID: " + clearData.dropID + "'>" + clearData.username + "</abbr>",
                 caughtLobbyKey: clearData.lobbyKey,
                 claimSocketID: clearData.claimSocketID
             };

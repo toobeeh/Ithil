@@ -149,7 +149,8 @@ class TypoSocket {
         let member = this.db.getUserByLogin(this.loginToken);
         const slots = (this.patron ? 1 : 0) + Math.floor(member.drops / 1000);
         const availablesprites = member.sprites.split(",").filter(sprite => sprite.replaceAll(".", "") > 0 && !sprite.includes("."));
-        if (data.slot = 0 && data.slot <= slots && (availablesprites.includes(data.sprite) || data.sprite == "0")) {
+        console.log(slots, availablesprites, data.slot > 0, data.slot <= slots, availablesprites.includes(data.sprite), data.sprite == "0");
+        if (data.slot > 0 && data.slot <= slots && (availablesprites.includes(data.sprite) || data.sprite == "0")) {
             // disable old sprite
             const inv = member.sprites.split(",");
             inv.forEach(item => {

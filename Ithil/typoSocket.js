@@ -176,10 +176,7 @@ class TypoSocket {
         let member = this.db.getUserByLogin(this.loginToken);
         const combo = data.payload.combostring.split(",");
         const slots = 1 + (this.patron ? 1 : 0) + Math.floor(member.drops / 1000) + (this.flags[1] == "1" ? 1000 : 0);
-        const availablesprites = member.sprites
-            .split(",")
-            .filter(sprite => sprite.replaceAll(".", "") > 0 && !sprite.includes("."))
-            .map(sprite => parseInt(sprite.replaceAll(".", "")));
+        const availablesprites = member.spritesmember.sprites.replaceAll(".", "").split(",");
         let verifiedCombo = combo.map(slot => { return { slot: parseInt(slot.split(".").length - 1), sprite: parseInt(slot.replaceAll(".","")) } });
         console.log(verifiedCombo);
         verifiedCombo = verifiedCombo.filter(slot => slot.slot > 0 && slot.slot <= slots && (availablesprites.includes(slot.sprite) || slot.sprite == 0));

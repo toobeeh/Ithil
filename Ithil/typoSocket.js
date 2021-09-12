@@ -179,7 +179,7 @@ class TypoSocket {
         const availablesprites = member.sprites.replaceAll(".", "").split(",");
         let verifiedCombo = combo.map(slot => { return { slot: parseInt(slot.split(".").length - 1), sprite: parseInt(slot.replaceAll(".","")) } });
         console.log(verifiedCombo);
-        verifiedCombo = verifiedCombo.filter(slot => slot.slot > 0 && slot.slot <= slots && (availablesprites.includes(slot.sprite) || slot.sprite == 0));
+        verifiedCombo = verifiedCombo.filter(slot => slot.slot > 0 && slot.slot <= slots && (availablesprites.some(s => s == slot.sprite) || slot.sprite == 0));
         console.log(verifiedCombo);
         const inv = member.sprites.replaceAll(".", "").split(",");
         verifiedCombo.forEach(slot => {

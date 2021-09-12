@@ -159,8 +159,8 @@ class TypoSocket {
             // disable old sprite
             const inv = member.sprites.split(",");
             inv.forEach(item => {
-                if (item.split(".").length - 1 == data.slot) item = item.replaceAll(".", "");
-                if (item.replaceAll(".", "") == data.sprite) item = ".".repeat(data.slot) + item.replaceAll(".", "");
+                if (item.split(".").length - 1 == setSlot) item = item.replaceAll(".", "");
+                if (item.replaceAll(".", "") == setSprite) item = ".".repeat(setSlot) + setSprite;
             });
             member.sprites = inv.join(",");
         }

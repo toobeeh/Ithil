@@ -115,6 +115,7 @@ class TypoSocket {
         const thread = this.imageDatabaseWorker = await spawn(new Worker("./imageDatabase"));
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
+        this.socket.on("set slot", this.setSlot); // add event handler set slot
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
         this.socket.on("set lobby", this.setLobby); // set lobby of socket, set playing and return lobbydata
         this.socket.on("search lobby", this.searchLobby); // set searching status
@@ -140,6 +141,23 @@ class TypoSocket {
         // get user data
         let member = this.db.getUserByLogin(this.loginToken);
         member.slots = this.spriteSlots;
+        this.emitEvent(data.event + " response", { user: member });
+    }
+    // set a sprite
+    setSlot = (data) => {
+        // get current user data
+        let member = this.db.getUserByLogin(this.loginToken);
+        const slots = (this.patron ? 1 : 0) + Math.floor(member.drops / 1000);
+        const availablesprites = member.sprites.split(",").filter(sprite => sprite.replaceAll(".", "") > 0 && !sprite.includes("."));
+        if (data.slot = 0 && data.slot <= slots && (availablesprites.includes(data.sprite) || data.sprite == "0")) {
+            // disable old sprite
+            const inv = member.sprites.split(",");
+            inv.forEach(item => {
+                if (item.split(".").length - 1 == data.slot) item = item.replaceAll(".", "");
+                if (item.replaceAll(".", "") == data.sprite) item = ".".repeat(data.slot) + item.replaceAll(".", "");
+            });
+            member.sprites = inv.join(",");
+        }
         this.emitEvent(data.event + " response", { user: member });
     }
     // on join lobby event: set status as playing and get lobby id

@@ -128,8 +128,8 @@ class Drops {
         };
         this.getNextDrop = async () => {
             let nextDrop;
-            // wait for next drop to appear, check in 5s intervals
-            while (!(nextDrop = database.getDrop()).drop || nextDrop.drop.CaughtLobbyKey != "") await idle(5000);
+            // wait for next drop to appear, check in 1s intervals
+            while (!(nextDrop = database.getDrop()).drop || nextDrop.drop.CaughtLobbyKey != "") await idle(1000);
             let ms = (new Date(nextDrop.drop.ValidFrom + " UTC")).getTime() - Date.now();
             if (ms < 0) return false; // old drop hasnt been claimed
             logLoading("Next drop in " + ms / 1000 + "s");
@@ -208,7 +208,7 @@ class Drops {
                         await idle(poll);
                     }
                 }
-                catch (e) {console.warn("Error in drops:",e)}
+                catch (e) { console.warn("Error in drops:", e);}
             }
         }, 1);
     }

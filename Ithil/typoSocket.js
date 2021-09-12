@@ -102,6 +102,8 @@ class TypoSocket {
             this.log(this.socket.id, this.username, "Recognized Patron");
         }
         else this.patron = false;
+        this.spriteSlots = Math.floor(member.drops / 1000) + (this.patron === true ? 1 : 0);
+        if (flags[2] == "1") this.spriteSlots = 100;
         member.member.Guilds.forEach(guild => {
             this.socket.join("guild" + guild.GuildID);
         });
@@ -137,6 +139,7 @@ class TypoSocket {
     getUser = (data) => {
         // get user data
         let member = this.db.getUserByLogin(this.loginToken);
+        member.slots = this.spriteSlots;
         this.emitEvent(data.event + " response", { user: member });
     }
     // on join lobby event: set status as playing and get lobby id

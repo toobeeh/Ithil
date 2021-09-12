@@ -154,7 +154,7 @@ class TypoSocket {
             .split(",")
             .filter(sprite => sprite.replaceAll(".", "") > 0 && !sprite.includes("."))
             .map(sprite => parseInt(sprite.replaceAll(".","")));
-        console.log(slots, availablesprites, setSlot > 0, setSlot <= slots, availablesprites.includes(setSprite), setSprite == 0);
+        console.log(slots, availablesprites, setSlot, setSprite, setSlot > 0, setSlot <= slots, availablesprites.includes(setSprite), setSprite == 0);
         if (data.slot > 0 && data.slot <= slots && (availablesprites.includes(data.sprite) || data.sprite == "0")) {
             // disable old sprite
             const inv = member.sprites.split(",");

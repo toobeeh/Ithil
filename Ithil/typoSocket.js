@@ -102,8 +102,8 @@ class TypoSocket {
             this.log(this.socket.id, this.username, "Recognized Patron");
         }
         else this.patron = false;
-        this.spriteSlots = Math.floor(member.drops / 1000) + (this.patron === true ? 1 : 0);
-        if (flags[2] == "1") this.spriteSlots = 100;
+        this.spriteSlots = 1 + Math.floor(member.drops / 1000) + (this.patron === true ? 1 : 0);
+        if (flags[1] == "1") this.spriteSlots = 100;
         member.member.Guilds.forEach(guild => {
             this.socket.join("guild" + guild.GuildID);
         });
@@ -149,7 +149,7 @@ class TypoSocket {
         let member = this.db.getUserByLogin(this.loginToken);
         const setSlot = parseInt(data.payload.slot);
         const setSprite = parseInt(data.payload.sprite);
-        const slots = (this.patron ? 1 : 0) + Math.floor(member.drops / 1000) + (this.flags[2] == "1" ? 100 : 0);
+        const slots = 1 + (this.patron ? 1 : 0) + Math.floor(member.drops / 1000) + (this.flags[1] == "1" ? 1000 : 0);
         const availablesprites = member.sprites
             .split(",")
             .filter(sprite => sprite.replaceAll(".", "") > 0 && !sprite.includes("."))

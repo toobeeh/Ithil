@@ -150,7 +150,7 @@ class TypoSocket {
         let member = this.db.getUserByLogin(this.loginToken);
         const setSlot = parseInt(data.payload.slot);
         const setSprite = parseInt(data.payload.sprite);
-        const slots = 1 + (this.patron ? 1 : 0) + Math.floor(member.drops / 1000) + (this.flags[1] == "1" ? 1000 : 0);
+        const slots = 1 + (this.patron ? 1 : 0) + Math.floor(member.drops / 1000) + (this.flags[1] == "1" ? 100 : 0);
         const availablesprites = member.sprites
             .split(",")
             .filter(sprite => sprite.replaceAll(".", "") > 0 && !sprite.includes("."))
@@ -175,19 +175,18 @@ class TypoSocket {
         // get current user data
         let member = this.db.getUserByLogin(this.loginToken);
         const combo = data.payload.combostring.split(",");
-        const slots = 1 + (this.patron ? 1 : 0) + Math.floor(member.drops / 1000) + (this.flags[1] == "1" ? 1000 : 0);
+        const slots = 1 + (this.patron ? 1 : 0) + Math.floor(member.drops / 1000) + (this.flags[1] == "1" ? 100 : 0);
         const availablesprites = member.sprites.replaceAll(".", "").split(",");
         let verifiedCombo = combo.map(slot => { return { slot: parseInt(slot.split(".").length - 1), sprite: parseInt(slot.replaceAll(".","")) } });
-        console.log(verifiedCombo);
         verifiedCombo = verifiedCombo.filter(slot => slot.slot > 0 && slot.slot <= slots && (availablesprites.some(s => s == slot.sprite) || slot.sprite == 0));
-        console.log(verifiedCombo);
         const inv = member.sprites.replaceAll(".", "").split(",");
         verifiedCombo.forEach(slot => {
             inv[inv.findIndex(item => item == slot.sprite.toString())] = ".".repeat(slot.slot) + slot.sprite;
         });
-        member.sprites = inv.join(",");
+
         // update member 
-        //member = this.db.getUserByLogin(this.loginToken);
+        this.db.setUserSprites(this.loginToken, inv.join(","));
+        member = this.db.getUserByLogin(this.loginToken);
         member.slots = slots;
         this.emitEvent(data.event + " response", { user: member });
     }

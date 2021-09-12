@@ -154,7 +154,6 @@ class TypoSocket {
             .split(",")
             .filter(sprite => sprite.replaceAll(".", "") > 0 && !sprite.includes("."))
             .map(sprite => parseInt(sprite.replaceAll(".","")));
-        console.log(slots, availablesprites, setSlot, setSprite, setSlot > 0, setSlot <= slots, availablesprites.includes(setSprite), setSprite == 0);
         if (setSlot > 0 && setSlot <= slots && (availablesprites.includes(setSprite) || setSprite == "0")) {
             // disable old sprite
             const inv = member.sprites.split(",");
@@ -163,6 +162,7 @@ class TypoSocket {
                 if (item.replaceAll(".", "") == setSprite) item = ".".repeat(setSlot) + setSprite;
             });
             member.sprites = inv.join(",");
+            console.log(inv);
         }
         this.emitEvent(data.event + " response", { user: member });
     }

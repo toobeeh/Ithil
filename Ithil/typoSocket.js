@@ -180,7 +180,7 @@ class TypoSocket {
             .split(",")
             .filter(sprite => sprite.replaceAll(".", "") > 0 && !sprite.includes("."))
             .map(sprite => parseInt(sprite.replaceAll(".", "")));
-        let verifiedCombo = combo.map(slot => { return { slot: parseInt(slot.split(".").length - 1), sprite: parseInt(slot.replaceAll(".")) } });
+        let verifiedCombo = combo.map(slot => { return { slot: parseInt(slot.split(".").length - 1), sprite: parseInt(slot.replaceAll(".","")) } });
         console.log(verifiedCombo);
         verifiedCombo = verifiedCombo.filter(slot => slot.slot > 0 && slot.slot <= slots && (availablesprites.includes(slot.sprite) || slot.sprite == 0));
         console.log(verifiedCombo);

@@ -162,9 +162,10 @@ class TypoSocket {
             console.log(newIndex, oldIndex);
             if (oldIndex >= 0) inv[oldIndex] = inv[oldIndex].replaceAll(".", "");
             if (newIndex >= 0) inv[newIndex] = ".".repeat(setSlot) + setSprite.toString();
-            member.sprites = inv.join(",");
-            console.log(inv);
+            this.db.setUserSprites(this.loginToken, inv.join(","));
         }
+        // update member 
+        member = this.db.getUserByLogin(this.loginToken);
         this.emitEvent(data.event + " response", { user: member });
     }
     // on join lobby event: set status as playing and get lobby id

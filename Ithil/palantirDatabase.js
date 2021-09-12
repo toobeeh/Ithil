@@ -32,6 +32,22 @@ const palantirDb = {
         palantirDb.close();
         return result;
     },
+    setUserSprites: (login, sprites) => {
+        let result = { valid: false };
+        try {
+            palantirDb.open();
+            palantirDb.db.prepare("UPDATE Members SET Sprites = ? WHERE Login = ?").run(sprites, login);
+            result = {
+                valid: true
+            };
+        }
+        catch {
+            palantirDb.close();
+            return result;
+        }
+        palantirDb.close();
+        return result;
+    },
     getActiveLobbies: () => {
         let result = { valid: false };
         let rows;

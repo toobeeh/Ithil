@@ -166,6 +166,7 @@ class TypoSocket {
         }
         // update member 
         member = this.db.getUserByLogin(this.loginToken);
+        member.slots = slots;
         this.emitEvent(data.event + " response", { user: member });
     }
     // on join lobby event: set status as playing and get lobby id

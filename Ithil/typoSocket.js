@@ -116,6 +116,7 @@ class TypoSocket {
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
         this.socket.on("set slot", this.setSlot); // add event handler set slot
+        this.socket.on("set combo", this.setCombo); // add event handler set combo
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
         this.socket.on("set lobby", this.setLobby); // set lobby of socket, set playing and return lobbydata
         this.socket.on("search lobby", this.searchLobby); // set searching status
@@ -166,6 +167,29 @@ class TypoSocket {
         }
         // update member 
         member = this.db.getUserByLogin(this.loginToken);
+        member.slots = slots;
+        this.emitEvent(data.event + " response", { user: member });
+    }
+    // set a combo
+    setCombo = (data) => {
+        // get current user data
+        let member = this.db.getUserByLogin(this.loginToken);
+        const combo = data.payload.combostring.split(",");
+        const slots = 1 + (this.patron ? 1 : 0) + Math.floor(member.drops / 1000) + (this.flags[1] == "1" ? 1000 : 0);
+        const availablesprites = member.sprites
+            .split(",")
+            .filter(sprite => sprite.replaceAll(".", "") > 0 && !sprite.includes("."))
+            .map(sprite => parseInt(sprite.replaceAll(".", "")));
+        const verifiedCombo = combo
+            .map(slot => { return { slot: parseInt(slot.split(".").length - 1), sprite: parseInt(slot.replaceAll(".")) } })
+            .filter(slot => slot.slot > 0 && slot.slot <= slots && (availablesprites.includes(slot.sprite) || slot.sprite == 0));
+        const inv = member.sprites.replaceAll(".", "").split(",");
+        verifiedCombo.forEach(slot => {
+            inv[inv.findIndex(item => item == slot.sprite.toString())] = ".".repeat(slot.slot) + slot.sprite;
+        });
+        member.sprites = inv.join(",");
+        // update member 
+        //member = this.db.getUserByLogin(this.loginToken);
         member.slots = slots;
         this.emitEvent(data.event + " response", { user: member });
     }

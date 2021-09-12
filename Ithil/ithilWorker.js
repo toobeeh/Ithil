@@ -76,7 +76,6 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     }
     on("publicData", data => {
         sharedData.publicData = data;
-        console.log(data);
         workerSocket.volatile.emit("online sprites", { event: "online sprites", payload: { onlineSprites: sharedData.publicData.onlineSprites } });
     });
     on("activeLobbies", data => {

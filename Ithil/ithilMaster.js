@@ -224,6 +224,7 @@ ipc.serve(() => {
     const broadcast = (event, callback) => ipc.server.broadcast(event, callback);
     on("workerConnect", (data, socket) => {
         balancer.addWorker(data.port, socket);
+        broadcast("publicData", sharedData.publicData);
         logState("Balancing: " + balancer.currentBalancing());
     });
     on("socket.disconnected", (socket, id) => {

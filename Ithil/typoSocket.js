@@ -154,11 +154,11 @@ class TypoSocket {
             .split(",")
             .filter(sprite => sprite.replaceAll(".", "") > 0 && !sprite.includes("."))
             .map(sprite => parseInt(sprite.replaceAll(".","")));
-        if (setSlot > 0 && setSlot <= slots && (availablesprites.includes(setSprite) || setSprite == "0")) {
+        if (setSlot > 0 && setSlot <= slots && (availablesprites.includes(setSprite) || setSprite == 0)) {
             // disable old sprite
             const inv = member.sprites.split(",");
             const oldIndex = inv.findIndex(item => item.split(".").length - 1 == setSlot);
-            const newIndex = inv.find(item => parseInt(item.replaceAll(".", "")) == setSprite);
+            const newIndex = inv.findIndex(item => parseInt(item.replaceAll(".", "")) == setSprite);
             console.log(newIndex, oldIndex);
             if (oldIndex >= 0) inv[oldIndex] = inv[oldIndex].replaceAll(".", "");
             if (newIndex >= 0) inv[newIndex] = ".".repeat(setSlot) + setSprite.toString();

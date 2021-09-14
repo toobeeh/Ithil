@@ -163,8 +163,7 @@ class Drops {
                 };
                 // if drop is not claimed, claim and reward
                 if (result.drop.CaughtLobbyKey == "") {
-                    console.log(claim.userID);
-                    database.claimDrop(claim.lobbyKey, claim.userID, result.drop.DropID, claim.login);
+                    database.claimDrop(claim.lobbyKey, claim.userID, result.drop.DropID, claim.userID);
                     database.rewardDrop(claim.login, result.drop.EventDropID);
                     // set last claim
                     clearData.dropID = result.drop.DropID;

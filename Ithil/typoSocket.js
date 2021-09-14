@@ -259,7 +259,6 @@ class TypoSocket {
     claimDrop = async (data) => {
         this.log(this.socket.id, this.username, "Claims a drop: " + (data.payload.drop ? data.payload.drop.DropID : " no drop - invalid."));
         if (!data.payload.drop || data.timedOut == true || this.flags[6] == "1") return;
-        console.log(this.id);
         this.sharedData.claimDrop({
             login: this.loginToken,
             username: data.payload.name,

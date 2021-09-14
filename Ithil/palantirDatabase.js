@@ -32,6 +32,22 @@ const palantirDb = {
         palantirDb.close();
         return result;
     },
+    setUserSprites: (login, sprites) => {
+        let result = { valid: false };
+        try {
+            palantirDb.open();
+            palantirDb.db.prepare("UPDATE Members SET Sprites = ? WHERE Login = ?").run(sprites, login);
+            result = {
+                valid: true
+            };
+        }
+        catch {
+            palantirDb.close();
+            return result;
+        }
+        palantirDb.close();
+        return result;
+    },
     getActiveLobbies: () => {
         let result = { valid: false };
         let rows;
@@ -42,7 +58,7 @@ const palantirDb = {
             rows.forEach(row => {
                 result.lobbies.push({ guildID: JSON.parse(row.GuildID), guildLobbies: JSON.parse(row.Lobbies) });
             });
-            result.lobbies.forEach(g => g.guildLobbies.forEach && g.guildLobbies.forEach(l => l.Players = l.Players.length));
+            result.lobbies.forEach(g => { g.guildLobbies.forEach && g.guildLobbies.forEach(l => l.Players = l.Players.length) });
             result.valid = true;
         }
         catch(e){

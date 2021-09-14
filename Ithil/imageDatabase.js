@@ -1,3 +1,4 @@
+const { expose } = require("threads/worker");
 class ImageDatabase {
     constructor(login) {
         const fs = require('fs');
@@ -95,7 +96,7 @@ class ImageDatabase {
                 if (query.name) where += " AND json_extract(meta,'$.name') like '%" + query.name + "%'";
                 if (query.author) where += " AND json_extract(meta,'$.author') like '%" + query.author + "%'";
                 if (query.date) where += " AND json_extract(meta,'$.date') like '%" + query.date + "%'";
-                let rows = db.prepare("SELECT * FROM Drawings WHERE login = ? " + where + " ORDER BY id DESC").all(login);
+                let rows = db.prepare("SELECT * FROM Drawings WHERE login = ? " + where + " ORDER BY id DESC" + (limit > 0 ? " LIMIT " + limit : "")).all(login);
                 result.drawings = [];
                 rows.forEach(row => {
                     if (limit > 0 && result.drawings.length > limit) return;
@@ -115,11 +116,11 @@ class ImageDatabase {
             result.valid = false;
             try {
                 open(); // delete drawings
-                console.log((new Date()).toLocaleTimeString() + " start delete " + path);
+                //console.log((new Date()).toLocaleTimeString() + " start delete " + path);
                 db.prepare("DELETE FROM BaseURI WHERE id IN (SELECT id FROM Drawings WHERE login = ? AND id < ?)").run(login, logindate);
                 db.prepare("DELETE FROM Commands WHERE id IN (SELECT id FROM Drawings WHERE login = ? AND id < ?)").run(login, logindate);
                 db.prepare("DELETE FROM Drawings WHERE login = ? AND id < ?").run(login, logindate);
-                console.log((new Date()).toLocaleTimeString() + " end delete ");
+                //console.log((new Date()).toLocaleTimeString() + " end delete ");
                 close();
                 result.valid = true;
             }
@@ -129,7 +130,7 @@ class ImageDatabase {
             }
             return result;
         }
-        this.removeDrawing = (id, login) => {
+        this.removeDrawing = (login, id) => {
             let result = {};
             result.valid = false;
             try {
@@ -149,5 +150,32 @@ class ImageDatabase {
         }
     }
 }
-
-module.exports = ImageDatabase;
+let _database = null;
+const database = (login) => {
+    if (!_database) _database = new ImageDatabase(login);
+    return _database;
+}
+const exposeInterface = {
+    addDrawing(login, id, meta) {
+        return database(login).addDrawing(login, id, meta);
+    },
+    addDrawCommands(login, id, commands) {
+        return database(login).addDrawCommands(id, commands);
+    },
+    addURI(login, id, uri) {
+        return database(login).addURI(id, uri);
+    },
+    getDrawing(login, id) {
+        return database(login).getDrawing(id);
+    },
+    getUserMeta(login, limit = -1, query = {}) {
+        return database(login).getUserMeta(login, limit, query);
+    },
+    removeEntries(login, logindate) {
+        return database(login).removeEntries(login, logindate);
+    },
+    removeDrawing(login, id) {
+        return database(login).removeDrawing(login, id);
+    }
+}
+expose(exposeInterface);

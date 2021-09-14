@@ -36,9 +36,9 @@ class TypoSocket {
                             this.db.writeLobbyReport(guildLobbies);
                             let playerid = lobbyRaw.Players.find(player => player.Sender).LobbyPlayerID;
                             let status = { PlayerMember: member, Status: "playing", LobbyID: lobbyRaw.ID, LobbyPlayerID: playerid };
-                            this.db.writePlayerStatus(status, this.socket.id);
+                            this.db.writePlayerStatus(status, this.socket.id); 
                         }
-                        catch (e) { this.log(this.socket.id, this.username, this.tynt.Red("Error writing report data: ") + e); }
+                        catch (e) { 0 && this.log(this.socket.id, this.username, this.tynt.Red("Error writing report data: ") + e); }
                         finally {
                             setTimeout(writeLobbyPlaying, 2500);
                         }
@@ -71,7 +71,6 @@ class TypoSocket {
         return new Promise((resolve, reject) => {
             if (listenResponse) this.socket.once(event + " response", (data) => {
                 resolve(data.payload);
-                //console.log(`Received response: ${event} @ ${this.loginToken}\n${data.payload}`);
             });
             try {
                 this.socket.emit(event, { event: event, payload: payload });
@@ -82,13 +81,14 @@ class TypoSocket {
         });
     }
     // On login event: authorize user, set room public if unauthorized
-    login = (data) => {
+    login = async (data) => {
         let member = this.db.getUserByLogin(data.payload.loginToken); // check if member exists with login
         if (!member.valid) {
             this.emitEvent(data.event + " response", { authorized: false});
             this.socket.join("public");
             return;
         }
+        this.username = member.member.UserName;
         let flags = ("00000000" + (Number(member.flag) >>> 0).toString(2)).slice(-8).split("").reverse();
         this.flags = flags;
         if (flags[5] == "1") {
@@ -97,19 +97,26 @@ class TypoSocket {
             this.socket.join("public");
             return;
         }
-        if (flags[3] == "1" || flags[4] == "1") { this.riproEnabled = true; console.log("patron / cloud connected"); }
-        else this.riproEnabled = false;
+        if (flags[3] == "1" || flags[4] == "1") {
+            this.patron = true;
+            this.log(this.socket.id, this.username, "Recognized Patron");
+        }
+        else this.patron = false;
+        this.spriteSlots = 1 + Math.floor(member.drops / 1000) + (this.patron === true ? 1 : 0);
+        if (flags[1] == "1") this.spriteSlots = 100;
         member.member.Guilds.forEach(guild => {
-            this.socket.join("guild" + guild.GuildID.slice(0, -2));
+            this.socket.join("guild" + guild.GuildID);
         });
         this.loginDate = Math.ceil(Date.now());
         this.loginToken = data.payload.loginToken; // set login
-        this.username = member.member.UserName;
         this.id = member.member.UserID;
         this.socket.off("login", this.login);
-        this.prodb = new (require("./prodb"))(this.loginToken);
+        const { spawn, Thread, Worker } = require("threads");
+        const thread = this.imageDatabaseWorker = await spawn(new Worker("./imageDatabase"));
         this.setStatusRoom("idle");// join idle room
         this.socket.on("get user", this.getUser); // add event handler get user
+        this.socket.on("set slot", this.setSlot); // add event handler set slot
+        this.socket.on("set combo", this.setCombo); // add event handler set combo
         this.socket.on("join lobby", this.joinLobby); // set lobby of socket, set playing and return lobbydata
         this.socket.on("set lobby", this.setLobby); // set lobby of socket, set playing and return lobbydata
         this.socket.on("search lobby", this.searchLobby); // set searching status
@@ -120,10 +127,13 @@ class TypoSocket {
         this.socket.on("remove drawing", this.removeDrawing); // get stored drawing
         this.socket.on("get commands", this.getCommands); // get stored drawing commands
         this.socket.on("get meta", this.getUserMeta); // get all meta
-        this.socket.on("disconnect", this.clearCloud); // clear image cloud
+        this.socket.on("disconnect", async () => { // clear up things
+            this.clearCloud(); // clear image cloud
+            await Thread.terminate(thread); // terminate imagecloud thread
+        });
         this.emitEvent(data.event + " response", {
             authorized: true,
-            activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
+            activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID))
         }); // reply with status
         this.log(this.socket.id, this.username, this.tynt.Green("Logged in: ") + this.loginToken);
     }
@@ -131,6 +141,53 @@ class TypoSocket {
     getUser = (data) => {
         // get user data
         let member = this.db.getUserByLogin(this.loginToken);
+        member.slots = this.spriteSlots;
+        this.emitEvent(data.event + " response", { user: member });
+    }
+    // set a sprite
+    setSlot = (data) => {
+        // get current user data
+        let member = this.db.getUserByLogin(this.loginToken);
+        const setSlot = parseInt(data.payload.slot);
+        const setSprite = parseInt(data.payload.sprite);
+        const slots = 1 + (this.patron ? 1 : 0) + Math.floor(member.drops / 1000) + (this.flags[1] == "1" ? 100 : 0);
+        const availablesprites = member.sprites
+            .split(",")
+            .filter(sprite => sprite.replaceAll(".", "") > 0 && !sprite.includes("."))
+            .map(sprite => parseInt(sprite.replaceAll(".","")));
+        if (setSlot > 0 && setSlot <= slots && (availablesprites.includes(setSprite) || setSprite == 0)) {
+            // disable old sprite
+            const inv = member.sprites.split(",");
+            const oldIndex = inv.findIndex(item => item.split(".").length - 1 == setSlot);
+            const newIndex = inv.findIndex(item => parseInt(item.replaceAll(".", "")) == setSprite);
+            console.log(newIndex, oldIndex);
+            if (oldIndex >= 0) inv[oldIndex] = inv[oldIndex].replaceAll(".", "");
+            if (newIndex >= 0) inv[newIndex] = ".".repeat(setSlot) + setSprite.toString();
+            this.db.setUserSprites(this.loginToken, inv.join(","));
+        }
+        // update member 
+        member = this.db.getUserByLogin(this.loginToken);
+        member.slots = slots;
+        this.emitEvent(data.event + " response", { user: member });
+    }
+    // set a combo
+    setCombo = (data) => {
+        // get current user data
+        let member = this.db.getUserByLogin(this.loginToken);
+        const combo = data.payload.combostring.split(",");
+        const slots = 1 + (this.patron ? 1 : 0) + Math.floor(member.drops / 1000) + (this.flags[1] == "1" ? 100 : 0);
+        const availablesprites = member.sprites.replaceAll(".", "").split(",");
+        let verifiedCombo = combo.map(slot => { return { slot: parseInt(slot.split(".").length - 1), sprite: parseInt(slot.replaceAll(".","")) } });
+        verifiedCombo = verifiedCombo.filter(slot => slot.slot > 0 && slot.slot <= slots && (availablesprites.some(s => s == slot.sprite) || slot.sprite == 0));
+        const inv = member.sprites.replaceAll(".", "").split(",");
+        verifiedCombo.forEach(slot => {
+            inv[inv.findIndex(item => item == slot.sprite.toString())] = ".".repeat(slot.slot) + slot.sprite;
+        });
+
+        // update member 
+        this.db.setUserSprites(this.loginToken, inv.join(","));
+        member = this.db.getUserByLogin(this.loginToken);
+        member.slots = slots;
         this.emitEvent(data.event + " response", { user: member });
     }
     // on join lobby event: set status as playing and get lobby id
@@ -140,7 +197,7 @@ class TypoSocket {
         let lobbyData = this.db.getLobby(data.payload.key);
         responseData.valid = lobbyData.valid;
         if (!lobbyData.found) {
-            responseData.valid = this.db.setLobby(Date.now(), data.payload.key, "").valid; // Math.random().toString(10).substr(2, 8)
+            responseData.valid = this.db.setLobby(Date.now(), data.payload.key, "").valid; 
             lobbyData = this.db.getLobby(data.payload.key);
         }
         this.searchData = null;
@@ -194,37 +251,24 @@ class TypoSocket {
         this.searchData = null;
         if (data.payload.joined) {
             this.emitEvent(data.event + " response", {
-                activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID.slice(0, -2)))
+                activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID))
             }); // reply with active lobbies
             this.log(this.socket.id, this.username, "Left a lobby");
         }
     }
-    claimDrop = (data) => {
+    claimDrop = async (data) => {
         this.log(this.socket.id, this.username, "Claims a drop: " + (data.payload.drop ? data.payload.drop.DropID : " no drop - invalid."));
-        if (!data.payload.drop || this.flags[6] == "1") return;
-        let res = this.db.getDrop(data.payload.drop.DropID);
-        console.log(JSON.stringify(res));
-        res = res.drop;
-        let result;
-        if (res.CaughtLobbyKey == "" && data.payload.timedOut === false) {
-            this.db.claimDrop(data.payload.lobbyKey, `<a href='#${data.payload.drop.DropID}'>${data.payload.name}</a>`, data.payload.drop.DropID, this.id);
-            this.db.rewardDrop(this.loginToken, data.payload.drop.EventDropID);
-            result = {
-                caught: true,
-            }
-        }
-        else {
-            result = {
-                caught: false,
-                playerName: res.CaughtLobbyPlayerID,
-                caughtLobbyKey: res.CaughtLobbyKey 
-            }
-        }
-        this.emitEvent(data.event + " response", result); // reply with result
-        // clear drop
-        this.socket.to("playing").emit("clear drop", { payload: { result: { caughtPlayer: `<a href='#${data.payload.drop.DropID}'>${data.payload.name}</a>`, caughtLobbyKey: data.payload.lobbyKey } } });
+        if (!data.payload.drop || data.timedOut == true || this.flags[6] == "1") return;
+        this.sharedData.claimDrop({
+            login: this.loginToken,
+            username: data.payload.name,
+            userID: this.id,
+            lobbyKey: data.payload.lobbyKey,
+            dropID: data.payload.drop.DropID,
+            claimSocketID: this.socket.id
+        });
     }
-    storeDrawing = (data) => {
+    storeDrawing = async (data) => {
         let meta = data.payload.meta;
         let uri = data.payload.uri;
         let commands = data.payload.commands;
@@ -232,47 +276,47 @@ class TypoSocket {
         if (!meta.author) meta.author = "Unknown";
         if (!meta.date) meta.date = (new Date()).toString();
         meta.login = this.loginToken;
-        meta.save = this.riproEnabled;
+        meta.save = this.patron;
         let id = Math.ceil(Date.now()).toString();
 
-        if (this.prodb.addDrawing(this.loginToken, id, meta)) {
-            this.prodb.addDrawCommands(id, commands);
-            this.prodb.addURI(id, uri);
+        if (await this.imageDatabaseWorker.addDrawing(this.loginToken, id, meta)) {
+            await this.imageDatabaseWorker.addDrawCommands(this.loginToken, id, commands);
+            await this.imageDatabaseWorker.addURI(this.loginToken, id, uri);
         }
         this.emitEvent(data.event + " response", {
             id: id
         }); 
     }
-    removeDrawing = data => {
+    removeDrawing = async (data) => {
         let id = data.payload.id;
-        this.prodb.removeDrawing(id, this.loginToken);
+        await this.imageDatabaseWorker.removeDrawing(this.loginToken, id);
     }
-    fetchDrawing = data => {
+    fetchDrawing = async (data) => {
         let id = data.payload.id;
-        let result = this.prodb.getDrawing(id);
+        let result = await this.imageDatabaseWorker.getDrawing(this.loginToken, id);
         if (data.payload.withCommands != true) result.commands = null;
         this.emitEvent(data.event + " response", {
             drawing: result
         }); 
     }
-    getCommands = data => {
+    getCommands = async (data) => {
         let id = data.payload.id;
-        let result = this.prodb.getDrawing(id);
+        let result = await this.imageDatabaseWorker.getDrawing(this.loginToken, id);
         this.emitEvent(data.event + " response", {
             commands: result.commands
         });
     }
-    getUserMeta = data => {
+    getUserMeta = async (data) => {
         let limit = data.payload.limit;
         if (!limit) limit = -1;
         let query = data.payload.query;
-        let result = this.prodb.getUserMeta(this.loginToken, limit, query);
+        let result = await this.imageDatabaseWorker.getUserMeta(this.loginToken, limit, query);
         this.emitEvent(data.event + " response", {
             drawings: result.drawings
         }); 
     }
-    clearCloud = () => {
-        if(!this.riproEnabled) this.prodb.removeEntries(this.loginToken, this.loginDate - 1000 * 60 * 60 * 24 * 30); // delete older than 30 days
+    clearCloud = async () => {
+        if (!this.patron) await this.imageDatabaseWorker.removeEntries(this.loginToken, this.loginDate - 1000 * 60 * 60 * 24 * 30); // delete older than 30 days
     }
 }
 module.exports = TypoSocket;

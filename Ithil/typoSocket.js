@@ -144,6 +144,9 @@ class TypoSocket {
         member.slots = this.spriteSlots;
         this.emitEvent(data.event + " response", { user: member });
     }
+    isSpecialSprite = (id) => {
+
+    }
     // set a sprite
     setSlot = (data) => {
         // get current user data

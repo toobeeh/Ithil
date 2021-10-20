@@ -81,12 +81,15 @@ const palantirDb = {
             const onlinescenes = palantirDb.db.prepare("SELECT * FROM OnlineSprites WHERE Slot < 0").all();
             // get sprites
             const sprites = palantirDb.db.prepare("SELECT * FROM Sprites").all();
+            // get scenes
+            const scenes = palantirDb.db.prepare("SELECT * FROM Scenes").all();
             result.valid = true;
             result.publicData = {
                 drops: eventdrops,
                 onlineSprites: onlinesprites,
                 onlineScenes: onlinescenes,
                 sprites: sprites,
+                scenes: scenes
             }
         }
         catch{

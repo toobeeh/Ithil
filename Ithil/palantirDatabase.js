@@ -74,15 +74,18 @@ const palantirDb = {
         try {
             palantirDb.open();
             // get eventdrops
-            eventdrops = palantirDb.db.prepare("SELECT * FROM EventDrops LEFT JOIN Events ON EventDrops.EventID = Events.EventID").all();
+            const eventdrops = palantirDb.db.prepare("SELECT * FROM EventDrops LEFT JOIN Events ON EventDrops.EventID = Events.EventID").all();
             // get active sprites
-            onlinesprites = palantirDb.db.prepare("SELECT * FROM OnlineSprites").all();
+            const onlinesprites = palantirDb.db.prepare("SELECT * FROM OnlineSprites WHERE Slot > 0").all();
+            // get active scenes
+            const onlinescenes = palantirDb.db.prepare("SELECT * FROM OnlineSprites WHERE Slot < 0").all();
             // get sprites
-            sprites = palantirDb.db.prepare("SELECT * FROM Sprites").all();
+            const sprites = palantirDb.db.prepare("SELECT * FROM Sprites").all();
             result.valid = true;
             result.publicData = {
                 drops: eventdrops,
                 onlineSprites: onlinesprites,
+                onlineScenes: onlinescenes,
                 sprites: sprites,
             }
         }

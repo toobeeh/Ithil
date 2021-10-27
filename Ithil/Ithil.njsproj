@@ -44,6 +44,9 @@
     <Content Include="package.json" />
     <Content Include="palantirDatabase.js" />
     <Content Include="README.md" />
+    <Content Include="statDatabase.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="typoSocket.js">
       <SubType>Code</SubType>
     </Content>

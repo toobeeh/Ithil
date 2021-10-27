@@ -188,7 +188,7 @@ const palantirDb = {
             palantirDb.open();
             palantirDb.db.prepare("DELETE FROM Reports WHERE Date < datetime('now', '-30 seconds')").run();
             palantirDb.db.prepare("DELETE FROM Status WHERE Date < datetime('now', '-10 seconds')").run();
-            palantirDb.db.prepare("DELETE FROM OnlineSprites WHERE Date < datetime('now', '-10 seconds')").run();
+            palantirDb.db.prepare("DELETE FROM OnlineSprites WHERE Date < datetime('now', '-30 seconds')").run();
             palantirDb.db.prepare("DELETE From Lobbies WHERE json_extract(Lobby, '$.ID') NOT IN (SELECT DISTINCT json_extract(Status, '$.LobbyID') from Status WHERE json_extract(Status, '$.LobbyID') IS NOT NULL) AND " +Date.now()+" - LobbyID > 60000;").run();
             // delete duplicate keys
             let lobbies = palantirDb.db.prepare("SELECT LobbyID, json_extract(Lobby, '$.Key') as LobbyKey FROM Lobbies").all();

@@ -12,6 +12,7 @@ const masterHttps = require('https');
 const fs = require('fs');
 const cors = require('cors');
 const palantirDb = require("./palantirDatabase");
+const statDb = require("./statDatabase");
 const tynt = require("tynt");
 const ipc = require('node-ipc');
 const portscanner = require('portscanner');
@@ -72,6 +73,7 @@ masterSocket.on('connection', async (socket) => { // on socket connect, get free
     socket.on("request port", async (data) => {
         let port = config.publicPort;
         if (data.auth === "member") port = (await balancer.getBalancedWorker()).port; // get balanced port if client wants to login
+        statDb.updateClientContact(data.client); // log client pseudo-id (not identifyable; only the timestamp of typo init -> pseudo usage stats)
         socket.emit("balanced port", { port: port }); // send balanced port
         socket.disconnect(); // disconnect from client
         //logState("Balancing: " + balancer.currentBalancing());

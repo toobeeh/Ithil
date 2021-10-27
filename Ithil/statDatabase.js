@@ -18,7 +18,7 @@ const statDb = {
         }
         catch(e) {
             statDb.close();
-            console.log(e);
+            console.log(e, initTimestamp);
         }
     }
 }

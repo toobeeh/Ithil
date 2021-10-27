@@ -13,7 +13,7 @@ const statDb = {
     updateClientContact: (initTimestamp) => {
         try {
             statDb.open();
-            statDb.db.prepare("REPLACE INTO clientContacts (clientInitTimestamp) VALUES ('?')").run(initTimestamp);
+            statDb.db.prepare("REPLACE INTO clientContacts (clientInitTimestamp) VALUES (?)").run(initTimestamp);
             statDb.close()
         }
         catch(e) {

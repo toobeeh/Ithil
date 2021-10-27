@@ -3,7 +3,7 @@ const statDb = {
     path: "/home/pi/Database/typoStats.db",
     db: null,
     open: () => {
-        statDb.db = new palantirDb.Database(palantirDb.path);
+        statDb.db = new statDb.Database(statDb.path);
         statDb.db.pragma('journal_mode = WAL');
     },
     close: () => {
@@ -14,9 +14,11 @@ const statDb = {
         try {
             statDb.open();
             statDb.db.prepare("REPLACE INTO clientContacts (clientInitTimestamp) VALUES ('?')").run(initTimestamp);
+            statDb.close()
         }
-        catch {
+        catch(e) {
             statDb.close();
+            console.log(e);
         }
     }
 }

@@ -32,6 +32,26 @@ const palantirDb = {
         palantirDb.close();
         return result;
     },
+    getLoginFromAcessToken: (accessToken) => {
+        let result = { valid: false };
+        let row;
+        try {
+            palantirDb.open();
+            row = palantirDb.db.prepare("SELECT * FROM AccessTokens WHERE AccessToken = ?").get(accessToken);
+            result = {
+                valid: true,
+                accessToken: row.AccessToken,
+                login: row.Login,
+                createdAt: row.CreatedAt
+            };
+        }
+        catch {
+            palantirDb.close();
+            return result;
+        }
+        palantirDb.close();
+        return result;
+    },
     setUserSprites: (login, sprites) => {
         let result = { valid: false };
         try {

@@ -83,8 +83,9 @@ class TypoSocket {
     // On login event: authorize user, set room public if unauthorized
     login = async (data) => {
         let login = data.payload.loginToken;
+        console.log(login);
         if (data.payload.accessToken?.length > 0) login = this.db.getLoginFromAccessToken(data.payload.accessToken).accessToken;
-        console.log(!login);
+        console.log(login);
         console.log(data.payload.accessToken);
         let member = this.db.getUserByLogin(login); // check if member exists with login
         if (!member.valid) {

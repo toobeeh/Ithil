@@ -110,7 +110,7 @@ class TypoSocket {
             this.socket.join("guild" + guild.GuildID);
         });
         this.loginDate = Math.ceil(Date.now());
-        this.loginToken = data.payload.loginToken; // set login
+        this.loginToken = login; // set login
         this.id = member.member.UserID;
         this.socket.off("login", this.login);
         const { spawn, Thread, Worker } = require("threads");

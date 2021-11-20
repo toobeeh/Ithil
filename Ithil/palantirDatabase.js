@@ -32,7 +32,7 @@ const palantirDb = {
         palantirDb.close();
         return result;
     },
-    getLoginFromAcessToken: (accessToken) => {
+    getLoginFromAccessToken: (accessToken) => {
         let result = { valid: false };
         let row;
         try {

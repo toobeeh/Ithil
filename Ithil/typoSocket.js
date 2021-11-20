@@ -84,6 +84,8 @@ class TypoSocket {
     login = async (data) => {
         let login = data.payload.loginToken;
         if (!login && data.payload.accessToken) login = this.db.getLoginFromAccessToken(data.payload.accessToken).accessToken;
+        console.log(!login);
+        console.log(data.payload.accessToken);
         let member = this.db.getUserByLogin(login); // check if member exists with login
         if (!member.valid) {
             this.emitEvent(data.event + " response", { authorized: false});

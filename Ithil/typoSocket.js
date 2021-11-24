@@ -84,8 +84,6 @@ class TypoSocket {
     login = async (data) => {
         let login = data.payload.loginToken;
         let access = data.payload.accessToken;
-        console.log(access, !access, access == false);
-        console.log(login, !login, login == false);
         if (access) login = this.db.getLoginFromAccessToken(access).login;
         let member = this.db.getUserByLogin(login); // check if member exists with login
         if (!member.valid) {
@@ -138,7 +136,8 @@ class TypoSocket {
         });
         this.emitEvent(data.event + " response", {
             authorized: true,
-            activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID))
+            activeLobbies: this.sharedData.activeLobbies.filter(a => this.socket.rooms.has("guild" + a.guildID)),
+            member: member
         }); // reply with status
         this.log(this.socket.id, this.username, this.tynt.Green("Logged in: ") + this.loginToken);
     }

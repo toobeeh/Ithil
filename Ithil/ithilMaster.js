@@ -143,6 +143,7 @@ class Drops {
         // clears the last claimed drop
         const clearDrop = (clearData) => {
             logState("Clearing drop ID " + clearData.dropID + " by " + clearData.username);
+            if ([...clearData.username].map(c => c.charCodeAt(0)).some(c => c == 8238 || c == 8237)) clearData.username = "Someone else";
             const result = {
                 dropID: clearData.dropID,
                 caughtPlayer: "<abbr title='Drop ID: " + clearData.dropID + "'>" + clearData.username + "</abbr>",

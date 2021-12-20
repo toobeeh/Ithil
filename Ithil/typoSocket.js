@@ -272,7 +272,8 @@ class TypoSocket {
             userID: this.id,
             lobbyKey: data.payload.lobbyKey,
             dropID: data.payload.drop.DropID,
-            claimSocketID: this.socket.id
+            claimSocketID: this.socket.id,
+            timestamp: Date.now()
         });
     }
     storeDrawing = async (data) => {

@@ -173,6 +173,11 @@ class Drops {
                     clearData.username = claim.username;
                     clearData.lobbyKey = claim.lobbyKey;
                     clearData.claimSocketID = claim.claimSocketID;
+                    // print claim times
+                    let thisTime = claim.timestamp;
+                    claimBuffer.forEach(claim => {
+                        console.log(" -" + claim.username + ": " + (thisTime - claim.timestamp) + "ms");
+                    });
                 }
                 else { // drop however is already claimed, set clear info 
                     clearData.dropID = result.drop.DropID;

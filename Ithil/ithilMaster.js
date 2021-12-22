@@ -150,7 +150,6 @@ class Drops {
                 caughtLobbyKey: clearData.lobbyKey,
                 claimSocketID: clearData.claimSocketID
             };
-            console.log("Clear result:", result);
             ipcBroadcast("clearDrop", result);
         };
         const processClaim = claim => {
@@ -223,7 +222,6 @@ class Drops {
                         while (claimBuffer.length > 0) { // while buffer has claims
                             const claim = claimBuffer.shift(); // get first claim of buffer
                             lastProcessedClaim = claim;
-                            console.log("Processing claim: ", claim);
                             if (processClaim(claim)) {
                                 claimed = true;
                                 break; // dont process any other claims

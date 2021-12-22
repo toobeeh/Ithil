@@ -180,6 +180,7 @@ class Drops {
                     });
                 }
                 else { // drop however is already claimed, set clear info 
+                    console.log("Claimed an already claimed drop: ", claim, result.drop);
                     clearData.dropID = result.drop.DropID;
                     clearData.username = result.drop.CaughtLobbyPlayerID;
                     clearData.lobbyKey = result.drop.CaughtLobbyKey;
@@ -188,15 +189,33 @@ class Drops {
                 clearDrop(clearData);
                 claimSuccess = true;
             }
+            else console.log("Claimed an already invalid drop: ", claim, result.drop);
             return claimSuccess;
         }
         // claim drop
         ipcOn("claimDrop", (claim) => claimBuffer.push(claim));
-        // check async for drops once in 5s
+
+        /* 
+         * Drop claiming process:
+         * 
+         * - set timeout to start async processing
+         * - - infinite loop:
+         * - - - wait for next drop:
+         * - - - - poll with 1s timeout for a new unclaimed drop
+         * - - - - log found drop
+         * - - - reset claim buffer
+         * - - - poll with 50ms timeout for claims in the buffer as long as the drop isn't claimed and timeout not exceeded:
+         * - - - - take a claim
+         * - - - - check if claim is valid
+         * - - - - add drop if valid and empty buffer 
+         * 
+         */
+
         setTimeout(async () => {
             while (true) {
                 try {
                     let drop = await this.getNextDrop();
+                    claimBuffer = []; // empty buffer from stragglers (drop ID would be checked anyway, but this saves time)
                     if (drop !== false) ipcBroadcast("newDrop", drop);
                     // drop catch timeout
                     const timeout = 5000;
@@ -206,6 +225,7 @@ class Drops {
                     while (passed < timeout && !claimed) { // process claim buffer while drop not claimed
                         while (claimBuffer.length > 0) { // while buffer has claims
                             const claim = claimBuffer.shift(); // get first claim of buffer
+                            console.log("Processing claim: " + claim);
                             if (processClaim(claim)) {
                                 claimed = true;
                                 claimBuffer = []; // if first claim is successful, reject all other claims

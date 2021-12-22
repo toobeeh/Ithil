@@ -173,11 +173,6 @@ class Drops {
                     clearData.username = claim.username;
                     clearData.lobbyKey = claim.lobbyKey;
                     clearData.claimSocketID = claim.claimSocketID;
-                    // print claim times
-                    let thisTime = claim.timestamp;
-                    claimBuffer.forEach(claim => {
-                        console.log(" -" + claim.username + ": " + (thisTime - claim.timestamp) + "ms");
-                    });
                 }
                 else { // drop however is already claimed, set clear info 
                     console.log("Claimed an already claimed drop: ", claim, result.drop);
@@ -215,26 +210,38 @@ class Drops {
             while (true) {
                 try {
                     let drop = await this.getNextDrop();
-                    claimBuffer = []; // empty buffer from stragglers (drop ID would be checked anyway, but this saves time)
+                    claimBuffer = []; // empty buffer from previous claims (drop ID would be checked anyway, but this saves time)
                     if (drop !== false) ipcBroadcast("newDrop", drop);
                     // drop catch timeout
                     const timeout = 5000;
                     const poll = 50;
                     let passed = 0;
                     let claimed = false;
+                    let lastProcessedClaim = null;
                     while (passed < timeout && !claimed) { // process claim buffer while drop not claimed
                         while (claimBuffer.length > 0) { // while buffer has claims
                             const claim = claimBuffer.shift(); // get first claim of buffer
+                            lastProcessedClaim = claim;
                             console.log("Processing claim: " + claim);
                             if (processClaim(claim)) {
                                 claimed = true;
-                                claimBuffer = []; // if first claim is successful, reject all other claims
+                                break; // dont process any other claims
                             }
                             else claimed = false;
                         }
                         passed += poll;
                         await idle(poll);
                     }
+                    // log all claims after a while
+                    setTimeout(() => {
+                        if (lastProcessedClaim) {
+                            // print claim times
+                            let thisTime = lastProcessedClaim.timestamp;
+                            claimBuffer.forEach(claim => {
+                                console.log(" -" + claim.username + ": +" + (thisTime - claim.timestamp) + "ms");
+                            });
+                        }
+                    }, 2000);
                 }
                 catch (e) { console.warn("Error in drops:", e);}
             }

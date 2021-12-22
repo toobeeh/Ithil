@@ -203,6 +203,7 @@ class Drops {
          * - - - - take a claim
          * - - - - check if claim is valid
          * - - - - add drop if valid and empty buffer 
+         * - - - log all claims with their time after 2s
          * 
          */
 
@@ -222,7 +223,7 @@ class Drops {
                         while (claimBuffer.length > 0) { // while buffer has claims
                             const claim = claimBuffer.shift(); // get first claim of buffer
                             lastProcessedClaim = claim;
-                            console.log("Processing claim: " + claim);
+                            console.log("Processing claim: ", claim);
                             if (processClaim(claim)) {
                                 claimed = true;
                                 break; // dont process any other claims
@@ -236,9 +237,8 @@ class Drops {
                     setTimeout(() => {
                         if (lastProcessedClaim) {
                             // print claim times
-                            let thisTime = lastProcessedClaim.timestamp;
                             claimBuffer.forEach(claim => {
-                                console.log(" -" + claim.username + ": +" + (thisTime - claim.timestamp) + "ms");
+                                console.log(" -" + claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
                             });
                         }
                     }, 2000);

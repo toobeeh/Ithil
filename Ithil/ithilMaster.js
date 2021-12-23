@@ -206,6 +206,7 @@ class Drops {
 
                         // wait to dispatch drop
                         await idle(dropInMs);
+                        nextDrop.broadcastTime = Date.now();
                         ipcBroadcast("newDrop", nextDrop);
                         logLoading("Dispatched Drop: ");
                         logLoading(nextDrop.DropID);

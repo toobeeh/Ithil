@@ -89,7 +89,10 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
             workerSocket.to("guild" + guildLobbies.guildID).emit("active lobbies", { event: "active lobbies", payload: { activeGuildLobbies: guildLobbies } });
         });
     });
+    let lastDropEmit = 0;
     on("newDrop", drop => {
+        console.log(Date.now() - drop.broadcastTime);
+        lastDropEmit = Date.now();
         workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
     });
     on("clearDrop", result => {

@@ -90,10 +90,9 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         });
     });
     on("newDrop", drop => {
-        console.log(port + " - Broadcast delay:" + (Date.now() - drop.broadcastTime));
-        lastDropEmit = Date.now();
+        const broadcastDelay = Date.now() - drop.broadcastTime;
+        if (broadcastDelay > 50) logLoading("Critical drop delay on port " + workerPort + " - " + broadcastDelay + "ms");
         workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
-        console.log("Emit delay:" + (Date.now() - lastDropEmit));
     });
     on("clearDrop", result => {
         workerSocket.to("playing").emit("clear drop", { event: "clear drop", payload: { result: result } });

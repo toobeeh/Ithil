@@ -92,8 +92,8 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     on("newDrop", drop => {
         // delay between ipc broadcast and receiving. sometimes itt akes unexpectedly longer 
         const broadcastDelay = Date.now() - drop.broadcastTime;
-        // emit the drop .5s after the broadcast time to buffer latencies and make drops fairer
-        const wait = 500 - broadcastDelay;
+        // emit the drop 1s after the broadcast time to buffer latencies and make drops fairer
+        const wait = 1000 - broadcastDelay;
         setTimeout(() => {
             console.log("Buffered broadcast delay:" + (Date.now() - drop.broadcastTime));
             lastDropEmit = Date.now();

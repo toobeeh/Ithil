@@ -233,7 +233,7 @@ class Drops {
                         // send all claims after a while
                         setTimeout(() => {
                             if (lastProcessedClaim) {
-                                let ranks = [(lastProcessedClaim.username + " claimed after " + nextDrop.broadcastTime + "ms")];
+                                let ranks = [(lastProcessedClaim.username + " claimed after " + (lastProcessedClaim.timestamp - nextDrop.broadcastTime) + "ms")];
                                 // collect claim times
                                 claimBuffer.forEach(claim => {
                                     console.log(" - " + claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");

@@ -91,6 +91,7 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     });
     on("newDrop", drop => {
         const broadcastDelay = Date.now() - drop.broadcastTime;
+        drop.broadcastDelay = broadcastDelay;
         if (broadcastDelay > 50) console.warn("Critical drop delay on port " + workerPort + " - " + broadcastDelay + "ms");
 
         workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });

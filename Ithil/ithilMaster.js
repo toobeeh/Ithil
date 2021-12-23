@@ -264,12 +264,15 @@ class Drops {
                     if (dropInMs > 0) {
                         // clear all left claims
                         claimBuffer = [];
-                        logLoading("Next drop in " + dropInMs / 1000 + "s:", nextDrop);
+                        logLoading("Next drop in " + dropInMs / 1000 + "s:");
+                        console.log(nextDrop);
 
                         // wait to dispatch drop
                         await idle(dropInMs);
                         ipcBroadcast("newDrop", nextDrop);
-                        logLoading("Dispatched Drop: ", nextDrop, claimBuffer);
+                        logLoading("Dispatched Drop: ");
+                        console.log(nextDrop, claimBuffer);
+                        let lastProcessedClaim = null;
                         let timeout = 5000; // 5s to claim a drop
                         const poll = 50; // check for claims in 50ms poll interval
 
@@ -278,6 +281,7 @@ class Drops {
                             // take a claim and process it
                             const claim = claimBuffer.shift();
                             if (claim) {
+                                lastProcessedClaim = claim;
                                 // if the claim was successful, stop processing claims
                                 if (processClaim(claim)) break;
                                 // if invalid claim, continue loop without delay

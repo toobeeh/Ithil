@@ -204,10 +204,13 @@ class Drops {
                         logLoading("Next drop in " + dropInMs / 1000 + "s:");
                         logLoading(nextDrop.DropID);
 
-                        // wait to dispatch drop
-                        await idle(dropInMs);
+                        // broadcast drop, workers set an iterval to dispatch it
                         nextDrop.broadcastTime = Date.now();
+                        nextDrop.dispatchTime = nextDrop.broadcastTime + dropInMs;
                         ipcBroadcast("newDrop", nextDrop);
+
+                        // wait to process claims
+                        await idle(dropInMs);
                         logLoading("Dispatched Drop: ");
                         logLoading(nextDrop.DropID);
                         let lastProcessedClaim = null;

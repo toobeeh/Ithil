@@ -91,9 +91,10 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     });
     let lastDropEmit = 0;
     on("newDrop", drop => {
-        console.log(Date.now() - drop.broadcastTime);
+        console.log("Broadcast delay:" + (Date.now() - drop.broadcastTime));
         lastDropEmit = Date.now();
         workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
+        console.log("Emit delay:" + (Date.now() - lastDropEmit));
     });
     on("clearDrop", result => {
         workerSocket.to("playing").emit("clear drop", { event: "clear drop", payload: { result: result } });

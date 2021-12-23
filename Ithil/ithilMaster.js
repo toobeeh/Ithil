@@ -237,7 +237,7 @@ class Drops {
                                     console.log(" - " + claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
                                     ranks.push(claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
                                 });
-                                if (ranks.length > 1) ipcBroadcast("rankDrop", { dropID: lastClaim.dropID, ranks: ranks });
+                                if (ranks.length > 1) ipcBroadcast("rankDrop", { dropID: lastProcessedClaim.dropID, ranks: ranks });
                             }
                         }, 2000);
                     }

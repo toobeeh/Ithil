@@ -246,6 +246,7 @@ const palantirDb = {
     },
     claimDrop: (lobbyKey, playerName, dropID, userid) => {
         let result = { valid: false };
+        console.log("adding past drop:", dropID, lobbyKey, playerName, userid);
         try {
             palantirDb.open();
             // get drop

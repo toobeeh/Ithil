@@ -206,42 +206,99 @@ class Drops {
          * 
          */
 
+        //setTimeout(async () => {
+        //    while (true) {
+        //        try {
+        //            let drop = await this.getNextDrop();
+        //            claimBuffer = []; // empty buffer from previous claims (drop ID would be checked anyway, but this saves time)
+        //            if (drop !== false) ipcBroadcast("newDrop", drop);
+        //            logLoading("Dispatched Drop: ", drop, claimBuffer);
+        //            // drop catch timeout
+        //            const timeout = 5000;
+        //            const poll = 50;
+        //            let passed = 0;
+        //            let claimed = false;
+        //            let lastProcessedClaim = null;
+        //            while (passed < timeout && !claimed) { // process claim buffer while drop not claimed
+        //                while (claimBuffer.length > 0) { // while buffer has claims
+        //                    const claim = claimBuffer.shift(); // get first claim of buffer
+        //                    lastProcessedClaim = claim;
+        //                    if (processClaim(claim)) {
+        //                        claimed = true;
+        //                        break; // dont process any other claims
+        //                    }
+        //                    else claimed = false;
+        //                }
+        //                passed += poll;
+        //                await idle(poll);
+        //            }
+        //            // log all claims after a while
+        //            setTimeout(() => {
+        //                if (lastProcessedClaim) {
+        //                    // print claim times
+        //                    claimBuffer.forEach(claim => {
+        //                        console.log(" -" + claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
+        //                    });
+        //                }
+        //            }, 2000);
+        //        }
+        //        catch (e) { console.warn("Error in drops:", e);}
+        //    }
+        //}, 1);
+        // NEW
         setTimeout(async () => {
             while (true) {
                 try {
-                    let drop = await this.getNextDrop();
-                    claimBuffer = []; // empty buffer from previous claims (drop ID would be checked anyway, but this saves time)
-                    if (drop !== false) ipcBroadcast("newDrop", drop);
-                    // drop catch timeout
-                    const timeout = 5000;
-                    const poll = 50;
-                    let passed = 0;
-                    let claimed = false;
-                    let lastProcessedClaim = null;
-                    while (passed < timeout && !claimed) { // process claim buffer while drop not claimed
-                        while (claimBuffer.length > 0) { // while buffer has claims
-                            const claim = claimBuffer.shift(); // get first claim of buffer
-                            lastProcessedClaim = claim;
-                            if (processClaim(claim)) {
-                                claimed = true;
-                                break; // dont process any other claims
-                            }
-                            else claimed = false;
-                        }
-                        passed += poll;
-                        await idle(poll);
+                    // wait for next drop to appear, check in 1s intervals
+                    logLoading("Polling for next drop..");
+                    let nextDrop = null;
+                    while (!nextDrop || nextDrop.CaughtLobbyKey != "") {
+                        nextDrop = database.getDrop().drop;
+                        await idle(1000);
                     }
-                    // log all claims after a while
-                    setTimeout(() => {
-                        if (lastProcessedClaim) {
-                            // print claim times
-                            claimBuffer.forEach(claim => {
-                                console.log(" -" + claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
-                            });
+
+                    // get drop timeout for dispatch
+                    const dropInMs = (new Date(nextDrop.ValidFrom + " UTC")).getTime() - Date.now();
+
+                    // if drop is still valid
+                    if (dropInMs < 0) {
+                        // clear all left claims
+                        claimBuffer = [];
+                        logLoading("Next drop in " + dropInMs / 1000 + "s:", nextDrop);
+
+                        // wait to dispatch drop
+                        await idle(dropInMs);
+                        ipcBroadcast("newDrop", nextDrop);
+                        logLoading("Dispatched Drop: ", nextDrop, claimBuffer);
+                        let timeout = 5000; // 5s to claim a drop
+                        const poll = 50; // check for claims in 50ms poll interval
+
+                        // poll for claims
+                        while (timeout > 0) {
+                            // take a claim and process it
+                            const claim = claimBuffer.shift();
+                            if (claim) {
+                                // if the claim was successful, stop processing claims
+                                if (processClaim(claim)) break;
+                                // if invalid claim, continue loop without delay
+                                else continue;
+                            }
+                            timeout -= poll;
+                            await idle(poll);
                         }
-                    }, 2000);
+
+                        // log all claims after a while
+                        setTimeout(() => {
+                            if (lastProcessedClaim) {
+                                // print claim times
+                                claimBuffer.forEach(claim => {
+                                    console.log(" -" + claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
+                                });
+                            }
+                        }, 2000);
+                    }
                 }
-                catch (e) { console.warn("Error in drops:", e);}
+                catch (e) { console.warn("Error in drops:", e); }
             }
         }, 1);
     }

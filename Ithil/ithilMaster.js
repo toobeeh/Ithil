@@ -235,9 +235,9 @@ class Drops {
                                 // collect claim times
                                 claimBuffer.forEach(claim => {
                                     console.log(" - " + claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
-                                    claims.push(claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
+                                    ranks.push(claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
                                 });
-                                if (claims.length > 1) ipcBroadcast("rankDrop", { dropID: lastClaim.dropID, ranks: ranks });
+                                if (ranks.length > 1) ipcBroadcast("rankDrop", { dropID: lastClaim.dropID, ranks: ranks });
                             }
                         }, 2000);
                     }

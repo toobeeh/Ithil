@@ -261,7 +261,7 @@ class Drops {
                     const dropInMs = (new Date(nextDrop.ValidFrom + " UTC")).getTime() - Date.now();
 
                     // if drop is still valid
-                    if (dropInMs < 0) {
+                    if (dropInMs > 0) {
                         // clear all left claims
                         claimBuffer = [];
                         logLoading("Next drop in " + dropInMs / 1000 + "s:", nextDrop);

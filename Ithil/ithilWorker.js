@@ -90,16 +90,10 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
         });
     });
     on("newDrop", drop => {
-        // delay between ipc broadcast and receiving. sometimes itt akes unexpectedly longer 
-        const broadcastDelay = Date.now() - drop.broadcastTime;
-        // emit the drop 1s after the broadcast time to buffer latencies and make drops fairer
-        const wait = 1000 - broadcastDelay;
-        setTimeout(() => {
-            console.log("Buffered broadcast delay:" + (Date.now() - drop.broadcastTime));
-            lastDropEmit = Date.now();
-            workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
-            console.log("Emit delay:" + (Date.now() - lastDropEmit));
-        }, wait);
+        console.log(port + " - Broadcast delay:" + (Date.now() - drop.broadcastTime));
+        lastDropEmit = Date.now();
+        workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
+        console.log("Emit delay:" + (Date.now() - lastDropEmit));
     });
     on("clearDrop", result => {
         workerSocket.to("playing").emit("clear drop", { event: "clear drop", payload: { result: result } });

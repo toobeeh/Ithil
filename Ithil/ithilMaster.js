@@ -233,11 +233,11 @@ class Drops {
                         // send all claims after a while
                         setTimeout(() => {
                             if (lastProcessedClaim) {
-                                let ranks = [(lastProcessedClaim.username + " claimed first")];
+                                let ranks = [(lastProcessedClaim.username + " claimed after " + nextDrop.broadcastTime + "ms")];
                                 // collect claim times
                                 claimBuffer.forEach(claim => {
                                     console.log(" - " + claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
-                                    ranks.push(claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms (w/ " + claim.broadcastDelay + "ms BD)");
+                                    ranks.push(claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms (w/ " + claim.broadcastDelay + "ms db)");
                                 });
                                 if (ranks.length > 1) ipcBroadcast("rankDrop", { dropID: lastProcessedClaim.dropID, ranks: ranks });
                             }

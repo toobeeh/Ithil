@@ -228,13 +228,16 @@ class Drops {
                             await idle(poll);
                         }
 
-                        // log all claims after a while
+                        // send all claims after a while
                         setTimeout(() => {
                             if (lastProcessedClaim) {
-                                // print claim times
+                                let ranks = [(lastProcessedClaim.username + " claimed first")];
+                                // collect claim times
                                 claimBuffer.forEach(claim => {
-                                    console.log(" -" + claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
+                                    console.log(" - " + claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
+                                    claims.push(claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
                                 });
+                                if (claims.length > 1) ipcBroadcast("rankDrop", { dropID: lastClaim.dropID, ranks: ranks });
                             }
                         }, 2000);
                     }

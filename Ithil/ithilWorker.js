@@ -95,6 +95,9 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
     on("clearDrop", result => {
         workerSocket.to("playing").emit("clear drop", { event: "clear drop", payload: { result: result } });
     });
+    on("rankDrop", result => {
+        workerSocket.to("playing").emit("rank drop", { event: "rank drop", payload: { result: result } });
+    });
 
     // init typo socket on connection
     logLoading("Initiating worker socket connection events");

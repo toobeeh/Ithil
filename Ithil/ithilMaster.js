@@ -202,13 +202,13 @@ class Drops {
                         // clear all left claims
                         claimBuffer = [];
                         logLoading("Next drop in " + dropInMs / 1000 + "s:");
-                        console.log(nextDrop);
+                        logLoading(nextDrop.DropID);
 
                         // wait to dispatch drop
                         await idle(dropInMs);
                         ipcBroadcast("newDrop", nextDrop);
                         logLoading("Dispatched Drop: ");
-                        console.log(nextDrop, claimBuffer);
+                        logLoading(nextDrop.DropID);
                         let lastProcessedClaim = null;
                         let timeout = 5000; // 5s to claim a drop
                         const poll = 50; // check for claims in 50ms poll interval

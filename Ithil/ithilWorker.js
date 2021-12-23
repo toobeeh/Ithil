@@ -89,12 +89,17 @@ portscanner.findAPortNotInUse(config.workerRange[0], config.workerRange[1], '127
             workerSocket.to("guild" + guildLobbies.guildID).emit("active lobbies", { event: "active lobbies", payload: { activeGuildLobbies: guildLobbies } });
         });
     });
-    let lastDropEmit = 0;
     on("newDrop", drop => {
-        console.log("Broadcast delay:" + (Date.now() - drop.broadcastTime));
-        lastDropEmit = Date.now();
-        workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
-        console.log("Emit delay:" + (Date.now() - lastDropEmit));
+        // delay between ipc broadcast and receiving. sometimes itt akes unexpectedly longer 
+        const broadcastDelay = Date.now() - drop.broadcastTime;
+        // emit the drop .5s after the broadcast time to buffer latencies and make drops fairer
+        const wait = 500 - broadcastDelay;
+        setTimeout(() => {
+            console.log("Buffered broadcast delay:" + (Date.now() - drop.broadcastTime));
+            lastDropEmit = Date.now();
+            workerSocket.to("playing").emit("new drop", { event: "new drop", payload: { drop: drop } });
+            console.log("Emit delay:" + (Date.now() - lastDropEmit));
+        }, wait);
     });
     on("clearDrop", result => {
         workerSocket.to("playing").emit("clear drop", { event: "clear drop", payload: { result: result } });

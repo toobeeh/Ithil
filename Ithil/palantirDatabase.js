@@ -250,7 +250,9 @@ const palantirDb = {
         try {
             palantirDb.open();
             // get drop
+            console.log(palantirDb.db.prepare("SELECT * FROM 'Drop'").get());
             palantirDb.db.prepare("UPDATE 'Drop' SET CaughtLobbyKey = ?, CaughtLobbyPlayerID = ? WHERE DropID = ?").run(lobbyKey, playerName, dropID);
+            console.log(palantirDb.db.prepare("SELECT * FROM 'Drop'").get());
             palantirDb.db.prepare("INSERT INTO PastDrops Select * From 'Drop'").run();
             palantirDb.db.prepare("UPDATE PastDrops SET CaughtLobbyPlayerID = ? WHERE DropID = ?").run(userid, dropID);
             result.valid = true;

@@ -236,6 +236,7 @@ class Drops {
                                 let ranks = [(lastProcessedClaim.username + " claimed first")];
                                 // collect claim times
                                 claimBuffer.forEach(claim => {
+                                    console.log(claim);
                                     console.log(" - " + claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
                                     ranks.push(claim.username + ": +" + (claim.timestamp - lastProcessedClaim.timestamp) + "ms");
                                 });

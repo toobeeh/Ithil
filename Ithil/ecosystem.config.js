@@ -5,10 +5,6 @@ module.exports = {
             script: "ithilMaster.js",
             time: true
         }, {
-            name: "Ithil Drop Server",
-            script: "drops/dropServer.js",
-            time: true
-        }, {
             name: "Ithil Worker Server",
             script: "ithilWorker.js",
             exec_mode: "cluster",

@@ -71,13 +71,10 @@ const masterSocket = require('socket.io')(masterServer, { // start socket master
 logLoading("Initiating master socket connection event");
 masterSocket.on('connection', async (socket) => { // on socket connect, get free balance 
     socket.on("request port", async (data) => {
-        let port = config.publicPort;
-        if (data.auth === "member") port = (await balancer.getBalancedWorker()).port; // get balanced port if client wants to login
+        let port = (await balancer.getBalancedWorker()).port; // get balanced port
         statDb.updateClientContact(data.client); // log client pseudo-id (not identifyable; only the timestamp of typo init -> pseudo usage stats)
         socket.emit("balanced port", { port: port }); // send balanced port
         socket.disconnect(); // disconnect from client
-        //logState("Balancing: " + balancer.currentBalancing());
-        console.log("Sent client to port " + port);
     });
     setTimeout(() => socket.connected ? socket.disconnect() : 1, 5*60*1000); // socket has max 5 mins idling to request port
 });

@@ -5,6 +5,10 @@ module.exports = {
             script: "ithilMaster.js",
             time: true
         }, {
+            name: "Ithil Drop Server",
+            script: "drops/dropServer.js",
+            time: true
+        }, {
             name: "Ithil Worker Server",
             script: "ithilWorker.js",
             exec_mode: "cluster",
@@ -16,7 +20,7 @@ module.exports = {
     config: {
         masterPort: 4000,
         coordinationPort: 3999,
-        publicPort: 4001,
+        dropPort: 4001,
         workerRange: [4002, 4010],
         minAvailableWorker: 7,
         certificatePath: '/etc/letsencrypt/live/typo.rip'
